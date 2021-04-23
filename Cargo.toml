@@ -10,6 +10,7 @@ edition = "2018"
 ammonia = "3.1.1" # HTML Sanitization
 clap = { version = "3.0.0-beta.2", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
 confy = "0.4.0" # Boilerplate-free configuration management
+error-chain = "0.12.4" # Consistent error handling
 indoc = "1.0.3" # Indented document literals
 lazy_static = "1.4.0" # A macro for declaring lazily evaluated statics
 liquid = "0.22.0" #  Liquid templating language for Rust
