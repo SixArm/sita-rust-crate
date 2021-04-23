@@ -1,0 +1,26 @@
+[package]
+name = "sita"
+version = "1.0.0"
+authors = ["Joel Parker Henderson <joel@joelparkerhenderson.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ammonia = "3.1.1" # HTML Sanitization 
+clap = { version = "3.0.0-beta.2", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
+confy = "0.4.0" # Boilerplate-free configuration management
+indoc = "1.0.3" # Indented document literals
+lazy_static = "1.4.0" # A macro for declaring lazily evaluated statics
+liquid = "0.22.0" #  Liquid templating language for Rust
+minidom = "0.13.0" # A small, simple DOM implementation on top of quick-xml 
+pulldown-cmark = "0.8.0" #  A pull parser for CommonMark
+regex = "1.4.5" # Regular expressions parser, compiler, and executer
+quick-xml = "0.22.0" # High-performance XML reader and writer 
+serde = { version = "1.0", features = ["derive"] } # Generic serialize/deserialize framework 
+tera = "1.8.0" # Template engine based on Jinja2/Django templates
+yaml-rust = "0.4.5" # YAML parser
+json = "0.12.4" # JSON parser
+toml = "0.5.8" # TOML encoder/decoder 
+serde_json = "1.0.64" # JSON serialize/deserialize
+serde_yaml = "0.8.17" # YAML serialize/deserialize
