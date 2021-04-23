@@ -18,32 +18,87 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
     use crate::templating::vars::Vars;
-        
-    #[test]
-    fn test_tera() {
-        let glob: &str =&*format!("{}/tests/templates/**/*", env!("CARGO_MANIFEST_DIR"));
-        let tera: Tera = super::init(glob);
-        let vars = Vars {
-            title: "Example".into(),
-        };
-        let actual = tera.render(
-            "example.html", 
-            &::tera::Context::from_serialize(&vars).unwrap()
-        ).unwrap();
-        let expect = indoc! {"
+
+    fn fab_tera() -> Tera {
+        let glob = &*format!("{}/templates/**/*", env!("CARGO_MANIFEST_DIR"));
+        super::init(glob)
+    }
+
+    fn fab_expect() -> &'static str {
+        indoc!{r#"
             <!DOCTYPE html>
-            <html>
+            <html lang="en">
                 <head>
-                    <title>Example</title>
+                    <meta charset="utf-8">
+                    <title>my title</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
                 </head>
                 <body>
-                    <h1>Example</h1>
+                    my body
                 </body>
             </html>
-        "};
-        assert_eq!(actual, expect);
+        "#}
+    }
+
+    #[test]
+    fn test_tera_x_vars() {
+        let tera = fab_tera();
+        let vars = Vars {
+            title: "my title".into(),
+            body: "my body".into(),
+        };
+        let actual = tera.render(
+            "example.html",
+            &::tera::Context::from_serialize(&vars).unwrap()
+        ).unwrap();
+        assert_eq!(actual, fab_expect());
+    }
+
+    #[test]
+    fn test_tera_x_json() {
+        let tera = fab_tera();
+        let vars = indoc!{r#"
+            {
+                "title": "my title",
+                "body": "my body"
+            }
+        "#};
+        let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
+        let actual = tera.render(
+            "example.html",
+            &::tera::Context::from_serialize(&vars).unwrap()
+        ).unwrap();
+        assert_eq!(actual, fab_expect());
+    }
+
+    #[test]
+    fn test_tera_x_toml() {
+        let tera = fab_tera();
+        let vars = indoc!{r#"
+            title = "my title"
+            body = "my body"
+        "#};
+        let vars: ::toml::Value = vars.parse::<::toml::Value>().unwrap();
+        let actual = tera.render(
+            "example.html",
+            &::tera::Context::from_serialize(&vars).unwrap()
+        ).unwrap();
+        assert_eq!(actual, fab_expect());
+    }
+
+    #[test]
+    fn test_tera_x_yaml() {
+        let tera = fab_tera();
+        let vars = indoc!{r#"
+            title: "my title"
+            body: "my body"
+        "#};
+        let vars: ::serde_yaml::Value = ::serde_yaml::from_str(&vars).unwrap();
+        let actual = tera.render(
+            "example.html",
+            &::tera::Context::from_serialize(&vars).unwrap()
+        ).unwrap();
+        assert_eq!(actual, fab_expect());
     }
 
 }
-
-    
