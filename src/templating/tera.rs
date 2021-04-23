@@ -34,7 +34,7 @@ mod tests {
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                 </head>
                 <body>
-                    my body
+                    my content
                 </body>
             </html>
         "#}
@@ -44,8 +44,8 @@ mod tests {
     fn test_tera_x_vars() {
         let tera = fab_tera();
         let vars = Vars {
-            title: "my title".into(),
-            body: "my body".into(),
+            title: Some("my title".into()),
+            content: Some("my content".into()),
         };
         let actual = tera.render(
             "example.html",
@@ -60,7 +60,7 @@ mod tests {
         let vars = indoc!{r#"
             {
                 "title": "my title",
-                "body": "my body"
+                "content": "my content"
             }
         "#};
         let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
@@ -76,7 +76,7 @@ mod tests {
         let tera = fab_tera();
         let vars = indoc!{r#"
             title = "my title"
-            body = "my body"
+            content = "my content"
         "#};
         let vars: ::toml::Value = vars.parse::<::toml::Value>().unwrap();
         let actual = tera.render(
@@ -91,7 +91,7 @@ mod tests {
         let tera = fab_tera();
         let vars = indoc!{r#"
             title: "my title"
-            body: "my body"
+            content: "my content"
         "#};
         let vars: ::serde_yaml::Value = ::serde_yaml::from_str(&vars).unwrap();
         let actual = tera.render(
