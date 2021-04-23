@@ -7,6 +7,6 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct Vars {
-    pub title: String,
-    pub body: String,
+    pub title: Option<String>,
+    pub content: Option<String>,
 }
