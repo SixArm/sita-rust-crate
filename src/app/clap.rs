@@ -16,7 +16,7 @@
 //! We favor our convention of doing clap setup in a file named `clap.rs`,
 //! rather than in `main.rs`, because we like the separation of concerns.
 
-use clap::{Arg,App,Values};
+use clap::{Arg, App};
 use std::path::PathBuf;
 use crate::app::args::Args;
 
@@ -31,13 +31,19 @@ pub fn app() -> App<'static> {
         .long("verbose")
         .multiple(true)
         .about("Set the verbosity level"))
-    .arg(Arg::new("templates")
+    .arg(Arg::new("output_path")
+        .short('o')
+        .long("output")
+        .value_name("FILE")
+        .takes_value(true)
+        .about("The output file path, such as \"output.html\""))
+    .arg(Arg::new("template_glob")
         .short('t')
-        .long("templates")
+        .long("template")
         .value_name("GLOB")
         .takes_value(true)
         .required(true)
-        .about("The templates file glob, such as \"templates/**/*\""))
+        .about("The template file path or glob, such as \"templates/example.html\" or \"templates/**/*\""))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -46,10 +52,18 @@ pub fn app() -> App<'static> {
 pub fn args() -> Args {
     let matches = app().get_matches();
     Args {
+        output_path: match matches.value_of("output_path") {
+            Some(x) => Some(PathBuf::from(x)),
+            _ => None,
+        },
+        paths: match matches.values_of("paths") {
+            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+            _ => None,
+        },
+        template_glob: match matches.value_of("template_path") {
+            Some(x) => x.into(),
+            _ =>  "templates/**/*".into(),
+        },
         verbose: std::cmp::max(3, matches.occurrences_of("verbose") as u8),
-        templates_glob: matches.value_of("templates").unwrap_or_else(||{ "templates/**/*" }).into(),
-        paths: matches.values_of("paths")
-        .unwrap_or_else(||Values::default())
-        .map(|x| PathBuf::from(x)).collect(),
     }
 }
