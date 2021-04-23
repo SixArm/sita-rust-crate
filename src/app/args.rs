@@ -9,7 +9,8 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct Args {
+    pub(crate) output_path: Option<PathBuf>,
+    pub(crate) paths: Option<Vec<PathBuf>>,
+    pub(crate) template_glob: String,
     pub(crate) verbose: u8,
-    pub(crate) templates_glob: String,
-    pub(crate) paths: Vec<PathBuf>,
 }
