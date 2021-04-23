@@ -14,7 +14,7 @@ pub(crate) struct Config {
 }
 
 impl ::std::default::Default for Config {
-    fn default() -> Self { Self { 
+    fn default() -> Self { Self {
         version: 1,
     } }
 }

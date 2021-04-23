@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-            
+
     #[test]
     fn test_x_json() {
         let json_str = r#"

@@ -2,17 +2,17 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
-    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_JSON: Regex 
+    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_JSON: Regex
     = Regex::new(r"(?m)(?s)\A(?P<front>\{\n.*?\n\}\n)(?P<markdown>.*)\z").unwrap();
 }
 
 lazy_static! {
-    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_TOML: Regex 
+    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_TOML: Regex
     = Regex::new(r"(?m)(?s)\A\+\+\+\n(?P<front>.*?)\n\+\+\+\n(?P<markdown>.*)\z").unwrap();
 }
 
 lazy_static! {
-    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_YAML: Regex 
+    static ref MARKDOWN_FRONT_MATTER_REGEX_AS_YAML: Regex
     = Regex::new(r"(?m)(?s)(?P<front>---\n.*?\n---)\n(?P<markdown>.*)\z").unwrap();
 }
 
@@ -21,7 +21,7 @@ fn extract_front_matter_as_json(input: &str) -> (&str, Option<Result<::serde_jso
         if let Some(front) = captures.name("front") {
             if let Some(markdown) = captures.name("markdown") {
                 return (
-                    markdown.as_str(), 
+                    markdown.as_str(),
                     Some(::serde_json::from_str(front.as_str()))
                 )
             }
@@ -36,7 +36,7 @@ fn extract_front_matter_as_toml(input: &str) -> (&str, Option<Result<::toml::Val
             if let Some(markdown) = captures.name("markdown") {
                 return (
                     markdown.as_str(),
-                    Some(front.as_str().parse::<::toml::Value>())                  , 
+                    Some(front.as_str().parse::<::toml::Value>()),
                 )
             }
         }
@@ -56,8 +56,8 @@ fn extract_front_matter_as_yaml(input: &str) -> (&str, Option<Result<::yaml_rust
                         )
                     },
                     Err(e) => {
-                        return (    
-                            markdown.as_str(), 
+                        return (
+                            markdown.as_str(),
                             Some(Err(e)),
                         )
                     }
@@ -73,7 +73,7 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
     //use crate::vars::Vars;
-        
+
     #[test]
     fn test_with_json() {
         let input_markdown = indoc! {r#"

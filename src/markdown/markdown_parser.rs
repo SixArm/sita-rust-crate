@@ -6,7 +6,7 @@ pub fn parser(text: &str) -> Parser  {
 
 #[cfg(test)]
 mod tests {
-            
+
     #[test]
     fn test_parser() {
         let markdown = "# alpha\n\nbravo *charlie* ~~delta~~ foxtrot\n";
