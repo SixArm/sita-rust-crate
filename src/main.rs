@@ -17,6 +17,7 @@ pub(crate) mod markdown {
     pub(crate) mod markdown_front_matter;
 }
 pub(crate) mod templating {
+    pub(crate) mod serde;
     pub(crate) mod tera;
     pub(crate) mod vars;
 }
@@ -31,7 +32,10 @@ fn main() -> Result<(), ::confy::ConfyError> {
     let _config: Config = ::confy::load("sita")?;
     let args: Args = crate::app::clap::args();
     let tera: Tera = crate::templating::tera::init(&*args.templates_glob);
-    let vars: Vars = Vars { title: "Example".into() };
+    let vars: Vars = Vars { 
+        title: "my title".into(),
+        body: "my body".into(),
+    };
     let html = tera.render(
         "example.html", 
         &::tera::Context::from_serialize(&vars).unwrap()
