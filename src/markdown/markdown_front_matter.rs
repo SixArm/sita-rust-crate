@@ -16,6 +16,8 @@ lazy_static! {
     = Regex::new(r"(?m)(?s)(?P<front>---\n.*?\n---)\n(?P<markdown>.*)\z").unwrap();
 }
 
+//TODO warn dead code
+#[allow(dead_code)]
 fn extract_front_matter_as_json(input: &str) -> (&str, Option<Result<::serde_json::Value, ::serde_json::Error>>) {
     if let Some(captures) = MARKDOWN_FRONT_MATTER_REGEX_AS_JSON.captures(input) {
         if let Some(front) = captures.name("front") {
@@ -30,6 +32,8 @@ fn extract_front_matter_as_json(input: &str) -> (&str, Option<Result<::serde_jso
     (input, None)
 }
 
+//TODO warn dead code
+#[allow(dead_code)]
 fn extract_front_matter_as_toml(input: &str) -> (&str, Option<Result<::toml::Value, ::toml::de::Error>>) {
     if let Some(captures) = MARKDOWN_FRONT_MATTER_REGEX_AS_TOML.captures(input) {
         if let Some(front) = captures.name("front") {
@@ -44,6 +48,8 @@ fn extract_front_matter_as_toml(input: &str) -> (&str, Option<Result<::toml::Val
     (input, None)
 }
 
+//TODO warn dead code
+#[allow(dead_code)]
 fn extract_front_matter_as_yaml(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
     if let Some(captures) = MARKDOWN_FRONT_MATTER_REGEX_AS_YAML.captures(input) {
         if let Some(front) = captures.name("front") {
@@ -76,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_with_json() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             {
                 "alpha": "bravo",
                 "charlie": "delta"
@@ -84,7 +90,7 @@ mod tests {
             echo
             foxtrot
         "#};
-        let expect_markdown = indoc! {r#"
+        let expect_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
@@ -100,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_sans_json() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
@@ -111,7 +117,7 @@ mod tests {
 
     #[test]
     fn test_with_toml() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             +++
             alpha = "bravo"
             charlie = "delta"
@@ -119,7 +125,7 @@ mod tests {
             echo
             foxtrot
         "#};
-        let expect_markdown = indoc! {r#"
+        let expect_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
@@ -135,7 +141,7 @@ mod tests {
 
     #[test]
     fn test_sans_toml() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
@@ -146,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_with_yaml() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             ---
             alpha: bravo
             charlie: delta
@@ -154,7 +160,7 @@ mod tests {
             echo
             foxtrot
         "#};
-        let expect_markdown = indoc! {r#"
+        let expect_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
@@ -170,7 +176,7 @@ mod tests {
 
     #[test]
     fn test_sans_yaml() {
-        let input_markdown = indoc! {r#"
+        let input_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
