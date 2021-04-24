@@ -1,13 +1,14 @@
 use ::tera::Tera;
 
 pub fn init(glob: &str) -> Tera {
-    let tera = match Tera::new(glob) {
+    let mut tera = match Tera::new(glob) {
         Ok(t) => t,
         Err(e) => {
             println!("Parsing error(s): {}", e);
             ::std::process::exit(1);
         }
     };
+    tera.autoescape_on(vec![]); // disable autoescaping completely
     //tera.autoescape_on(vec!["html", ".sql"]);
     //tera.register_filter("do_nothing", do_nothing_filter);
     tera
@@ -24,21 +25,19 @@ mod tests {
         super::init(glob)
     }
 
-    fn fab_expect() -> &'static str {
-        indoc!{r#"
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta charset="utf-8">
-                    <title>my title</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                </head>
-                <body>
-                    my content
-                </body>
-            </html>
-        "#}
-    }
+    const FAB_OUTPUT_HTML: &str = indoc!{r#"
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <title>my title</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body>
+        my content
+            </body>
+        </html>
+    "#};
 
     #[test]
     fn test_tera_x_vars() {
@@ -51,7 +50,7 @@ mod tests {
             "example.html",
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
-        assert_eq!(actual, fab_expect());
+        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
@@ -68,7 +67,7 @@ mod tests {
             "example.html",
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
-        assert_eq!(actual, fab_expect());
+        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
@@ -83,7 +82,7 @@ mod tests {
             "example.html",
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
-        assert_eq!(actual, fab_expect());
+        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
@@ -98,7 +97,7 @@ mod tests {
             "example.html",
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
-        assert_eq!(actual, fab_expect());
+        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
 }
