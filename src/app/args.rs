@@ -11,6 +11,7 @@ use std::path::PathBuf;
 pub struct Args {
     pub(crate) output_path: Option<PathBuf>,
     pub(crate) paths: Option<Vec<PathBuf>>,
-    pub(crate) template_glob: String,
+    pub(crate) template_file: String,
+    pub(crate) templates_glob: String,
     pub(crate) verbose: u8,
 }

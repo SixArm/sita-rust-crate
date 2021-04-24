@@ -30,6 +30,7 @@ pub fn app() -> App<'static> {
         .short('v')
         .long("verbose")
         .multiple(true)
+        .takes_value(false)
         .about("Set the verbosity level"))
     .arg(Arg::new("output_path")
         .short('o')
@@ -37,13 +38,17 @@ pub fn app() -> App<'static> {
         .value_name("FILE")
         .takes_value(true)
         .about("The output file path, such as \"output.html\""))
-    .arg(Arg::new("template_glob")
+    .arg(Arg::new("template_file")
         .short('t')
         .long("template")
+        .value_name("FILE")
+        .takes_value(true)
+        .about("The template file, such as \"templates/example.html\""))
+    .arg(Arg::new("templates_glob")
+        .long("templates")
         .value_name("GLOB")
         .takes_value(true)
-        .required(true)
-        .about("The template file path or glob, such as \"templates/example.html\" or \"templates/**/*\""))
+        .about("The templates glob, such as \"templates/**/*\""))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -60,7 +65,11 @@ pub fn args() -> Args {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },
-        template_glob: match matches.value_of("template_path") {
+        template_file: match matches.value_of("template_file") {
+            Some(x) => x.into(),
+            _ =>  "example.html".into(),
+        },
+        templates_glob: match matches.value_of("templates_glob") {
             Some(x) => x.into(),
             _ =>  "templates/**/*".into(),
         },
