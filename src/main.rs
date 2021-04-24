@@ -29,6 +29,11 @@ use errors::*;
 
 ////
 
+#[macro_use]
+extern crate log;
+
+////
+
 pub(crate) mod app {
     pub(crate) mod args;
     pub(crate) mod clap;
@@ -70,34 +75,83 @@ fn run() -> Result<()> {
     let _config: Config = ::confy::load("sita")
         .chain_err(|| "configuration load error")?;
     let args: Args = crate::app::clap::args();
-    let tera: Tera = crate::templating::tera::init(&*args.template_glob);
-    let vars = Vars {
-        title: Some("my title".into()),
-        content: Some("my content".into()),
-    };
-    if let Some(paths) = args.paths {
+    let tera: Tera = crate::templating::tera::init(&*args.templates_glob);
+    if let Some(paths) = &args.paths {
         for input_path in paths {
-            do_path(&tera, "example.html", &vars, &input_path)?;
+            do_path(&args, &tera, &args.template_file, &input_path)?;
         }
     };
     Ok(())
 }
 
-fn do_path(tera: &Tera, template: &str, vars: &Vars, input_path: &PathBuf) -> Result<()> {
+fn do_path(args: &Args, tera: &Tera, template: &str, input_path: &PathBuf) -> Result<()> {
+    if args.verbose > 0 {
+        info!("do path → start → input:{:?}", input_path);
+    }
+    vet_input_path_file(input_path)?;
+    vet_input_path_name(input_path)?;
+
+    // Prepare output file path
+    let mut output_path: PathBuf;
+    match &args.output_path {
+        Some(x) => {
+            output_path = x.to_path_buf();
+        },
+        None => {
+            output_path = PathBuf::from(input_path);
+            output_path.set_extension("html");
+        },
+    };
+
+    // Translate Markdown to HTML
+    let input_as_markdown = ::std::fs::read_to_string(&input_path)
+        .chain_err(|| format!("input path must be readable; path: {:?}", input_path))?;
+    let content_as_html = markdown_to_html(&input_as_markdown);
+
+    // Create variables
+    let vars = Vars {
+        title: Some("my title".into()),
+        content: Some(content_as_html),
+    };
+
+    // Render Tera template that has {{ content }} slot for HTML string
+    let context = ::tera::Context::from_serialize(&vars)
+        .chain_err(|| "create context")?;
+    let output_as_html = tera.render(template, &context)
+        .chain_err(|| "render template")?;
+    ::std::fs::write(&output_path, output_as_html)
+        .chain_err(|| "write output")?;
+    if args.verbose > 0 {
+        info!("do path → success → input:{:?} output:{:?}", input_path, output_path);
+    }
+    Ok(())
+}
+
+fn vet_input_path_file(input_path: &PathBuf) -> Result<()> {
+    if !input_path.exists() {
+        bail!("input path must exist. path: {:?}", input_path)
+    }
+    let metadata = ::std::fs::metadata(input_path)
+        .chain_err(|| format!("input path must have metadata. path: {:?}", input_path))?;
+    if !metadata.is_file() {
+        bail!("input path must be a file. path: {:?}", input_path);
+    }
+    Ok(())
+}
+
+fn vet_input_path_name(input_path: &PathBuf) -> Result<()> {
+    // Check if we want to process the input path or skip it
     let os_md = OsStr::new("md");
     let extension = input_path.extension();
     if extension != Some(&os_md) {
-        return Ok(());
+        bail!("input path must have extension \".md\". path: {:?}", input_path);
     }
-    let mut output_path = PathBuf::from(input_path);
-    output_path.set_extension("html");
-    let input_markdown = ::std::fs::read_to_string(input_path)
-        .chain_err(|| "read input")?;
-    let context = ::tera::Context::from_serialize(&vars)
-        .chain_err(|| "create context")?;
-    let output_html = tera.render(template, &context)
-        .chain_err(|| "render template")?;
-    ::std::fs::write(output_path, output_html)
-        .chain_err(|| "write output")?;
     Ok(())
+}
+
+fn markdown_to_html(input_as_markdown: &str) -> String {
+    let parser = crate::markdown::markdown_parser::parser(&*input_as_markdown);
+    let mut content_as_html = String::new();
+    pulldown_cmark::html::push_html(&mut content_as_html, parser);
+    content_as_html
 }
