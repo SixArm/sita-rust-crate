@@ -12,8 +12,11 @@ App crates:
 * [`indoc`](https://crates.io/crates/indoc) - Indented document literals
 * [`error-chain`](https://crates.io/crates/error-chain) - Consistent error handling
 * [`lazy_static`](https://crates.io/crates/lazy_static) - Lazy evaluated statics
+* [`log`](https://crates.io/crates/env_logger) A lightweight logging facade
 * [`regex`](https://crates.io/crates/regex) - Regular expressions parser
 * [`serde`](https://crates.io/crates/serde) - Generic serialize/deserialize framework
+* [`env_logger`](https://crates.io/crates/env_logger) A logger configurable via environment variables
+
 
 Maybe:
 
