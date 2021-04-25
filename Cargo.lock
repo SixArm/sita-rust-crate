@@ -58,6 +58,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b62fc65de8e4e7f52534fb52b0f3ed04746ae267519eef2a83941e8085068b"
 
 [[package]]
+name = "assertables"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba15edfb059993ad4be73d5707ddb05e6cd3a9cfe5f5d219f37443924af53172"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1195,6 +1201,7 @@ name = "sita"
 version = "1.0.0"
 dependencies = [
  "ammonia",
+ "assertables",
  "clap",
  "confy",
  "env_logger",
