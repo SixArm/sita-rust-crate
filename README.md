@@ -1,22 +1,22 @@
 # Sita static site generator Rust crate
 
-Generate one static site file:
+Generate a file:
 
 ```
 $ sita hello.md
 => hello.html
 ```
 
-Choose a template file with `-t` or `--template`:
-
-```sh
-$ sita hello.md -t typical.html
-=> hello.html (with template file typical.html)
-```
-
-Choose an ouput file with `-o` or `--output`:
+To choose an ouput file use `-o` or `--output-file`:
 
 ```
 $ sita hello.md -o world.html
 => world.html
+```
+
+To choose a template file use `-t` or `--template-name`:
+
+```sh
+$ sita hello.md -t default.html
+=> hello.html using template file
 ```
