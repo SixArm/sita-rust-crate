@@ -16,8 +16,8 @@
 //! We favor our convention of doing clap setup in a file named `clap.rs`,
 //! rather than in `main.rs`, because we like the separation of concerns.
 
-use clap::{Arg, App};
-use std::path::PathBuf;
+use ::clap::{Arg, App};
+use ::std::path::PathBuf;
 use crate::app::args::Args;
 
 /// Create a clap app.
@@ -32,46 +32,96 @@ pub fn app() -> App<'static> {
         .multiple(true)
         .takes_value(false)
         .about("Set the verbosity level"))
-    .arg(Arg::new("output_path")
+    .arg(Arg::new("input_file")
+        .short('i')
+        .long("input-file")
+        .value_name("FILE")
+        .takes_value(true)
+        .about("The input file, such as \"input.html\""))
+    .arg(Arg::new("input_directory")
+        .short('I')
+        .long("input-directory")
+        .value_name("DIRECTORY")
+        .takes_value(true)
+        .about("The input directory, such as \"~/input/\""))
+    .arg(Arg::new("input_extension")
+        .long("input-extension")
+        .value_name("EXTENSION")
+        .takes_value(true)
+        .about("The input file name extension; default \"md\""))
+    .arg(Arg::new("output_file")
         .short('o')
-        .long("output")
+        .long("output-file")
         .value_name("FILE")
         .takes_value(true)
-        .about("The output file path, such as \"output.html\""))
-    .arg(Arg::new("template_file")
+        .about("The output file, such as \"output.html\""))
+    .arg(Arg::new("output_directory")
+        .short('O')
+        .long("output-directory")
+        .value_name("DIRECTORY")
+        .takes_value(true)
+        .about("The output directory, such as \"~/output/\""))
+    .arg(Arg::new("output_extension")
+        .long("output-extension")
+        .value_name("EXTENSION")
+        .takes_value(true)
+        .about("The output file name extension; default \"html\""))
+    .arg(Arg::new("template_name")
         .short('t')
-        .long("template")
-        .value_name("FILE")
+        .long("template-name")
+        .value_name("NAME")
         .takes_value(true)
-        .about("The template file, such as \"templates/example.html\""))
-    .arg(Arg::new("templates_glob")
-        .long("templates")
+        .about("The template name; default is \"default.html\""))
+    .arg(Arg::new("template_glob")
+        .short('T')
+        .long("template-glob")
         .value_name("GLOB")
         .takes_value(true)
-        .about("The templates glob, such as \"templates/**/*\""))
+        .about("The template glob; default is \"templates/**/*\""))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
 }
+
 /// Create an Args struct initiatied with the clap App settings.
 pub fn args() -> Args {
     let matches = app().get_matches();
     Args {
-        output_path: match matches.value_of("output_path") {
+        input_file_path: match matches.value_of("input_file") {
             Some(x) => Some(PathBuf::from(x)),
+            _ => None,
+        },
+        input_directory_path: match matches.value_of("input_directory") {
+            Some(x) => Some(PathBuf::from(x)),
+            _ => None,
+        },
+        input_extension: match matches.value_of("input_extension") {
+            Some(x) => Some(String::from(x)),
+            _ => None,
+        },
+        output_file_path: match matches.value_of("output_file") {
+            Some(x) => Some(PathBuf::from(x)),
+            _ => None,
+        },
+        output_directory_path: match matches.value_of("output_directory") {
+            Some(x) => Some(PathBuf::from(x)),
+            _ => None,
+        },
+        output_extension: match matches.value_of("output_extension") {
+            Some(x) => Some(String::from(x)),
             _ => None,
         },
         paths: match matches.values_of("paths") {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },
-        template_file: match matches.value_of("template_file") {
-            Some(x) => x.into(),
-            _ =>  "example.html".into(),
+        template_name: match matches.value_of("template_name") {
+            Some(x) => Some(x.into()),
+            _ =>  Some("default.html".into()),
         },
-        templates_glob: match matches.value_of("templates_glob") {
-            Some(x) => x.into(),
-            _ =>  "templates/**/*".into(),
+        template_glob: match matches.value_of("template_glob") {
+            Some(x) => Some(x.into()),
+            _ =>  Some("templates/**/*".into())
         },
         verbose: std::cmp::max(3, matches.occurrences_of("verbose") as u8),
     }
