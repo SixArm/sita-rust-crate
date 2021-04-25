@@ -29,11 +29,11 @@ use errors::*;
 
 ## Catch errors
 
-Our `main()` function uses the recommended code for `error_chain` handling:
+Our convention is a file `main.rs` where the setup happens:
 
 ```
 fn main() {
-    if let Err(ref e) = run() {
+    if let Err(ref e) = crate::run::run() {
         println!("error: {}", e);
         for e in e.iter().skip(1) {
             println!("caused by: {}", e);
@@ -46,10 +46,10 @@ fn main() {
 }
 ```
 
-Our `run()` function is where the work happens:
+Our convention is a file `run.rs` where the work happens:
 
 ```
-fn run() -> Result<()> {
+pub(crate) fn run() -> Result<()> {
     …
     Ok(())
 }
