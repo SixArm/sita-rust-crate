@@ -7,6 +7,7 @@ Generator crates:
 
 App crates:
 
+* [`assertables`](https://crates.io/crates/assertables) # Runtime reliability checking macros
 * [`clap`](https://crates.io/crates/clap) - Command Line Argument Parser
 * [`confy`](https://crates.io/crates/confy) - Configuration management
 * [`indoc`](https://crates.io/crates/indoc) - Indented document literals
@@ -16,7 +17,6 @@ App crates:
 * [`regex`](https://crates.io/crates/regex) - Regular expressions parser
 * [`serde`](https://crates.io/crates/serde) - Generic serialize/deserialize framework
 * [`env_logger`](https://crates.io/crates/env_logger) A logger configurable via environment variables
-
 
 Maybe:
 

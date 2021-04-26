@@ -1,118 +1,111 @@
-use ::indoc::indoc;
 use ::std::process::Command;
 use ::std::path::PathBuf;
 
 const SITA: &str = "./target/debug/sita";
 
-const FAB_INPUT_MARKDOWN: &str = indoc!{r#"
-    # my title
-    my content
-"#};
+fn fab_tests_files_path(s: &str) -> PathBuf {
+    [env!("CARGO_MANIFEST_DIR"), "tests", "files", s].iter().collect::<PathBuf>()
+}
 
-const FAB_TERA_TEMPLATE: &str = indoc!{r#"
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <title>{{ title }}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-        </head>
-        <body>
-    {{ content}}
-
-        </body>
-    </html>
-"#};
-
-const FAB_OUTPUT_HTML: &str = indoc!{r#"
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <title>my title</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-        </head>
-        <body>
-    <h1>my title</h1>
-    <p>my content</p>
-
-        </body>
-    </html>
-
-"#};
-
-fn fab_path(s: &str) -> PathBuf {
+fn fab_tmp_path(s: &str) -> PathBuf {
     [env!("CARGO_MANIFEST_DIR"), "tmp", s].iter().collect::<PathBuf>()
 }
 
-fn fab_input_file(path: &PathBuf) {
-    ::std::fs::write(path, FAB_INPUT_MARKDOWN).expect("write");
+fn remove_file_if_exists(path: &PathBuf) {
+    if path.exists() {
+        ::std::fs::remove_file(path).expect("remove");
+    }
 }
 
-fn fab_template_file(path: &PathBuf) {
-    ::std::fs::write(path, FAB_TERA_TEMPLATE).expect("write");
+fn assert_file_string_eq(a: &PathBuf, b: &PathBuf) {
+    let a_string = ::std::fs::read_to_string(a).expect("a");
+    let b_string = ::std::fs::read_to_string(b).expect("b");
+    assert_eq!(a_string, b_string);
 }
-
 
 #[test]
 fn test_command_x_default() {
-    // Prep
-    let input_path = fab_path("alpha.md");
-    fab_input_file(&input_path);
-    let output_path = fab_path("alpha.html");
-    if output_path.exists() {
-        ::std::fs::remove_file(&output_path).expect("prep");
-    }
+    // Prep input
+    let input_path = fab_tmp_path("test.md");
+    ::std::fs::copy(
+        &fab_tests_files_path("input_1.md"), 
+        &input_path
+    ).expect("prep input");
+    // Prep output
+    let output_path = fab_tmp_path("test.html");
+    remove_file_if_exists(&output_path);
     // Run
-    assert!(!&output_path.exists());
     let _output = Command::new(SITA)
         .arg(&input_path)
         .output()
         .expect("failure");
-    assert!(&output_path.exists());
-    assert_eq!(::std::fs::read_to_string(output_path).expect("output"), FAB_OUTPUT_HTML);
+    assert_fn_eq(
+        ::std::fs::read_to_string,
+        &output_path,
+        &fab_tests_files_path("output_1_template_1.html"),
+    );
+    // Done
+    remove_file_if_exists(&input_path);
+    remove_file_if_exists(&output_path);
 }
 
 #[test]
 fn test_command_x_output_file() {
-    // Prep
-    let input_path = fab_path("alpha.md");
-    fab_input_file(&input_path);
-    let output_path = fab_path("alpha.html");
-    if output_path.exists() {
-        ::std::fs::remove_file(&output_path).expect("prep");
-    }
+    // Prep input
+    let input_path = fab_tmp_path("test.md");
+    ::std::fs::copy(
+        &fab_tests_files_path("input_1.md"), 
+        &input_path
+    ).expect("prep input");
+    // Prep output
+    let output_path = fab_tmp_path("test-output-file.html");
+    remove_file_if_exists(&output_path);
     // Run
-    assert!(!output_path.exists());
     let _output = Command::new(SITA)
         .arg(&input_path)
         .arg("--output-file")
         .arg(&output_path)
         .output()
         .expect("failure");
-    assert!(output_path.exists());
-    assert_eq!(::std::fs::read_to_string(output_path).expect("output"), FAB_OUTPUT_HTML);
+    assert_file_string_eq(
+        &output_path,
+        &fab_tests_files_path("output_1_template_1.html"),
+    );
+    // Done
+    remove_file_if_exists(&input_path);
+    remove_file_if_exists(&output_path);
 }
 
 #[test]
 fn test_command_x_template_name() {
-    // Prep
-    let input_path = fab_path("alpha.md");
-    fab_input_file(&input_path);
-    let template_path = fab_path("template.html");
-    fab_template_file(&template_path);
-    let output_path = fab_path("alpha.html");
-    if output_path.exists() {
-        ::std::fs::remove_file(&output_path).expect("before");
-    }
+    // Prep input
+    let input_path = fab_tmp_path("test.md");
+    ::std::fs::copy(
+        &fab_tests_files_path("input_1.md"), 
+        &input_path
+    ).expect("prep input");
+    // Prep output
+    let output_path = fab_tmp_path("test.html");
+    remove_file_if_exists(&output_path);
+    // Prep template
+    let template_path = fab_tmp_path("test-template.html");
+    ::std::fs::copy(
+        &fab_tests_files_path("template_2.md"), 
+        &input_path
+    ).expect("prep template");
     // Run
-    assert!(!output_path.exists());
     let _output = Command::new(SITA)
         .arg(&input_path)
         .arg("--template-name")
         .arg(&template_path)
         .output()
         .expect("failure");
-    assert!(output_path.exists());
-    assert_eq!(::std::fs::read_to_string(output_path).expect("output"), FAB_OUTPUT_HTML);
+    assert_file_string_eq(
+        &output_path,
+        &fab_tests_files_path("output_1_template_2.html"),
+    );
+    // Done
+    remove_file_if_exists(&input_path);
+    remove_file_if_exists(&output_path);
+    remove_file_if_exists(&template_path);
 }
