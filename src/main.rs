@@ -45,12 +45,18 @@ pub(crate) mod app {
 }
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
-    pub(crate) mod markdown_front_matter;
+    pub(crate) mod front_matter {
+        pub(crate) mod html;
+        pub(crate) mod json;
+        pub(crate) mod toml;
+        pub(crate) mod yaml;
+    }
 }
 pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tera;
     pub(crate) mod vars;
+    pub(crate) mod xml;
 }
 
 fn main() {
