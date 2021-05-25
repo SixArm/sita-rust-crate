@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 ammonia = "3.1.1" # HTML Sanitization
-assertables = "3.1.0" # Runtime reliability checking macros
+assertables = "3.2.1" # Runtime reliability checking macros
 clap = { version = "3.0.0-beta.2", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
 confy = "0.4.0" # Boilerplate-free configuration management
 env_logger = "0.8.3" # A logger that can be configured via environment variables
