@@ -3,7 +3,7 @@ use regex::Regex;
 
 lazy_static! {
     static ref REGEX: Regex
-    = Regex::new(r"(?m)(?s)(?P<front>---\n.*?\n---)\n(?P<markdown>.*)\z").unwrap();
+    = Regex::new(r"(?m)(?s)\A---\n(?P<front>.*?)\n---\n(?P<markdown>.*)\z").unwrap();
 }
 
 //TODO warn dead code
