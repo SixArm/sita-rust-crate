@@ -1,3 +1,4 @@
+use ::assertables::*;
 use ::std::process::Command;
 use ::std::path::PathBuf;
 
@@ -39,7 +40,7 @@ fn test_command_x_default() {
         .arg(&input_path)
         .output()
         .expect("failure");
-    assert_fn_eq(
+    assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &output_path,
         &fab_tests_files_path("output_1_template_1.html"),
@@ -67,7 +68,8 @@ fn test_command_x_output_file() {
         .arg(&output_path)
         .output()
         .expect("failure");
-    assert_file_string_eq(
+    assert_fn_ok_eq!(
+        ::std::fs::read_to_string,
         &output_path,
         &fab_tests_files_path("output_1_template_1.html"),
     );
@@ -100,7 +102,8 @@ fn test_command_x_template_name() {
         .arg(&template_path)
         .output()
         .expect("failure");
-    assert_file_string_eq(
+    assert_fn_ok_eq!(
+        ::std::fs::read_to_string,
         &output_path,
         &fab_tests_files_path("output_1_template_2.html"),
     );
