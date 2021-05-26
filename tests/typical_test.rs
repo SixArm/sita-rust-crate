@@ -6,7 +6,6 @@ use ::std::path::PathBuf;
 mod util;
 use util::*;
 
-
 fn test_with_base_path_and_default_input_expect_actual(base_path: PathBuf) {
     let input = base_path.join("input.md");
     let expect = base_path.join("expect.html");

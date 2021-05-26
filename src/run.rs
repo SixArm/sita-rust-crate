@@ -37,7 +37,7 @@ fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) 
     }
     vet_input_file_path_exists(&args, input_file_path)?;
     vet_input_file_path_metadata(&args, input_file_path)?;
-    vet_input_extension(&args, input_file_path)?;
+    vet_input_file_path_extension(&args, input_file_path)?;
     let output_file_path = create_output_file_path(&args, &input_file_path)?;
 
     // Translate Markdown to HTML
@@ -67,7 +67,7 @@ fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) 
 /// Vet input path exists
 fn vet_input_file_path_exists(_args: &Args, input_file_path: &PathBuf) -> Result<()> {
     if !input_file_path.exists() {
-        bail!("input path must exist. path: {:?}", input_file_path)
+        bail!("input file path must exist. path: {:?}", input_file_path)
     }
     Ok(())
 }
@@ -75,19 +75,19 @@ fn vet_input_file_path_exists(_args: &Args, input_file_path: &PathBuf) -> Result
 /// Vet input path metadata is file
 fn vet_input_file_path_metadata(_args: &Args, input_file_path: &PathBuf) -> Result<()> {
     let metadata = ::std::fs::metadata(input_file_path)
-    .chain_err(|| format!("input path must have metadata. path: {:?}", input_file_path))?;
+    .chain_err(|| format!("input file path must have metadata. path: {:?}", input_file_path))?;
     if !metadata.is_file() {
-        bail!("input path must be a file. path: {:?}", input_file_path);
+        bail!("input file path must be a file. path: {:?}", input_file_path);
     }
     Ok(())
 }
 
 /// Vet input path name ends with "md" meaning Markdown format
-fn vet_input_extension(args: &Args, input_file_path: &PathBuf) -> Result<()> {
+fn vet_input_file_path_extension(args: &Args, input_file_path: &PathBuf) -> Result<()> {
     if let Some(a) = &args.input_extension {
         if let Some(b) = &input_file_path.extension() {
             if a != &String::from(b.to_string_lossy()) {
-                bail!("input extension must be \"{:?}\" but is \"{:?}. path: {:?}", a, b, input_file_path);
+                bail!("input file path extension must be \"{:?}\" but is \"{:?}. path: {:?}", a, b, input_file_path);
             }
         }
     }
@@ -120,9 +120,14 @@ fn markdown_to_html(input_as_markdown: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::PathBuf;
+    use ::std::path::PathBuf;
+    use ::lazy_static::lazy_static;
     use crate::app::args::Args;
 
+    lazy_static! {
+        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
+    }
+    
     #[test]
     fn test_run() {
         //TODO
@@ -135,50 +140,67 @@ mod tests {
 
     #[test]
     fn test_vet_input_file_path_exists_x_ok() {
-        let input_file_path: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "files", "input.md"].iter().collect();
         let args = Args::default();
+        let input_file_path = TESTS_DIR.join("vet_input_file_path_exists").join("example.txt");
         let x = vet_input_file_path_exists(&args, &input_file_path);
         assert!(x.is_ok());
     }
 
     #[test]
     fn test_vet_input_file_path_exists_x_err() {
-        let input_file_path: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "files", "missing"].iter().collect();
         let args = Args::default();
+        let input_file_path = TESTS_DIR.join("vet_input_file_path_exists").join("missing");
         let x = vet_input_file_path_exists(&args, &input_file_path);
         assert!(x.is_err());
     }
         
     #[test]
     fn test_vet_input_file_path_metadata_x_ok() {
-        let input_file_path: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "files", "input.md"].iter().collect();
         let args = Args::default();
+        let input_file_path = TESTS_DIR.join("vet_input_file_path_metadata").join("example.txt");
         let x = vet_input_file_path_metadata(&args, &input_file_path);
         assert!(x.is_ok());
     }
 
     #[test]
     fn test_vet_input_file_path_metadata_x_err() {
-        let input_file_path: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "files", "missing"].iter().collect();
         let args = Args::default();
+        let input_file_path = TESTS_DIR.join("vet_input_file_path_metadata").join("missing");
         let x = vet_input_file_path_metadata(&args, &input_file_path);
         assert!(x.is_err());
     }
 
     #[test]
-    fn test_vet_input_extension_x_ok() {
-        let input_file_path = PathBuf::from("example.md");
+    fn test_vet_input_file_path_extension_x_default_x_ok() {
         let args = Args::default();
-        let x = vet_input_extension(&args, &input_file_path);
+        let input_file_path = PathBuf::from("example.md");
+        let x = vet_input_file_path_extension(&args, &input_file_path);
         assert!(x.is_ok());
     }
 
     #[test]
-    fn test_vet_input_extension_x_err() {
-        let input_file_path = PathBuf::from("example.md");
+    fn test_vet_input_file_path_extension_x_default_x_err() {
+        let args = Args::default();
+        let input_file_path = PathBuf::from("example.invalid");
+        let x = vet_input_file_path_extension(&args, &input_file_path);
+        assert!(x.is_ok());
+    }
+
+    #[test]
+    fn test_vet_input_file_path_extension_x_custom_x_ok() {
         let mut args = Args::default();
         args.input_extension = Some(String::from("alpha"));
-        let x = vet_input_extension(&args, &input_file_path);
+        let input_file_path = PathBuf::from("example.alpha");
+        let x = vet_input_file_path_extension(&args, &input_file_path);
+        assert!(x.is_ok());
+    }
+
+    #[test]
+    fn test_vet_input_file_path_extension_x_custom_x_err() {
+        let mut args = Args::default();
+        args.input_extension = Some(String::from("alpha"));
+        let input_file_path = PathBuf::from("example.bravo");
+        let x = vet_input_file_path_extension(&args, &input_file_path);
         assert!(x.is_err());
     }
 
@@ -192,18 +214,18 @@ mod tests {
 
     #[test]
     fn test_create_output_file_path_x_output_extension() {
-        let input_file_path = PathBuf::from("example.md");
         let mut args = Args::default();
         args.output_extension = Some(String::from("alpha"));
+        let input_file_path = PathBuf::from("example.md");
         let x = create_output_file_path(&args, &input_file_path);
         assert_eq!(x.unwrap().to_string_lossy(), "example.alpha");
     }
 
     #[test]
     fn test_create_output_file_path_x_output_file_path() {
-        let input_file_path = PathBuf::from("example.md");
         let mut args = Args::default();
         args.output_file_path = Some(PathBuf::from("alpha"));
+        let input_file_path = PathBuf::from("example.md");
         let x = create_output_file_path(&args, &input_file_path);
         assert_eq!(x.unwrap().to_string_lossy(), "alpha");
     }
