@@ -1,44 +1,112 @@
 use ::indoc::indoc;
 use ::tera::Tera;
+use ::std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 
+// Return the template default name, which is "default".
+//
+// ```rust
+// template_default_name()
+// //-> "default"
+// ```
+//
 pub fn template_default_name() -> &'static str {
-    "default.html"
+    "default"
 }
 
-pub fn template_default_html() -> &'static str {
-    indoc!{r#"
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <title>{{ title }}</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-            </head>
-            <body>
-        {{ content }}
-            </body>
-        </html>
-    "#}
+// Return the template default content, which is "{{ content }}".
+//
+// ```rust
+// template_default_content()
+// //-> "{{ content }}"
+// ```
+//
+pub fn template_default_content() -> &'static str {
+    indoc!{r#"{{ content }}"#}
+}
+
+// Tera new or default.
+//
+// If args has a template glob, then call Tera::new,
+// otherwise call Tera::default().
+//
+// ```
+// let args = Args::default();
+// let mut tera = tera_new_via_args(args);
+// //-> A new Tera object via Tera::default()
+// ```
+//
+// let mut args = Args::default();
+// args.template_glob = PathBuf::from("./templates");
+// let mut tera = tera_new_via_args(args);
+// //-> A new Tera object via Tera::new(…) with the glob
+//
+fn tera_new_via_args(args: &Args) -> Result<Tera> {
+    match &args.template_glob {
+        Some(template_glob) => {
+            Ok(
+                Tera::new(&*template_glob.as_os_str().to_string_lossy())
+                .chain_err(|| format!("create tera. template glob: {:?}", template_glob))?
+            )
+        },
+        _ => {
+            Ok(Tera::default())
+        }
+    }
+}
+
+// Tera: add_tempate_files() via args.
+//
+// Example:
+//
+// ```rust
+// let files: Vec<PathBuf> = vec![
+//     PathBuf::from("alpha.html"),
+//     PathBuf::from("bravo.html"),
+// ];
+// let mut args = Args::default();
+// args.template_files = Some(files);
+// let mut tera: Tera::default();
+// tera_add_template_files_via_vec_path_buf(tera, args);
+// ```
+//
+fn tera_add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<()> {
+    if let Some(files) = args.template_files.as_ref() {
+        tera.add_template_files(
+            files.into_iter().map(|x| 
+                (x.clone(), None)
+            ).collect::<Vec<(PathBuf, Option<String>)>>()
+        )
+    } else {
+        Ok(())
+    }
+}
+
+// Tera: use add_raw_template() to add a default template
+//
+// Example:
+//
+// ```
+// let mut tera: Tera::default();
+// tera_add_template_default(tera);
+// //-> Tera now has a template name "default" with content "{{ content }}"
+// ```
+//
+fn tera_add_template_default(tera: &mut Tera) -> ::tera::Result<()> {
+    tera.add_raw_template(
+        template_default_name(),
+        template_default_content(),
+    )
 }
 
 pub fn init(args: &Args) -> Result<Tera> {
-    let mut tera: Tera = match &args.template_glob {
-        Some(template_glob) => {
-            Tera::new(&*template_glob)
-            .chain_err(|| format!("create tera. template glob: {:?}", template_glob))?
-        },
-        _ => {
-            Tera::default()
-        }
-    };
-    tera.add_raw_template(
-        template_default_name(),
-        template_default_html(),
-    )
-    .chain_err(|| format!("add raw template. name: {:?}", template_default_name()))?;
-
+    let mut tera = tera_new_via_args(args)
+        .chain_err(|| "tera_new_via_args")?;
+    tera_add_template_default(&mut tera)
+        .chain_err(|| "tera_add_template_default")?;
+    tera_add_template_files_via_args(&mut tera, args)
+        .chain_err(|| "tera_add_template_files_via_args")?;
     tera.autoescape_on(vec![]); // disable autoescaping completely
     //tera.autoescape_on(vec!["html", ".sql"]);
     //tera.register_filter("do_nothing", do_nothing_filter);
@@ -57,19 +125,7 @@ mod tests {
         super::init(&args).unwrap()
     }
 
-    const FAB_OUTPUT_HTML: &str = indoc!{r#"
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <title>my title</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-            </head>
-            <body>
-        my content
-            </body>
-        </html>
-    "#};
+    const FAB_OUTPUT_HTML: &str = "my content";
 
     #[test]
     fn test_init() {

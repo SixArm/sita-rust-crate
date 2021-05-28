@@ -4,6 +4,7 @@
 //! We have these args in their own file in order to be flexible,
 //! such as being able to start our app with other arg parsers.
 
+use ::std::ffi::OsString;
 use ::std::path::PathBuf;
 
 #[derive(Debug)]
@@ -16,7 +17,9 @@ pub struct Args {
     pub(crate) output_extension: Option<String>,
     pub(crate) paths: Option<Vec<PathBuf>>,
     pub(crate) template_name: Option<String>,
-    pub(crate) template_glob: Option<String>,
+    pub(crate) template_files: Option<Vec<PathBuf>>,
+    pub(crate) template_glob: Option<PathBuf>,
+    pub(crate) template_html: Option<String>,
     pub(crate) verbose: u8,
 }
 
@@ -30,7 +33,9 @@ impl ::std::default::Default for Args {
         output_extension: None,
         paths: None,
         template_name: None,
+        template_files: None,
         template_glob: None,
+        template_html: None,
         verbose: 0,
     } }
 }

@@ -16,6 +16,7 @@
 //! We favor our convention of doing clap setup in a file named `clap.rs`,
 //! rather than in `main.rs`, because we like the separation of concerns.
 
+
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
 use crate::app::args::Args;
@@ -71,13 +72,25 @@ pub fn app() -> App<'static> {
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
-        .about("The template name; default is \"default.html\""))
-    .arg(Arg::new("template_glob")
+        .about("The template name; for example \"my-template.html\""))
+    .arg(Arg::new("template_file")
         .short('T')
+        .long("template-file")
+        .value_name("FILE")
+        .takes_value(true)
+        .multiple(true)
+        .number_of_values(1)
+        .about("The template file; for example \"my-template.html\""))
+    .arg(Arg::new("template_glob")
         .long("template-glob")
         .value_name("GLOB")
         .takes_value(true)
-        .about("The template glob; default is \"templates/**/*\""))
+        .about("The template glob; for example \"templates/**/*\""))
+    .arg(Arg::new("template_html")
+        .long("template-html")
+        .value_name("HTML")
+        .takes_value(true)
+        .about("The template HTML; for example \"<p>{{ content }}</p>\""))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -111,17 +124,25 @@ pub fn args() -> Args {
             Some(x) => Some(String::from(x)),
             _ => None,
         },
-        paths: match matches.values_of("paths") {
+        paths: match matches.values_of_os("paths") {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {
             Some(x) => Some(x.into()),
-            _ =>  Some("default.html".into()),
+            _ =>  None,
         },
-        template_glob: match matches.value_of("template_glob") {
+        template_files: match matches.values_of_os("template_file") {
+            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+            _ => None,
+        },
+        template_glob: match matches.value_of_os("template_glob") {
             Some(x) => Some(x.into()),
-            _ =>  Some("templates/**/*".into())
+            _ =>  None,
+        },
+        template_html: match matches.value_of("template_html") {
+            Some(x) => Some(x.into()),
+            _ =>  None,
         },
         verbose: std::cmp::max(3, matches.occurrences_of("verbose") as u8),
     }

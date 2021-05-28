@@ -1,4 +1,6 @@
 use ::assertables::*;
+use ::std::ffi::OsStr;
+use ::std::path::PathBuf;
 use ::std::process::Command;
 
 #[path = "util.rs"]
@@ -7,89 +9,83 @@ use util::*;
 
 #[test]
 fn test_command_x_default() {
-    // Prep input
-    let input_path = TMP_DIR.join("test.md");
-    ::std::fs::copy(
-        TESTS_DIR.join("input_1.md"), 
-        &input_path
-    ).expect("prep input");
-    // Prep output
-    let output_path = TMP_DIR.join("test.html");
-    remove_file_if_exists(&output_path).unwrap();
+    // Prep
+    let dir: PathBuf = TESTS_DIR.join("command_x_default");
+    let input: PathBuf = dir.join("example.md");
+    let actual: PathBuf = dir.join("example.html");
+    let expect: PathBuf = dir.join("expect.html");
+    assert!(input.exists());
+    assert!(expect.exists());
     // Run
+    assert!(!actual.exists());
     let _output = Command::new(COMMAND)
-        .arg(&input_path)
+        .arg(&input)
         .output()
         .expect("failure");
+    assert!(actual.exists());
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
-        &output_path,
-        TESTS_DIR.join("output_1_template_1.html"),
+        &actual,
+        &expect,
     );
     // Done
-    remove_file_if_exists(&input_path).unwrap();
-    remove_file_if_exists(&output_path).unwrap();
+    ::std::fs::remove_file(&actual).expect("remove");
 }
 
 #[test]
 fn test_command_x_output_file() {
-    // Prep input
-    let input_path = TMP_DIR.join("test.md");
-    ::std::fs::copy(
-        TESTS_DIR.join("input_1.md"), 
-        &input_path
-    ).expect("prep input");
-    // Prep output
-    let output_path = TMP_DIR.join("test-output-file.html");
-    remove_file_if_exists(&output_path).unwrap();
+    // Prep
+    let dir: PathBuf = TESTS_DIR.join("command_x_output_file");
+    let input: PathBuf = dir.join("example.md");
+    let actual: PathBuf = dir.join("custom-output-file.html");
+    let expect: PathBuf = dir.join("expect.html");
+    assert!(input.exists());
+    assert!(expect.exists());
     // Run
+    assert!(!actual.exists());
     let _output = Command::new(COMMAND)
-        .arg(&input_path)
+        .arg(&input)
         .arg("--output-file")
-        .arg(&output_path)
+        .arg(actual.as_os_str())
         .output()
         .expect("failure");
+    assert!(actual.exists());
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
-        &output_path,
-        TESTS_DIR.join("output_1_template_1.html"),
+        &actual,
+        &expect,
     );
     // Done
-    remove_file_if_exists(&input_path).unwrap();
-    remove_file_if_exists(&output_path).unwrap();
+    ::std::fs::remove_file(&actual).unwrap();
 }
 
 #[test]
 fn test_command_x_template_name() {
-    // Prep input
-    let input_path = TMP_DIR.join("test.md");
-    ::std::fs::copy(
-        TESTS_DIR.join("input_1.md"), 
-        &input_path
-    ).expect("prep input");
-    // Prep output
-    let output_path = TMP_DIR.join("test.html");
-    remove_file_if_exists(&output_path).unwrap();
-    // Prep template
-    let template_path = TMP_DIR.join("test-template.html");
-    ::std::fs::copy(
-        TESTS_DIR.join("template_2.md"), 
-        &input_path
-    ).expect("prep template");
+    // Prep
+    let dir: PathBuf = TESTS_DIR.join("command_x_template_name");
+    let input: PathBuf = dir.join("example.md");
+    let template: PathBuf = dir.join("custom-template-name.html");
+    let actual: PathBuf = dir.join("example.html");
+    let expect: PathBuf = dir.join("expect.html");
+    assert!(input.exists());
+    assert!(template.exists());
+    assert!(expect.exists());
     // Run
+    assert!(!actual.exists());
     let _output = Command::new(COMMAND)
-        .arg(&input_path)
+        .arg(&input)
         .arg("--template-name")
-        .arg(&template_path)
+        .arg(template.file_name().unwrap()) // because Tera favors using the file name as the template name
+        .arg("--template-glob")
+        .arg(template.as_os_str()) // because Tera favors initialization via globs not one file
         .output()
         .expect("failure");
+    assert!(actual.exists());
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
-        &output_path,
-        TESTS_DIR.join("output_1_template_2.html"),
+        &actual,
+        &expect,
     );
     // Done
-    remove_file_if_exists(&input_path).unwrap();
-    remove_file_if_exists(&output_path).unwrap();
-    remove_file_if_exists(&template_path).unwrap();
+    ::std::fs::remove_file(&actual).unwrap();
 }

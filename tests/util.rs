@@ -29,10 +29,11 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
     }
 }
 
-pub fn test_with_base_path_and_default_input_expect_actual(base_path: PathBuf) {
-    let input = base_path.join("input.md");
-    let expect = base_path.join("expect.html");
+pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
+    let input = base_path.join("example.md");
     let actual = base_path.join("actual.html");
+    let expect = base_path.join("expect.html");
+    remove_file_if_exists(&actual).expect("remove");
     let _output = Command::new(COMMAND)
         .arg(&input)
         .output()
@@ -42,23 +43,24 @@ pub fn test_with_base_path_and_default_input_expect_actual(base_path: PathBuf) {
         &actual,
         &expect,
     );
-    remove_file_if_exists(&actual).expect("remove");
+    ::std::fs::remove_file(&actual).expect("remove");
 }
 
-pub fn test_with_base_path_and_default_input_template_expect_actual(base_path: PathBuf) {
-    let input = base_path.join("input.md");
-    let _template = base_path.join("template.md"); //TODO use template
-    let expect = base_path.join("expect.html");
-    let actual = base_path.join("actual.html");
-    let _output = Command::new(COMMAND)
-        .arg(&input)
-        .output()
-        .expect("failure");
-    assert_fn_ok_eq!(
-        ::std::fs::read_to_string,
-        &actual,
-        &expect,
-    );
-    remove_file_if_exists(&actual).expect("remove");
-}
+// pub fn test_with_base_path_and_default_input_actual_expect_template(base_path: PathBuf) {
+//     let input = base_path.join("example.md");
+//     let actual = base_path.join("example.html");
+//     let expect = base_path.join("expect.html");
+//     let _template = base_path.join("template.html");
+//     remove_file_if_exists(&actual).expect("remove");
+//     let _output = Command::new(COMMAND)
+//         .arg(&input)
+//         .output()
+//         .expect("failure");
+//     assert_fn_ok_eq!(
+//         ::std::fs::read_to_string,
+//         &actual,
+//         &expect,
+//     );
+//     ::std::fs::remove_file(&actual).expect("remove");
+// }
 
