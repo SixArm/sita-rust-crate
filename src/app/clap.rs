@@ -144,6 +144,6 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        verbose: std::cmp::max(3, matches.occurrences_of("verbose") as u8),
+        verbose: matches.occurrences_of("verbose") as u8,
     }
 }
