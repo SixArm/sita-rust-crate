@@ -22,7 +22,7 @@ pulldown-cmark = "0.8.0" #  A pull parser for CommonMark
 regex = "1.4.5" # Regular expressions parser, compiler, and executer
 quick-xml = "0.22.0" # High-performance XML reader and writer
 serde = { version = "1.0", features = ["derive"] } # Generic serialize/deserialize framework
-tera = "1.8.0" # Template engine based on Jinja2/Django templates
+tera = "1.10.0" # Template engine based on Jinja2/Django templates
 yaml-rust = "0.4.5" # YAML parser
 json = "0.12.4" # JSON parser
 toml = "0.5.8" # TOML encoder/decoder
