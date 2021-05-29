@@ -4,7 +4,6 @@
 //! We have these args in their own file in order to be flexible,
 //! such as being able to start our app with other arg parsers.
 
-use ::std::ffi::OsString;
 use ::std::path::PathBuf;
 
 #[derive(Debug)]
