@@ -4,54 +4,56 @@ use ::std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 
-// Return the template default name, which is "default".
+// Initiatlize Tera
 //
-// ```rust
-// template_default_name()
-// //-> "default"
+// Example:
+//
+// ```
+// let args = Args::default();
+// let tera = init(&args);
 // ```
 //
-pub fn template_default_name() -> &'static str {
-    "default"
+pub fn init(args: &Args) -> Result<Tera> {
+    let mut tera = new_or_default_via_args(args)
+        .chain_err(|| "tera_new_via_args")?;
+    add_template_default(&mut tera)
+        .chain_err(|| "add_template_default")?;
+    add_template_files_via_args(&mut tera, args)
+        .chain_err(|| "add_template_files_via_args")?;
+    tera.autoescape_on(vec![]); // disable autoescaping completely
+    //tera.autoescape_on(vec!["html", ".sql"]);
+    //tera.register_filter("do_nothing", do_nothing_filter);
+    Ok(tera)
 }
 
-// Return the template default content, which is "{{ content }}".
-//
-// ```rust
-// template_default_content()
-// //-> "{{ content }}"
-// ```
-//
-pub fn template_default_content() -> &'static str {
-    indoc!{r#"{{ content }}"#}
-}
-
-// Tera new or default.
+// Create a new Tera isntance via Tera::new or Tera::default.
 //
 // If args has a template glob, then call Tera::new,
 // otherwise call Tera::default().
 //
 // ```
 // let args = Args::default();
-// let mut tera = tera_new_via_args(args);
+// let mut tera = new_or_default_via_args(args);
 // //-> A new Tera object via Tera::default()
 // ```
 //
+// ```
 // let mut args = Args::default();
-// args.template_glob = PathBuf::from("./templates");
-// let mut tera = tera_new_via_args(args);
+// args.template_glob = Some(PathBuf::from("./templates/**/*"));
+// let mut tera = new_or_default_via_args(args);
 // //-> A new Tera object via Tera::new(…) with the glob
+// ```
 //
-fn tera_new_via_args(args: &Args) -> Result<Tera> {
+fn new_or_default_via_args(args: &Args) -> Result<Tera> {
     match &args.template_glob {
         Some(template_glob) => {
             Ok(
-                Tera::new(&*template_glob.as_os_str().to_string_lossy())
+                ::tera::Tera::new(&*template_glob.as_os_str().to_string_lossy())
                 .chain_err(|| format!("create tera. template glob: {:?}", template_glob))?
             )
         },
         _ => {
-            Ok(Tera::default())
+            Ok(::tera::Tera::default())
         }
     }
 }
@@ -67,11 +69,11 @@ fn tera_new_via_args(args: &Args) -> Result<Tera> {
 // ];
 // let mut args = Args::default();
 // args.template_files = Some(files);
-// let mut tera: Tera::default();
-// tera_add_template_files_via_vec_path_buf(tera, args);
+// let mut tera = Tera::default();
+// add_template_files_via_vec_path_buf(tera, args);
 // ```
 //
-fn tera_add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<()> {
+fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<()> {
     if let Some(files) = args.template_files.as_ref() {
         tera.add_template_files(
             files.into_iter().map(|x| 
@@ -88,35 +90,66 @@ fn tera_add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Res
 // Example:
 //
 // ```
-// let mut tera: Tera::default();
-// tera_add_template_default(tera);
+// let mut tera = Tera::default();
+// add_template_default(tera);
 // //-> Tera now has a template name "default" with content "{{ content }}"
 // ```
 //
-fn tera_add_template_default(tera: &mut Tera) -> ::tera::Result<()> {
+fn add_template_default(tera: &mut Tera) -> ::tera::Result<()> {
     tera.add_raw_template(
         template_default_name(),
         template_default_content(),
     )
 }
 
-pub fn init(args: &Args) -> Result<Tera> {
-    let mut tera = tera_new_via_args(args)
-        .chain_err(|| "tera_new_via_args")?;
-    tera_add_template_default(&mut tera)
-        .chain_err(|| "tera_add_template_default")?;
-    tera_add_template_files_via_args(&mut tera, args)
-        .chain_err(|| "tera_add_template_files_via_args")?;
-    tera.autoescape_on(vec![]); // disable autoescaping completely
-    //tera.autoescape_on(vec!["html", ".sql"]);
-    //tera.register_filter("do_nothing", do_nothing_filter);
-    Ok(tera)
+// Tera: does the instance have any templates?
+//
+// Example:
+//
+// ```
+// let mut tera = Tera::default();
+// let flag = tera_has_templates(tera);
+// assert_eq!(flag, false);
+// ```
+//
+// ```
+// let mut tera = Tera::default();
+// tera.add_raw_template("my-template", "{{ my-content }}");
+// let flag = has_templates(tera);
+// assert_eq!(flag, true);
+// ```
+//
+fn has_templates(tera: Tera) -> bool {
+    tera.get_template_names().nth(0).is_some()
+}
+
+// Get the template default name, which is "default".
+//
+// ```
+// let name = template_default_name();
+// assert_eq!(name, "default");
+// ```
+//
+pub fn template_default_name() -> &'static str {
+    "default"
+}
+
+// Get the template default content, which is "{{ content }}".
+//
+// ```
+// let content = template_default_content();
+// assert_eq!(content, "{{ content }}");
+// ```
+//
+pub fn template_default_content() -> &'static str {
+    indoc!{r#"{{ content }}"#}
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use ::indoc::indoc;
+    use ::tera::Tera;
     use crate::app::args::Args;
     use crate::templating::vars::Vars;
 
@@ -129,7 +162,40 @@ mod tests {
 
     #[test]
     fn test_init() {
-        //TODO
+        let args = Args::default();
+        let tera = super::init(&args);
+        assert!(tera.is_ok());
+    }
+
+    #[test]
+    fn test_new_or_default_via_args_x_new() {
+        let mut args = Args::default();
+        args.template_glob = Some(PathBuf::from("./templates/**/*"));
+        let tera = super::new_or_default_via_args(&args);
+        assert!(tera.is_ok());
+    }
+
+    #[test]
+    fn test_new_or_default_via_args_x_default() {
+        let mut args = Args::default();
+        args.template_glob = None;
+        let tera = super::new_or_default_via_args(&args);
+        assert!(tera.is_ok());
+    }
+
+    #[test]
+    fn test_has_templates_x_true() {
+        let mut tera  = Tera::default();
+        tera.add_raw_template("alpha", "bravo");
+        let flag = super::has_templates(tera);
+        assert_eq!(flag, true);
+    }
+
+    #[test]
+    fn test_has_templates_x_false() {
+        let mut tera = Tera::default();
+        let flag = super::has_templates(tera);
+        assert_eq!(flag, false);
     }
 
     #[test]

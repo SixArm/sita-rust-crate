@@ -1,5 +1,4 @@
 use ::assertables::*;
-use ::std::ffi::OsStr;
 use ::std::path::PathBuf;
 use ::std::process::Command;
 
@@ -60,11 +59,11 @@ fn test_command_x_output_file() {
 }
 
 #[test]
-fn test_command_x_template_name() {
+fn test_command_x_template_file() {
     // Prep
-    let dir: PathBuf = TESTS_DIR.join("command_x_template_name");
+    let dir: PathBuf = TESTS_DIR.join("command_x_template_file");
     let input: PathBuf = dir.join("example.md");
-    let template: PathBuf = dir.join("custom-template-name.html");
+    let template: PathBuf = dir.join("custom-template-file.html");
     let actual: PathBuf = dir.join("example.html");
     let expect: PathBuf = dir.join("expect.html");
     assert!(input.exists());
@@ -74,10 +73,8 @@ fn test_command_x_template_name() {
     assert!(!actual.exists());
     let _output = Command::new(COMMAND)
         .arg(&input)
-        .arg("--template-name")
-        .arg(template.file_name().unwrap()) // because Tera favors using the file name as the template name
-        .arg("--template-glob")
-        .arg(template.as_os_str()) // because Tera favors initialization via globs not one file
+        .arg("--template-file")
+        .arg(template.file_name().unwrap())
         .output()
         .expect("failure");
     assert!(actual.exists());
