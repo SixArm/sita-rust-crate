@@ -7,17 +7,14 @@ use crate::app::config::Config;
 use crate::errors::*;
 use crate::templating::vars::Vars;
 
-
 pub(crate) fn run() -> Result<()> {
+    trace!("run()");
     let _config: Config = ::confy::load("sita")
     .chain_err(|| "configuration load error")?;
     let args: Args = crate::app::clap::args();
     let tera: Tera = crate::templating::tera::init(&args)
     .chain_err(|| "init tera")?;
-    let template_name = match &args.template_name {
-        Some(s) => &*s,
-        _ => crate::templating::tera::template_default_name(),
-    };
+    let template_name = template_name(&args, &tera);
     if let Some(paths) = &args.paths {
         for input_file_path in paths {
             do_path(
@@ -31,10 +28,17 @@ pub(crate) fn run() -> Result<()> {
     Ok(())
 }
 
-fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) -> Result<()> {
-    if args.verbose > 0 {
-        info!("do path → start → input:{:?}", input_file_path);
+fn template_name(args: &Args, tera: &Tera) -> String {
+    trace!("template_name(…)");
+    if let Some(s) = &args.template_name {
+        s.clone()
+    } else {
+        crate::templating::tera::best_template_name(&tera)
     }
+}
+
+fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) -> Result<()> {
+    trace!("do path(…) → start → template:{:?} input:{:?}", template, input_file_path);
     vet_input_file_path_exists(&args, input_file_path)?;
     vet_input_file_path_metadata(&args, input_file_path)?;
     vet_input_file_path_extension(&args, input_file_path)?;
@@ -58,9 +62,7 @@ fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) 
     .chain_err(|| "render template")?;
     ::std::fs::write(&output_file_path, output_as_html)
     .chain_err(|| "write output")?;
-    if args.verbose > 0 {
-        info!("do path → success → input:{:?} output:{:?}", input_file_path, output_file_path);
-    }
+    info!("do path → success → input:{:?} output:{:?}", input_file_path, output_file_path);
     Ok(())
 }
 

@@ -32,7 +32,7 @@ pub fn app() -> App<'static> {
         .long("verbose")
         .multiple(true)
         .takes_value(false)
-        .about("Set the verbosity level"))
+        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace"))
     .arg(Arg::new("input_file")
         .short('i')
         .long("input-file")
@@ -144,6 +144,13 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        verbose: matches.occurrences_of("verbose") as u8,
+        log_level: match matches.occurrences_of("verbose") {
+            1 => Some(::log::Level::Error),
+            2 => Some(::log::Level::Warn),
+            3 => Some(::log::Level::Info),
+            4 => Some(::log::Level::Debug),
+            5 => Some(::log::Level::Trace),
+            _ => None,
+        },
     }
 }

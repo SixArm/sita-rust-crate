@@ -16,10 +16,12 @@ use crate::errors::*;
 pub fn init(args: &Args) -> Result<Tera> {
     let mut tera = new_or_default_via_args(args)
         .chain_err(|| "tera_new_via_args")?;
-    add_template_default(&mut tera)
-        .chain_err(|| "add_template_default")?;
     add_template_files_via_args(&mut tera, args)
         .chain_err(|| "add_template_files_via_args")?;
+    if !has_template(&tera) {
+        add_template_default(&mut tera)
+        .chain_err(|| "add_template_default")?;
+    }
     tera.autoescape_on(vec![]); // disable autoescaping completely
     //tera.autoescape_on(vec!["html", ".sql"]);
     //tera.register_filter("do_nothing", do_nothing_filter);
@@ -97,8 +99,8 @@ fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<(
 //
 fn add_template_default(tera: &mut Tera) -> ::tera::Result<()> {
     tera.add_raw_template(
-        template_default_name(),
-        template_default_content(),
+        &template_default_name(),
+        &template_default_content(),
     )
 }
 
@@ -108,19 +110,49 @@ fn add_template_default(tera: &mut Tera) -> ::tera::Result<()> {
 //
 // ```
 // let mut tera = Tera::default();
-// let flag = tera_has_templates(tera);
+// let flag = tera_has_template(tera);
 // assert_eq!(flag, false);
 // ```
 //
 // ```
 // let mut tera = Tera::default();
 // tera.add_raw_template("my-template", "{{ my-content }}");
-// let flag = has_templates(tera);
+// let flag = has_template(tera);
 // assert_eq!(flag, true);
 // ```
 //
-fn has_templates(tera: Tera) -> bool {
+pub fn has_template(tera: &Tera) -> bool {
     tera.get_template_names().nth(0).is_some()
+}
+
+// Get the best template name.
+//
+// The best template name is currently 
+// chosen as the first name alphabetically.
+//
+// Example with default template:
+//
+// ```
+// let mut tera = Tera::default();
+// let name = best_template_name(tera);
+// assert_eq!(name, "default");
+// ```
+//
+// Example with custom template:
+//
+// ```
+// let mut tera = Tera::default();
+// tera.add_raw_template("my-template", "{{ my-content }}");
+// let name = best_template_name(tera);
+// assert_eq!(name, "my-template");
+// ```
+//
+pub fn best_template_name(tera: &Tera) -> String {
+    if let Some(name) = tera.get_template_names().min() {
+        String::from(name)
+    } else {
+        template_default_name()
+    }
 }
 
 // Get the template default name, which is "default".
@@ -130,8 +162,8 @@ fn has_templates(tera: Tera) -> bool {
 // assert_eq!(name, "default");
 // ```
 //
-pub fn template_default_name() -> &'static str {
-    "default"
+pub fn template_default_name() -> String {
+    String::from("default")
 }
 
 // Get the template default content, which is "{{ content }}".
@@ -141,8 +173,8 @@ pub fn template_default_name() -> &'static str {
 // assert_eq!(content, "{{ content }}");
 // ```
 //
-pub fn template_default_content() -> &'static str {
-    indoc!{r#"{{ content }}"#}
+pub fn template_default_content() -> String {
+    String::from(indoc!{r#"{{ content }}"#})
 }
 
 #[cfg(test)]
@@ -184,18 +216,33 @@ mod tests {
     }
 
     #[test]
-    fn test_has_templates_x_true() {
+    fn test_has_template_x_true() {
         let mut tera  = Tera::default();
-        tera.add_raw_template("alpha", "bravo");
-        let flag = super::has_templates(tera);
+        tera.add_raw_template("my-name", "my-content").unwrap();
+        let flag = super::has_template(&tera);
         assert_eq!(flag, true);
     }
 
     #[test]
-    fn test_has_templates_x_false() {
-        let mut tera = Tera::default();
-        let flag = super::has_templates(tera);
+    fn test_has_template_x_false() {
+        let tera = Tera::default();
+        let flag = super::has_template(&tera);
         assert_eq!(flag, false);
+    }
+
+    #[test]
+    fn test_best_template_name_x_default_name() {
+        let tera = Tera::default();
+        let name = best_template_name(&tera);
+        assert_eq!(name, "default");
+    }
+
+    #[test]
+    fn test_best_template_name_x_custom_name() {
+        let mut tera = Tera::default();
+        tera.add_raw_template("my-name", "{{ my-content }}").unwrap();
+        let name = best_template_name(&tera);
+        assert_eq!(name, "my-name");
     }
 
     #[test]
@@ -206,7 +253,7 @@ mod tests {
             content: Some("my content".into()),
         };
         let actual = tera.render(
-            template_default_name(),
+            &template_default_name(),
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
@@ -223,7 +270,7 @@ mod tests {
         "#};
         let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
         let actual = tera.render(
-            template_default_name(),
+            &template_default_name(),
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
@@ -238,7 +285,7 @@ mod tests {
         "#};
         let vars: ::toml::Value = vars.parse::<::toml::Value>().unwrap();
         let actual = tera.render(
-            template_default_name(),
+            &template_default_name(),
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
@@ -253,7 +300,7 @@ mod tests {
         "#};
         let vars: ::serde_yaml::Value = ::serde_yaml::from_str(&vars).unwrap();
         let actual = tera.render(
-            template_default_name(),
+            &template_default_name(),
             &::tera::Context::from_serialize(&vars).unwrap()
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);

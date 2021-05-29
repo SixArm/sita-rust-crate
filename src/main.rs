@@ -28,10 +28,11 @@ mod errors {
 #[allow(unused_imports)]
 use errors::*;
 
-////
+//// log
 
 #[macro_use]
 extern crate log;
+extern crate env_logger;
 
 ////
 
@@ -60,6 +61,7 @@ pub(crate) mod templating {
 }
 
 fn main() {
+    env_logger::init();
     if let Err(ref e) = crate::run::run() {
         println!("error: {}", e);
         for e in e.iter().skip(1) {
