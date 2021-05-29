@@ -15,6 +15,7 @@ pub(crate) fn run() -> Result<()> {
     let tera: Tera = crate::templating::tera::init(&args)
     .chain_err(|| "init tera")?;
     let template_name = template_name(&args, &tera);
+    debug!("template_name: {:?}", template_name);
     if let Some(paths) = &args.paths {
         for input_file_path in paths {
             do_path(
@@ -38,31 +39,37 @@ fn template_name(args: &Args, tera: &Tera) -> String {
 }
 
 fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) -> Result<()> {
-    trace!("do path(…) → start → template:{:?} input:{:?}", template, input_file_path);
+    trace!("do path(…) → start → template: {:?} input: {:?}", template, input_file_path);
     vet_input_file_path_exists(&args, input_file_path)?;
     vet_input_file_path_metadata(&args, input_file_path)?;
     vet_input_file_path_extension(&args, input_file_path)?;
     let output_file_path = create_output_file_path(&args, &input_file_path)?;
 
-    // Translate Markdown to HTML
+    // Get input as markdown
     let input_as_markdown = ::std::fs::read_to_string(&input_file_path)
     .chain_err(|| format!("input path must be readable; path: {:?}", input_file_path))?;
+    debug!("input_as_markdown: {:?}", input_as_markdown);
+
+    // Convert from input markdown to content HTML
     let content_as_html = markdown_to_html(&input_as_markdown);
+    debug!("content_as_html: {:?}", content_as_html);
 
     // Create variables
     let vars = Vars {
         title: Some("my title".into()),
         content: Some(content_as_html),
     };
+    debug!("vars: {:?}", vars);
 
     // Render Tera template that has {{ content }} slot for HTML string
     let context = ::tera::Context::from_serialize(&vars)
     .chain_err(|| "create context")?;
+
     let output_as_html = tera.render(template, &context)
     .chain_err(|| "render template")?;
     ::std::fs::write(&output_file_path, output_as_html)
     .chain_err(|| "write output")?;
-    info!("do path → success → input:{:?} output:{:?}", input_file_path, output_file_path);
+    info!("do path → success → input: {:?} output: {:?}", input_file_path, output_file_path);
     Ok(())
 }
 
