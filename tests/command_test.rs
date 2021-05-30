@@ -74,7 +74,7 @@ fn test_command_x_template_file() {
     let _output = Command::new(COMMAND)
         .arg(&input)
         .arg("--template-file")
-        .arg(template.file_name().unwrap())
+        .arg(template.as_os_str())
         .output()
         .expect("failure");
     assert!(actual.exists());
