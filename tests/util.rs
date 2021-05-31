@@ -29,6 +29,7 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
     }
 }
 
+#[cfg(test)]
 pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     let input = base_path.join("example.md");
     let actual = base_path.join("actual.html");
@@ -46,6 +47,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     ::std::fs::remove_file(&actual).expect("remove");
 }
 
+// #[cfg(test)]
 // pub fn test_with_base_path_and_default_input_actual_expect_template(base_path: PathBuf) {
 //     let input = base_path.join("example.md");
 //     let actual = base_path.join("example.html");
