@@ -7,73 +7,108 @@ use crate::app::config::Config;
 use crate::errors::*;
 use crate::templating::vars::Vars;
 
+/// Run everything.
+///
+/// Steps:
+///
+///   * Initialize configuration.
+///
+///   * Initialize arguments.
+///
+///   * Initialize templating.
+///
+//    * Process each page.
+///
+/// Example:
+///
+/// ```
+/// run();
+/// //-> Initialize everything then process each page
+/// ```
+///
 pub(crate) fn run() -> Result<()> {
     trace!("run()");
+
+    // Initialize configuration
     let _config: Config = ::confy::load("sita")
     .chain_err(|| "configuration load error")?;
+
+    // Initialize arguments
     let args: Args = crate::app::clap::args();
+
+    // Initialize templating
     let tera: Tera = crate::templating::tera::init(&args)
     .chain_err(|| "init tera")?;
-    let template_name = template_name(&args, &tera);
-    debug!("template_name: {:?}", template_name);
+
+    // Process each page
     if let Some(paths) = &args.paths {
-        for input_file_path in paths {
+        for path in paths {
             do_path(
                 &args, 
                 &tera, 
-                &template_name, 
-                &input_file_path
+                &path
             )?; 
         }
     };
     Ok(())
 }
 
-fn template_name(args: &Args, tera: &Tera) -> String {
-    trace!("template_name(…)");
-    if let Some(s) = &args.template_name {
-        s.clone()
-    } else {
-        crate::templating::tera::best_template_name(&tera)
-    }
-}
+fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
+    trace!("do path(…) → input_file_path: {:?}", input_file_path);
 
-fn do_path(args: &Args, tera: &Tera, template: &str, input_file_path: &PathBuf) -> Result<()> {
-    trace!("do path(…) → start → template: {:?} input: {:?}", template, input_file_path);
+    // Vet input file path
     vet_input_file_path_exists(&args, input_file_path)?;
     vet_input_file_path_metadata(&args, input_file_path)?;
     vet_input_file_path_extension(&args, input_file_path)?;
+    debug!("input_file_path: {:?}", input_file_path);
+
+    // Calculate output file path
     let output_file_path = create_output_file_path(&args, &input_file_path)?;
+    debug!("output_file_path: {:?}", output_file_path);
 
-    // Get input as markdown
-    let input_as_markdown = ::std::fs::read_to_string(&input_file_path)
-    .chain_err(|| format!("input path must be readable; path: {:?}", input_file_path))?;
-    debug!("input_as_markdown: {:?}", input_as_markdown);
+    // Read content as Markdown text
+    let content_as_markdown_text = read_content_as_markdown_text(&input_file_path)?;
+    debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
-    // Convert from input markdown to content HTML
-    let content_as_html = markdown_to_html(&input_as_markdown);
-    debug!("content_as_html: {:?}", content_as_html);
+    // Convert from Markdown text to HTML text
+    let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
+    debug!("content_as_html_text: {:?}", content_as_html_text);
 
-    // Create variables
-    let vars = Vars {
-        title: Some("my title".into()),
-        content: Some(content_as_html),
-    };
+    // Create variables based on content
+    let vars = create_vars(content_as_markdown_text, content_as_html_text);
     debug!("vars: {:?}", vars);
 
-    // Render Tera template that has {{ content }} slot for HTML string
+    // Create Tera context that holds variables
     let context = ::tera::Context::from_serialize(&vars)
     .chain_err(|| "create context")?;
+    debug!("context: {:?}", context);
 
-    let output_as_html = tera.render(template, &context)
+    // Select relevant template name
+    let template_name = select_template_name(&args, &tera);
+    debug!("template_name: {:?}", template_name);
+
+    // Render template with context
+    let output_as_html_text = tera.render(&template_name, &context)
     .chain_err(|| "render template")?;
-    ::std::fs::write(&output_file_path, output_as_html)
+    debug!("output_as_html_text: {:?}", output_as_html_text);
+
+    // Write output
+    ::std::fs::write(&output_file_path, output_as_html_text)
     .chain_err(|| "write output")?;
+
     info!("do path → success → input: {:?} output: {:?}", input_file_path, output_file_path);
     Ok(())
 }
 
-/// Vet input path exists
+/// Vet input path exists.
+///
+/// Example:
+///
+/// ```
+/// let input_file_path: PathBuf = PathBuf::from("example.md");
+/// vet_input_file_path_exists(&input_file_path);
+/// ```
+///
 fn vet_input_file_path_exists(_args: &Args, input_file_path: &PathBuf) -> Result<()> {
     if !input_file_path.exists() {
         bail!("input file path must exist. path: {:?}", input_file_path)
@@ -81,7 +116,15 @@ fn vet_input_file_path_exists(_args: &Args, input_file_path: &PathBuf) -> Result
     Ok(())
 }
 
-/// Vet input path metadata is file
+/// Vet input path metadata is file.
+///
+/// Example:
+///
+/// ```
+/// let input_file_path: PathBuf = PathBuf::from("example.md");
+/// vet_input_file_path_metadata(&input_file_path);
+/// ```
+///
 fn vet_input_file_path_metadata(_args: &Args, input_file_path: &PathBuf) -> Result<()> {
     let metadata = ::std::fs::metadata(input_file_path)
     .chain_err(|| format!("input file path must have metadata. path: {:?}", input_file_path))?;
@@ -91,7 +134,15 @@ fn vet_input_file_path_metadata(_args: &Args, input_file_path: &PathBuf) -> Resu
     Ok(())
 }
 
-/// Vet input path name ends with "md" meaning Markdown format
+/// Vet input path name ends with "md" meaning Markdown format.
+///
+/// Example:
+///
+/// ```
+/// let input_file_path: PathBuf = PathBuf::from("example.md");
+/// vet_input_file_path_extension(&input_file_path);
+/// ```
+///
 fn vet_input_file_path_extension(args: &Args, input_file_path: &PathBuf) -> Result<()> {
     if let Some(a) = &args.input_extension {
         if let Some(b) = &input_file_path.extension() {
@@ -103,7 +154,17 @@ fn vet_input_file_path_extension(args: &Args, input_file_path: &PathBuf) -> Resu
     Ok(())
 }
 
-/// Create output path, either via args or changing input path extension from "md" to "html"
+/// Create output path, either via args or changing input path extension from "md" to "html".
+///
+/// Example:
+///
+/// ```
+/// let args = Args::default();
+/// let input_file_path: PathBuf = PathBuf::from("example.md");
+/// let output_file_path: PathBuf = create_output_file_path(&args, &input_file_path).unwrap();
+/// assert_eq!(output_file_path, "example.html");
+/// ```
+///
 fn create_output_file_path(args: &Args, input_file_path: &PathBuf) -> Result<PathBuf> {
     if let Some(path) = &args.output_file_path {
         return Ok(path.to_path_buf())
@@ -118,12 +179,76 @@ fn create_output_file_path(args: &Args, input_file_path: &PathBuf) -> Result<Pat
     Ok(path)
 }
 
-/// Translate Markdown text to HTML text
-fn markdown_to_html(input_as_markdown: &str) -> String {
-    let parser = crate::markdown::markdown_parser::parser(&*input_as_markdown);
-    let mut content_as_html = String::new();
-    pulldown_cmark::html::push_html(&mut content_as_html, parser);
-    content_as_html
+/// Read content as Markdown text.
+///
+/// Example:
+///
+/// ```
+/// let input_file_path: PathBuf = PathBuf::from("example.md");
+/// let content_as_markdown: String = read_content_as_markdown(&input_file_path);
+/// ```
+///
+fn read_content_as_markdown_text(input_file_path: &PathBuf) -> Result<String> {
+    ::std::fs::read_to_string(input_file_path)
+    .chain_err(|| format!("read_content_as_markdown → input_file_path: {:?}", input_file_path))
+}
+
+/// Convert from Markdown text to HTML text.
+///
+/// Example:
+///
+/// ```
+/// let markdown_text: &str = "# alpha\nbravo\n";
+/// let html_text = convert_from_markdown_text_to_html_text(markdown);
+/// assert_eq!(html, "<h1>alpha</h1>\n<p>bravo</p>\n");
+/// ```
+///
+fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
+    let parser = crate::markdown::markdown_parser::parser(markdown_text);
+    let mut html_text = String::new();
+    pulldown_cmark::html::push_html(&mut html_text, parser);
+    html_text
+}
+
+/// Create variables that are specific to the page being processed.
+///
+/// The vars take ownership of the content strings.
+///
+/// Example:
+///
+/// ```
+/// let content_as_markdown_text = String::from("# alpha\nbravo\n");
+/// let content_as_html_text = String::from("<h1>alpha</h1>\n<p>bravo</p>\n");
+/// let vars: Vars = create_vars(content_as_markdown_text, content_as_html_text);
+/// assert_eq!(vars.title, "alpha");
+/// assert_eq!(vars.content, "<h1>alpha</h1>\n<p>bravo</p>\n");
+/// ```
+///
+fn create_vars(_content_as_markdown_text: String, content_as_html_text: String) -> Vars {
+    Vars {
+        title: Some("my title".into()),
+        content: Some(content_as_html_text),
+    }
+}
+
+/// Select the revelant Tera template name.
+///
+/// Example:
+///
+/// ```
+/// let args = Args::default();
+/// let tera = Tera::default();
+/// let template_name = select_template_name(&args, &tera);
+/// assert_eq!(template_name, "default");
+/// ```
+///
+fn select_template_name(args: &Args, tera: &Tera) -> String {
+    trace!("template_name(…)");
+    if let Some(s) = &args.template_name {
+        s.clone()
+    } else {
+        crate::templating::tera::best_template_name(&tera)
+    }
 }
 
 #[cfg(test)]
@@ -237,6 +362,43 @@ mod tests {
         let input_file_path = PathBuf::from("example.md");
         let x = create_output_file_path(&args, &input_file_path);
         assert_eq!(x.unwrap().to_string_lossy(), "alpha");
+    }
+
+
+    #[test]
+    fn test_read_content_as_markdown_text() {
+        let input_file_path: PathBuf = PathBuf::from("example.md");
+        let content_as_markdown: String = read_content_as_markdown_text(&input_file_path).unwrap();
+        assert_eq!(content_as_markdown, "# alpha\nbravo\n");
+    }
+
+    #[test]
+    fn test_convert_from_markdown_text_to_html_text() {
+        let markdown_text: &str = "# alpha\nbravo\n";
+        let html_text = convert_from_markdown_text_to_html_text(markdown_text);
+        assert_eq!(html_text, "<h1>alpha</h1>\n<p>bravo</p>\n");
+    }
+
+    #[test]
+    fn test_create_vars() {
+        let content_as_markdown_text = String::from("# alpha\nbravo\n");
+        let content_as_html_text = String::from("<h1>alpha</h1>\n<p>bravo</p>\n");
+        let vars: Vars = create_vars(content_as_markdown_text, content_as_html_text);
+        assert_eq!(vars.title.unwrap(), "alpha");
+        assert_eq!(vars.content.unwrap(), "<h1>alpha</h1>\n<p>bravo</p>\n");
+    }
+
+    #[test]
+    fn test_select_template_name_x_default() {
+        let args = Args::default();
+        let tera = Tera::default();
+        let template_name = select_template_name(&args, &tera);
+        assert_eq!(template_name, "default");
+    }
+
+    #[test]
+    fn test_select_template_name_x_custom() {
+        // TODO
     }
 
 }

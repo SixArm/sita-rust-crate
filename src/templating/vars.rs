@@ -8,5 +8,5 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct Vars {
     pub title: Option<String>,
-    pub content: Option<String>,
+    pub content: Option<String>, // content as HTML text
 }
