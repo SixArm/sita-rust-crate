@@ -32,7 +32,7 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
 #[cfg(test)]
 pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     let input = base_path.join("example.md");
-    let actual = base_path.join("actual.html");
+    let actual = base_path.join("example.html");
     let expect = base_path.join("expect.html");
     remove_file_if_exists(&actual).expect("remove");
     let _output = Command::new(COMMAND)
