@@ -1,11 +1,11 @@
 //! Run the app
 
-use ::tera::Tera;
+use ::std::collections::HashMap;
 use ::std::path::PathBuf;
+use ::tera::Tera;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
-use crate::templating::vars::Vars;
 
 /// Run everything.
 ///
@@ -44,10 +44,10 @@ pub(crate) fn run() -> Result<()> {
     if let Some(paths) = &args.paths {
         for path in paths {
             do_path(
-                &args, 
-                &tera, 
+                &args,
+                &tera,
                 &path
-            )?; 
+            )?;
         }
     };
     Ok(())
@@ -60,41 +60,47 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     vet_input_file_path_exists(&args, input_file_path)?;
     vet_input_file_path_metadata(&args, input_file_path)?;
     vet_input_file_path_extension(&args, input_file_path)?;
-    debug!("input_file_path: {:?}", input_file_path);
+    debug!("input_file_path: {:?}", &input_file_path);
 
     // Calculate output file path
     let output_file_path = create_output_file_path(&args, &input_file_path)?;
-    debug!("output_file_path: {:?}", output_file_path);
+    debug!("output_file_path: {:?}", &output_file_path);
 
     // Read content as Markdown text
     let content_as_markdown_text = read_content_as_markdown_text(&input_file_path)?;
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
+    // Parse front matter that holds variables
+    let (content_as_markdown_text, front_matter_option) = crate::markdown::front_matter::kinds::html::extract(&content_as_markdown_text);
+    let mut front_matter: HashMap<String, String> = front_matter_option.unwrap_or_else(|| crate::markdown::front_matter::kinds::html::blank());
+    debug!("front_matter: {:?}", &front_matter);
+
     // Convert from Markdown text to HTML text
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
-    debug!("content_as_html_text: {:?}", content_as_html_text);
+    debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    // Create variables based on content
-    let vars = create_vars(content_as_markdown_text, content_as_html_text);
-    debug!("vars: {:?}", vars);
+    // Set the magic "content" key for the corresponding template tag "{{ content }}"
+    front_matter.insert("content".into(), content_as_html_text);
 
     // Create Tera context that holds variables
-    let context = ::tera::Context::from_serialize(&vars)
+    let context = ::tera::Context::from_serialize(front_matter)
     .chain_err(|| "create context")?;
-    debug!("context: {:?}", context);
+    debug!("context: {:?}", &context);
 
     // Select relevant template name
     let template_name = select_template_name(&args, &tera);
-    debug!("template_name: {:?}", template_name);
+    debug!("template_name: {:?}", &template_name);
 
     // Render template with context
     let output_as_html_text = tera.render(&template_name, &context)
     .chain_err(|| "render template")?;
-    debug!("output_as_html_text: {:?}", output_as_html_text);
+    debug!("output_as_html_text: {:?}", &output_as_html_text);
 
     // Write output
+    debug!("write file");
     ::std::fs::write(&output_file_path, output_as_html_text)
     .chain_err(|| "write output")?;
+    debug!("write file ok");
 
     info!("do path → success → input: {:?} output: {:?}", input_file_path, output_file_path);
     Ok(())
@@ -210,27 +216,6 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
     html_text
 }
 
-/// Create variables that are specific to the page being processed.
-///
-/// The vars take ownership of the content strings.
-///
-/// Example:
-///
-/// ```
-/// let content_as_markdown_text = String::from("# alpha\nbravo\n");
-/// let content_as_html_text = String::from("<h1>alpha</h1>\n<p>bravo</p>\n");
-/// let vars: Vars = create_vars(content_as_markdown_text, content_as_html_text);
-/// assert_eq!(vars.title, "alpha");
-/// assert_eq!(vars.content, "<h1>alpha</h1>\n<p>bravo</p>\n");
-/// ```
-///
-fn create_vars(_content_as_markdown_text: String, content_as_html_text: String) -> Vars {
-    Vars {
-        title: Some("my title".into()),
-        content: Some(content_as_html_text),
-    }
-}
-
 /// Select the revelant Tera template name.
 ///
 /// Example:
@@ -261,7 +246,7 @@ mod tests {
     lazy_static! {
         pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
     }
-    
+
     #[test]
     fn test_run() {
         //TODO
@@ -287,7 +272,7 @@ mod tests {
         let x = vet_input_file_path_exists(&args, &input_file_path);
         assert!(x.is_err());
     }
-        
+
     #[test]
     fn test_vet_input_file_path_metadata_x_ok() {
         let args = Args::default();
@@ -367,7 +352,7 @@ mod tests {
 
     #[test]
     fn test_read_content_as_markdown_text() {
-        let input_file_path: PathBuf = PathBuf::from("example.md");
+        let input_file_path: PathBuf = TESTS_DIR.join("read_content_as_markdown_text").join("example.md");
         let content_as_markdown: String = read_content_as_markdown_text(&input_file_path).unwrap();
         assert_eq!(content_as_markdown, "# alpha\nbravo\n");
     }
@@ -377,15 +362,6 @@ mod tests {
         let markdown_text: &str = "# alpha\nbravo\n";
         let html_text = convert_from_markdown_text_to_html_text(markdown_text);
         assert_eq!(html_text, "<h1>alpha</h1>\n<p>bravo</p>\n");
-    }
-
-    #[test]
-    fn test_create_vars() {
-        let content_as_markdown_text = String::from("# alpha\nbravo\n");
-        let content_as_html_text = String::from("<h1>alpha</h1>\n<p>bravo</p>\n");
-        let vars: Vars = create_vars(content_as_markdown_text, content_as_html_text);
-        assert_eq!(vars.title.unwrap(), "alpha");
-        assert_eq!(vars.content.unwrap(), "<h1>alpha</h1>\n<p>bravo</p>\n");
     }
 
     #[test]

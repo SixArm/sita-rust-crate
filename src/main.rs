@@ -35,7 +35,7 @@ extern crate env_logger;
 
 //// maplit
 
-#[macro_use] 
+#[macro_use]
 extern crate maplit;
 
 ////
