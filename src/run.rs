@@ -54,7 +54,7 @@ pub(crate) fn run() -> Result<()> {
 }
 
 fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
-    trace!("do path(…) → input_file_path: {:?}", input_file_path);
+    trace!("do path(…) →     input_file_path: {:?}", input_file_path);
 
     // Vet input file path
     vet_input_file_path_exists(&args, input_file_path)?;
@@ -102,7 +102,7 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     .chain_err(|| "write output")?;
     debug!("write file ok");
 
-    info!("do path → success → input: {:?} output: {:?}", input_file_path, output_file_path);
+    info!("do path → success → input_file_path: {:?} output_file_path: {:?}", input_file_path, output_file_path);
     Ok(())
 }
 
