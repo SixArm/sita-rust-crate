@@ -183,7 +183,6 @@ mod tests {
     use ::indoc::indoc;
     use ::tera::Tera;
     use crate::app::args::Args;
-    use crate::templating::vars::Vars;
 
     fn fab_tera() -> Tera {
         let args = Args::default();
@@ -243,20 +242,6 @@ mod tests {
         tera.add_raw_template("my-name", "{{ my-content }}").unwrap();
         let name = best_template_name(&tera);
         assert_eq!(name, "my-name");
-    }
-
-    #[test]
-    fn test_tera_x_vars() {
-        let tera = fab_tera();
-        let vars = Vars {
-            title: Some("my title".into()),
-            content: Some("my content".into()),
-        };
-        let actual = tera.render(
-            &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
-        ).unwrap();
-        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
