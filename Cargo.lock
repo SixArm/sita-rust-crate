@@ -1172,6 +1172,7 @@ dependencies = [
  "lazy_static",
  "liquid",
  "log",
+ "maplit",
  "minidom",
  "once_cell",
  "pulldown-cmark",
