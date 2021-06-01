@@ -1,34 +1,24 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-pub static BLANK: Lazy<::yaml_rust::yaml::Yaml> = Lazy::new(|| {
-    ::yaml_rust::YamlLoader::load_from_str("").unwrap()[0]
-});
+// #[allow(dead_code)]
+// pub fn blank() -> ::toml::Value {
+//     "".parse::<::toml::Value>().unwrap()
+// }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A\+\+\+\n(?P<front>.*?)\n\+\+\+\n(?P<markdown>.*)\z").unwrap()
 });
 
-//TODO warn dead code
 #[allow(dead_code)]
-pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
+pub fn extract(input: &str) -> (&str, Option<Result<::toml::Value, ::toml::de::Error>>) {
     if let Some(captures) = REGEX.captures(input) {
         if let Some(front) = captures.name("front") {
             if let Some(markdown) = captures.name("markdown") {
-                match ::yaml_rust::YamlLoader::load_from_str(front.as_str()) {
-                    Ok(vec) => {
-                        return (
-                            markdown.as_str(),
-                            Some(Ok(vec[0].to_owned())),
-                        )
-                    },
-                    Err(e) => {
-                        return (
-                            markdown.as_str(),
-                            Some(Err(e)),
-                        )
-                    }
-                }
+                return (
+                    markdown.as_str(),
+                    Some(front.as_str().parse::<::toml::Value>()),
+                )
             }
         }
     }
@@ -40,13 +30,20 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
 
+    // #[test]
+    // fn test_blank() {
+    //     let actual: ::toml::Value = super::blank();
+    //     let expect: ::toml::Value = "".parse::<::toml::Value>().unwrap();
+    //     assert_eq!(actual, expect);
+    // }
+
     #[test]
     fn test_present() {
         let input_markdown = indoc!{r#"
-            <!--
-            alpha: bravo
-            charlie: delta
-            -->
+            +++
+            alpha = "bravo"
+            charlie = "delta"
+            +++
             echo
             foxtrot
         "#};
@@ -59,7 +56,7 @@ mod tests {
         assert!(front_option.is_some());
         let front_result = front_option.unwrap();
         assert!(front_result.is_ok());
-        let front: ::yaml_rust::yaml::Yaml = front_result.unwrap();
+        let front = front_result.unwrap();
         assert_eq!(front["alpha"].as_str().unwrap(), "bravo");
         assert_eq!(front["charlie"].as_str().unwrap(), "delta");
     }

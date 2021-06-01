@@ -4,7 +4,6 @@
 //!   * `config` - Our configuration struct, set via `confy`.
 //!   * `confy` - Tests for `confy` loading and parsing.
 //!   * `tera` - Tera template loading and parsing.
-//!   * `vars` - Our variables for Tera template context.
 
 //// error-chain
 
@@ -34,6 +33,11 @@ use errors::*;
 extern crate log;
 extern crate env_logger;
 
+//// maplit
+
+#[macro_use] 
+extern crate maplit;
+
 ////
 
 pub(crate) mod run;
@@ -47,16 +51,18 @@ pub(crate) mod app {
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
     pub(crate) mod front_matter {
-        pub(crate) mod html;
-        pub(crate) mod json;
-        pub(crate) mod toml;
-        pub(crate) mod yaml;
+        pub(crate) mod front;
+        pub(crate) mod kinds {
+            pub(crate) mod html;
+            pub(crate) mod json;
+            pub(crate) mod toml;
+            pub(crate) mod yaml;
+        }
     }
 }
 pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tera;
-    pub(crate) mod vars;
     pub(crate) mod xml;
 }
 

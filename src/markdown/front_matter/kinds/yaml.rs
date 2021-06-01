@@ -1,15 +1,17 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-pub static BLANK: Lazy<::yaml_rust::yaml::Yaml> = Lazy::new(|| {
-    ::yaml_rust::YamlLoader::load_from_str("").unwrap()[0]
-});
+// #[allow(dead_code)]
+// pub fn blank() -> ::yaml_rust::yaml::Yaml {
+//     let docs = ::yaml_rust::YamlLoader::load_from_str("").unwrap();
+//     let doc = &docs[0];
+//     doc.clone()
+// }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A---\n(?P<front>.*?)\n---\n(?P<markdown>.*)\z").unwrap()
 });
 
-//TODO warn dead code
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
     if let Some(captures) = REGEX.captures(input) {
@@ -39,7 +41,13 @@ pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::y
 mod tests {
     use super::*;
     use ::indoc::indoc;
-    //use crate::vars::Vars;
+
+    // #[test]
+    // fn test_blank() {
+    //     let actual: ::yaml_rust::yaml::Yaml = super::blank();
+    //     let expect: ::yaml_rust::yaml::Yaml = (&(::yaml_rust::YamlLoader::load_from_str("").unwrap()))[0].clone();
+    //     assert_eq!(actual, expect);
+    // }
 
     #[test]
     fn test_present() {
