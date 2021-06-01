@@ -1,14 +1,17 @@
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use regex::Regex;
 
-lazy_static! {
-    static ref REGEX: Regex
-    = Regex::new(r"(?m)(?s)\A\+\+\+\n(?P<front>.*?)\n\+\+\+\n(?P<markdown>.*)\z").unwrap();
-}
+pub static BLANK: Lazy<::toml::Value> = Lazy::new(|| {
+    "".parse::<::toml::Value>().unwrap()
+});
+
+pub static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+});
 
 //TODO warn dead code
 #[allow(dead_code)]
-fn extract(input: &str) -> (&str, Option<Result<::toml::Value, ::toml::de::Error>>) {
+pub fn extract(input: &str) -> (&str, Option<Result<::toml::Value, ::toml::de::Error>>) {
     if let Some(captures) = REGEX.captures(input) {
         if let Some(front) = captures.name("front") {
             if let Some(markdown) = captures.name("markdown") {
@@ -26,7 +29,6 @@ fn extract(input: &str) -> (&str, Option<Result<::toml::Value, ::toml::de::Error
 mod tests {
     use super::*;
     use ::indoc::indoc;
-    //use crate::vars::Vars;
 
     #[test]
     fn test_present() {

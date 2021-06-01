@@ -1,14 +1,17 @@
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use regex::Regex;
 
-lazy_static! {
-    static ref REGEX: Regex
-    = Regex::new(r"(?m)(?s)\A---\n(?P<front>.*?)\n---\n(?P<markdown>.*)\z").unwrap();
-}
+pub static BLANK: Lazy<::yaml_rust::yaml::Yaml> = Lazy::new(|| {
+    ::yaml_rust::YamlLoader::load_from_str("").unwrap()[0]
+});
+
+pub static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+});
 
 //TODO warn dead code
 #[allow(dead_code)]
-fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
+pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
     if let Some(captures) = REGEX.captures(input) {
         if let Some(front) = captures.name("front") {
             if let Some(markdown) = captures.name("markdown") {

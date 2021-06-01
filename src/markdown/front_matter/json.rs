@@ -1,14 +1,17 @@
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use regex::Regex;
 
-lazy_static! {
-    static ref REGEX: Regex
-    = Regex::new(r"(?m)(?s)\A(?P<front>\{\n.*?\n\}\n)(?P<markdown>.*)\z").unwrap();
-}
+pub static BLANK: Lazy<::serde_json::Value> = Lazy::new(|| {
+    ::serde_json::from_str("").unwrap()
+});
+
+pub static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+});
 
 //TODO warn dead code
 #[allow(dead_code)]
-fn extract(input: &str) -> (&str, Option<Result<::serde_json::Value, ::serde_json::Error>>) {
+pub fn extract(input: &str) -> (&str, Option<Result<::serde_json::Value, ::serde_json::Error>>) {
     if let Some(captures) = REGEX.captures(input) {
         if let Some(front) = captures.name("front") {
             if let Some(markdown) = captures.name("markdown") {
@@ -26,7 +29,6 @@ fn extract(input: &str) -> (&str, Option<Result<::serde_json::Value, ::serde_jso
 mod tests {
     use super::*;
     use ::indoc::indoc;
-    //use crate::vars::Vars;
 
     #[test]
     fn test_present() {
