@@ -73,6 +73,13 @@ pub fn app() -> App<'static> {
         .value_name("EXTENSION")
         .takes_value(true)
         .about("The output file name extension; default \"html\""))
+    .arg(Arg::new("stylesheet")
+        .long("stylesheet")
+        .value_name("URL")
+        .takes_value(true)
+        .multiple(true)
+        .number_of_values(1)
+        .about("A stylesheet URL to add to the HTML header, such as \"stylesheet.css\""))
     .arg(Arg::new("template_name")
         .short('t')
         .long("template-name")
@@ -141,6 +148,10 @@ pub fn args() -> Args {
         },
         paths: match matches.values_of_os("paths") {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+            _ => None,
+        },
+        stylesheet_urls: match matches.values_of_os("stylesheet") {
+            Some(x) => Some(x.map(|x| Url::parse(&x.to_string_lossy()).unwrap()).collect()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {

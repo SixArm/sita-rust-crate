@@ -100,6 +100,27 @@ The output file adds this HTML attribute:
 ```
 
 
+### Stylesheet option
+
+To use a stylesheet file, use the command line option `--stylesheet` such as:
+
+```sh
+$ sita example.md --stylesheet my.css
+```
+
+The output file adds this HTML:
+
+```html
+<link rel="stylesheet" href="my.css">
+```
+
+You can use `--stylesheet` multiple times such as:
+
+```sh
+$ sita example.md --stylesheet reset.css --stylesheet screen.js
+```
+
+
 ### Template file option
 
 First create a file `template.html` with any HTML such as:
