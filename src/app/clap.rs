@@ -92,6 +92,11 @@ pub fn app() -> App<'static> {
         .value_name("HTML")
         .takes_value(true)
         .about("The template HTML; for example \"<p>{{ content }}</p>\""))
+    .arg(Arg::new("title")
+        .long("title")
+        .value_name("TEXT")
+        .takes_value(true)
+        .about("The HTML title; for example \"Welcome\""))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -142,6 +147,10 @@ pub fn args() -> Args {
             _ =>  None,
         },
         template_html: match matches.value_of("template_html") {
+            Some(x) => Some(x.into()),
+            _ =>  None,
+        },
+        title: match matches.value_of("title") {
             Some(x) => Some(x.into()),
             _ =>  None,
         },

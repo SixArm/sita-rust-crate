@@ -20,6 +20,7 @@ pub struct Args {
     pub(crate) template_files: Option<Vec<PathBuf>>,
     pub(crate) template_glob: Option<PathBuf>,
     pub(crate) template_html: Option<String>,
+    pub(crate) title: Option<String>,
     pub(crate) log_level: Option<::log::Level>,
 }
 
@@ -36,6 +37,7 @@ impl ::std::default::Default for Args {
         template_files: None,
         template_glob: None,
         template_html: None,
+        title: None,
         log_level: None,
     } }
 }

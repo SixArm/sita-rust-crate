@@ -70,6 +70,21 @@ The outcome is a new page file `example.html` with this text:
 ```
 
 
+### Title option
+
+To set the title, use the command line option `--title` such as:
+
+```sh
+$ sita example.md --title Welcome
+```
+
+The output file adds this HTML:
+
+```html
+<title>Welcome</title>
+```
+
+
 ### Template file option
 
 First create a file `template.html` with any HTML such as:
