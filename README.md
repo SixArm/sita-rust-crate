@@ -247,3 +247,24 @@ $ sita example.md --variable-file var.yaml
 ```
 
 Sita chooses the format based on the file name.
+
+
+## Issues
+
+
+### TODO
+
+TODO list in priority order:
+
+* HTML default templates using the options `--lang`, `--title`, `--script`, `--stylesheet`.
+
+* Front matter variables via JON, TOML, YAML, and the option `--variable-file`.
+
+
+### UTF-8
+
+The command line options for `--script` and `--stylesheet` require UTF-8 strings in order to create valid URLs. 
+
+* These options cannot currently use OS-specific non-UTF-8 file names.
+
+* This means the options cannot point to a non-UTF-8 URL, such as a local file name that uses ASCII-only encoding.
