@@ -5,6 +5,7 @@
 //! such as being able to start our app with other arg parsers.
 
 use ::std::path::PathBuf;
+use ::url::Url;
 
 #[derive(Debug)]
 pub struct Args {

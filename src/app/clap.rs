@@ -19,6 +19,7 @@
 
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
+use ::url::Url;
 use crate::app::args::Args;
 
 /// Create a clap app.
