@@ -85,6 +85,21 @@ The output file adds this HTML:
 ```
 
 
+### Language option
+
+To set the language, use the command line option `--lang` such as:
+
+```sh
+$ sita example.md --lang en
+```
+
+The output file adds this HTML attribute:
+
+```html
+<html lang="en">
+```
+
+
 ### Template file option
 
 First create a file `template.html` with any HTML such as:

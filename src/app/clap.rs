@@ -51,6 +51,11 @@ pub fn app() -> App<'static> {
         .value_name("EXTENSION")
         .takes_value(true)
         .about("The input file name extension; default \"md\""))
+    .arg(Arg::new("lang")
+        .long("lang")
+        .value_name("LANGUAGE")
+        .takes_value(true)
+        .about("The language encoding, such as \"en\" for English"))
     .arg(Arg::new("output_file")
         .short('o')
         .long("output-file")
@@ -117,6 +122,10 @@ pub fn args() -> Args {
         input_extension: match matches.value_of("input_extension") {
             Some(x) => Some(String::from(x)),
             _ => None,
+        },
+        lang: match matches.value_of("lang") {
+            Some(x) => Some(x.into()),
+            _ =>  None,
         },
         output_file_path: match matches.value_of("output_file") {
             Some(x) => Some(PathBuf::from(x)),
