@@ -121,6 +121,27 @@ $ sita example.md --stylesheet reset.css --stylesheet screen.js
 ```
 
 
+### Script option
+
+To use a script file, use the command line option `--script` such as:
+
+```sh
+$ sita example.md --script-file my.js
+```
+
+The output file adds this HTML:
+
+```html
+<script src="my.js"></script>
+```
+
+You can use `--script` multiple times such as:
+
+```sh
+$ sita example.md --script graphics.js --script utilities.js
+```
+
+
 ### Template file option
 
 First create a file `template.html` with any HTML such as:

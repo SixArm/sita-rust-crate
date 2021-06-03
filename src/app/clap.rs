@@ -73,6 +73,13 @@ pub fn app() -> App<'static> {
         .value_name("EXTENSION")
         .takes_value(true)
         .about("The output file name extension; default \"html\""))
+    .arg(Arg::new("script")
+        .long("script")
+        .value_name("URL")
+        .takes_value(true)
+        .multiple(true)
+        .number_of_values(1)
+        .about("A script URL to add to the HTML header, such as \"script.js\""))
     .arg(Arg::new("stylesheet")
         .long("stylesheet")
         .value_name("URL")
@@ -148,6 +155,10 @@ pub fn args() -> Args {
         },
         paths: match matches.values_of_os("paths") {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+            _ => None,
+        },
+        script_urls: match matches.values_of_os("script") {
+            Some(x) => Some(x.map(|x| Url::parse(&x.to_string_lossy()).unwrap()).collect()),
             _ => None,
         },
         stylesheet_urls: match matches.values_of_os("stylesheet") {
