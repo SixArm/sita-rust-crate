@@ -19,7 +19,6 @@
 
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
-use ::url::Url;
 use crate::app::args::Args;
 
 /// Create a clap app.
@@ -158,11 +157,11 @@ pub fn args() -> Args {
             _ => None,
         },
         script_urls: match matches.values_of_os("script") {
-            Some(x) => Some(x.map(|x| Url::parse(&x.to_string_lossy()).unwrap()).collect()),
+            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<String>>()),
             _ => None,
         },
         stylesheet_urls: match matches.values_of_os("stylesheet") {
-            Some(x) => Some(x.map(|x| Url::parse(&x.to_string_lossy()).unwrap()).collect()),
+            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<String>>()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {
