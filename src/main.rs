@@ -35,8 +35,8 @@ extern crate env_logger;
 
 //// maplit
 
-#[macro_use]
-extern crate maplit;
+// #[macro_use]
+// extern crate maplit;
 
 ////
 
@@ -62,6 +62,7 @@ pub(crate) mod markdown {
 }
 pub(crate) mod templating {
     pub(crate) mod serde;
+    pub(crate) mod tags;
     pub(crate) mod tera;
     pub(crate) mod xml;
 }
