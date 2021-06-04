@@ -1,7 +1,3 @@
-use ::assertables::*;
-use ::std::process::Command;
-use ::std::path::PathBuf;
-
 #[path = "util.rs"]
 mod util;
 use util::*;
