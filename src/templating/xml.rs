@@ -1,3 +1,5 @@
+/*
+
 use quick_xml::Reader;
 use quick_xml::events::Event;
 
@@ -40,3 +42,5 @@ fn demo() -> () {
         buf.clear();
     }
 }
+
+*/
