@@ -19,7 +19,7 @@
 
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
-use ::std::collections::HashMap;
+use ::std::collections::BTreeMap;
 use crate::app::args::Args;
 use crate::types::*;
 
@@ -174,7 +174,7 @@ pub fn args() -> Args {
         settings: match matches.values_of("set") {
             Some(x) => {
                 let vec: Vec<&str> = x.collect();
-                Some(vec_str_to_hash_map_string_string(&vec))
+                Some(vec_str_to_btreemap_string_string(&vec))
             },
             _ => None,
         },
@@ -198,7 +198,7 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        test: Some(matches.is_present("input_file")),
+        test: matches.is_present("test"),
         title: match matches.value_of("title") {
             Some(x) => Some(x.into()),
             _ =>  None,
@@ -216,8 +216,8 @@ pub fn args() -> Args {
 
 }
 
-pub fn vec_str_to_hash_map_string_string(vec_str: &Vec<&str>) -> HashMap<String, String> {
-    let mut map: HashMap<String, String> = HashMap::new();
+pub fn vec_str_to_btreemap_string_string(vec_str: &Vec<&str>) -> BTreeMap<String, String> {
+    let mut map: BTreeMap<String, String> = BTreeMap::new();
     for i in (0..vec_str.len()-1).step_by(2) {
         let k = String::from(vec_str[i]);
         let v = String::from(vec_str[i+1]);

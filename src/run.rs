@@ -35,9 +35,7 @@ pub(crate) fn run() -> Result<()> {
 
     // Initialize arguments
     let args: Args = crate::app::clap::args();
-    if args.test.is_some() {
-        println!("{:?}", args);
-    }
+    if args.test { println!("{:?}", args); }
 
     // Initialize templating
     let tera: Tera = crate::templating::tera::init(&args)
