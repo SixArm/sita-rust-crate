@@ -1,9 +1,4 @@
 //! Main
-//!
-//!   * `args` - Our arguments struct, set via `clap`.
-//!   * `config` - Our configuration struct, set via `confy`.
-//!   * `confy` - Tests for `confy` loading and parsing.
-//!   * `tera` - Tera template loading and parsing.
 
 //// error-chain
 
@@ -28,25 +23,24 @@ mod errors {
 use errors::*;
 
 //// log
-
 #[macro_use]
 extern crate log;
 extern crate env_logger;
 
 //// maplit
-
 // #[macro_use]
 // extern crate maplit;
 
 ////
 
-pub(crate) mod run;
+pub(crate) mod run; // Main run logic
+pub(crate) mod types; // Type aliases
 
-pub(crate) mod app {
-    pub(crate) mod args;
-    pub(crate) mod clap;
-    pub(crate) mod config;
-    pub(crate) mod confy;
+pub(crate) mod app { // Application
+    pub(crate) mod args; // Arguments struct, such as set via `clap`.
+    pub(crate) mod clap; // Command line argument parser
+    pub(crate) mod config; // Configuration struct, such as set via `confy`
+    pub(crate) mod confy; // Configuration tests for loading and parsing
 }
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
