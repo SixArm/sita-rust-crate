@@ -5,8 +5,8 @@
 //! such as being able to start our app with other arg parsers.
 
 use ::std::path::PathBuf;
-
-type UrlString = String;
+use ::std::collections::HashMap;
+use crate::types::*;
 
 #[derive(Debug)]
 pub struct Args {
@@ -19,6 +19,7 @@ pub struct Args {
     pub(crate) output_extension: Option<String>,
     pub(crate) paths: Option<Vec<PathBuf>>,
     pub(crate) script_urls: Option<Vec<UrlString>>,
+    pub(crate) settings: Option<HashMap<String, String>>,
     pub(crate) stylesheet_urls: Option<Vec<UrlString>>,
     pub(crate) template_name: Option<String>,
     pub(crate) template_files: Option<Vec<PathBuf>>,
@@ -38,6 +39,7 @@ impl ::std::default::Default for Args {
         output_directory_path: None,
         output_extension: None,
         paths: None,
+        settings: None,
         script_urls: None,
         stylesheet_urls: None,
         template_name: None,
