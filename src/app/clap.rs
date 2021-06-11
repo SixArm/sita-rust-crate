@@ -112,6 +112,10 @@ pub fn app() -> App<'static> {
         .value_name("HTML")
         .takes_value(true)
         .about("The template HTML; for example \"<p>{{ content }}</p>\""))
+    .arg(Arg::new("test")
+        .long("test")
+        .takes_value(false)
+        .about("Print test output for debugging, verifying, tracing, and the like"))
     .arg(Arg::new("title")
         .long("title")
         .value_name("TEXT")
@@ -170,13 +174,7 @@ pub fn args() -> Args {
         settings: match matches.values_of("set") {
             Some(x) => {
                 let vec: Vec<&str> = x.collect();
-                let mut map: HashMap<String, String> = HashMap::new();
-                for i in (0..vec.len()-1).step_by(2) {
-                    let k = String::from(vec[i]);
-                    let v = String::from(vec[i+1]);
-                    map.insert(k, v);
-                }
-                Some(map)
+                Some(vec_str_to_hash_map_string_string(&vec))
             },
             _ => None,
         },
@@ -200,17 +198,30 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
+        test: Some(matches.is_present("input_file")),
         title: match matches.value_of("title") {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
         log_level: match matches.occurrences_of("verbose") {
+            0 => None,
             1 => Some(::log::Level::Error),
             2 => Some(::log::Level::Warn),
             3 => Some(::log::Level::Info),
             4 => Some(::log::Level::Debug),
             5 => Some(::log::Level::Trace),
-            _ => None,
+            _ => Some(::log::Level::Trace),
         },
     }
+
+}
+
+pub fn vec_str_to_hash_map_string_string(vec_str: &Vec<&str>) -> HashMap<String, String> {
+    let mut map: HashMap<String, String> = HashMap::new();
+    for i in (0..vec_str.len()-1).step_by(2) {
+        let k = String::from(vec_str[i]);
+        let v = String::from(vec_str[i+1]);
+        map.insert(k, v);
+    }
+    map
 }
