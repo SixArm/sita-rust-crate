@@ -31,14 +31,14 @@ pub(crate) fn run() -> Result<()> {
 
     // Initialize configuration
     let _config: Config = ::confy::load("sita")
-    .chain_err(|| "configuration load error")?;
+    .chain_err(|| "error: confy load")?;
 
     // Initialize arguments
     let args: Args = crate::app::clap::args();
 
     // Initialize templating
     let tera: Tera = crate::templating::tera::init(&args)
-    .chain_err(|| "init tera")?;
+    .chain_err(|| "error: tera init")?;
 
     // Process each page
     if let Some(paths) = &args.paths {
@@ -54,7 +54,7 @@ pub(crate) fn run() -> Result<()> {
 }
 
 fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
-    trace!("do path(…) →     input_file_path: {:?}", input_file_path);
+    trace!("do path(…) → input_file_path: {:?}", input_file_path);
 
     // Vet input file path
     vet_input_file_path_exists(&args, input_file_path)?;
