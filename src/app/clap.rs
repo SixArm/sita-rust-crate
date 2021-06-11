@@ -19,7 +19,9 @@
 
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
+use ::std::collections::HashMap;
 use crate::app::args::Args;
+use crate::types::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {
@@ -115,6 +117,11 @@ pub fn app() -> App<'static> {
         .value_name("TEXT")
         .takes_value(true)
         .about("The HTML title; for example \"Welcome\""))
+    .arg(Arg::new("set")
+        .short('s')
+        .long("set")
+        .value_names(&["NAME", "VALUE"])
+        .multiple(true))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -157,11 +164,24 @@ pub fn args() -> Args {
             _ => None,
         },
         script_urls: match matches.values_of_os("script") {
-            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<String>>()),
+            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<UrlString>>()),
+            _ => None,
+        },
+        settings: match matches.values_of("set") {
+            Some(x) => {
+                let vec: Vec<&str> = x.collect();
+                let mut map: HashMap<String, String> = HashMap::new();
+                for i in (0..vec.len()-1).step_by(2) {
+                    let k = String::from(vec[i]);
+                    let v = String::from(vec[i+1]);
+                    map.insert(k, v);
+                }
+                Some(map)
+            },
             _ => None,
         },
         stylesheet_urls: match matches.values_of_os("stylesheet") {
-            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<String>>()),
+            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<UrlString>>()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {
