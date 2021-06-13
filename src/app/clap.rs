@@ -29,46 +29,41 @@ pub fn app() -> App<'static> {
     .version("1.0.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
     .about("Sita static site generator")
-    .arg(Arg::new("verbose")
-        .short('v')
-        .long("verbose")
-        .multiple(true)
-        .takes_value(false)
-        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace"))
-    .arg(Arg::new("input_file")
+    .arg(Arg::new("input_path")
         .short('i')
-        .long("input-file")
-        .value_name("FILE")
+        .long("input-path")
+        .value_name("PATH, ...")
         .takes_value(true)
-        .about("The input file, such as \"input.html\""))
+        .multiple(true)
+        .about("The input path; for example \"input.html\""))
     .arg(Arg::new("input_directory")
         .short('I')
         .long("input-directory")
         .value_name("DIRECTORY")
         .takes_value(true)
-        .about("The input directory, such as \"~/input/\""))
+        .about("The input directory; for example \"~/input/\""))
     .arg(Arg::new("input_extension")
         .long("input-extension")
         .value_name("EXTENSION")
         .takes_value(true)
         .about("The input file name extension; default \"md\""))
-    .arg(Arg::new("lang")
-        .long("lang")
-        .value_name("LANGUAGE")
+    .arg(Arg::new("language")
+        .long("language")
+        .value_name("LANGUAGE_ENCODING")
         .takes_value(true)
-        .about("The language encoding, such as \"en\" for English"))
+        .about("The language encoding; for example \"en\" for English"))
     .arg(Arg::new("output_file")
         .short('o')
         .long("output-file")
         .value_name("FILE")
         .takes_value(true)
-        .about("The output file, such as \"output.html\""))
+        .about("The output file; for example \"output.html\""))
     .arg(Arg::new("output_directory")
         .short('O')
         .long("output-directory")
         .value_name("DIRECTORY")
         .takes_value(true)
-        .about("The output directory, such as \"~/output/\""))
+        .about("The output directory; for example \"~/output/\""))
     .arg(Arg::new("output_extension")
         .long("output-extension")
         .value_name("EXTENSION")
@@ -76,32 +71,29 @@ pub fn app() -> App<'static> {
         .about("The output file name extension; default \"html\""))
     .arg(Arg::new("script")
         .long("script")
-        .value_name("URL")
+        .value_name("URL, ...")
         .takes_value(true)
         .multiple(true)
-        .number_of_values(1)
-        .about("A script URL to add to the HTML header, such as \"script.js\""))
+        .about("A script URL to add to the HTML header; for example \"script.js\""))
     .arg(Arg::new("stylesheet")
         .long("stylesheet")
-        .value_name("URL")
+        .value_name("URL, ...")
         .takes_value(true)
         .multiple(true)
-        .number_of_values(1)
-        .about("A stylesheet URL to add to the HTML header, such as \"stylesheet.css\""))
+        .about("A stylesheet URL to add to the HTML header; for example \"stylesheet.css\""))
     .arg(Arg::new("template_name")
         .short('t')
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
         .about("The template name; for example \"my-template.html\""))
-    .arg(Arg::new("template_file")
+    .arg(Arg::new("template_path")
         .short('T')
-        .long("template-file")
-        .value_name("FILE")
+        .long("template-path")
+        .value_name("PATH, ...")
         .takes_value(true)
         .multiple(true)
-        .number_of_values(1)
-        .about("The template file; for example \"my-template.html\""))
+        .about("The template path; for example \"my-template.html\""))
     .arg(Arg::new("template_glob")
         .long("template-glob")
         .value_name("GLOB")
@@ -126,6 +118,12 @@ pub fn app() -> App<'static> {
         .long("set")
         .value_names(&["NAME", "VALUE"])
         .multiple(true))
+    .arg(Arg::new("verbose")
+        .short('v')
+        .long("verbose")
+        .multiple(true)
+        .takes_value(false)
+        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace"))
     .arg(Arg::new("paths")
         .value_name("FILES")
         .multiple(true))
@@ -135,19 +133,15 @@ pub fn app() -> App<'static> {
 pub fn args() -> Args {
     let matches = app().get_matches();
     Args {
-        input_file_path: match matches.value_of("input_file") {
-            Some(x) => Some(PathBuf::from(x)),
-            _ => None,
-        },
-        input_directory_path: match matches.value_of("input_directory") {
-            Some(x) => Some(PathBuf::from(x)),
+        input_paths: match matches.values_of_os("input_path") {
+            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },
         input_extension: match matches.value_of("input_extension") {
             Some(x) => Some(String::from(x)),
             _ => None,
         },
-        lang: match matches.value_of("lang") {
+        language: match matches.value_of("language") {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
@@ -186,7 +180,7 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        template_files: match matches.values_of_os("template_file") {
+        template_paths: match matches.values_of_os("template_path") {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },

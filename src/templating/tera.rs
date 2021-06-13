@@ -76,9 +76,10 @@ fn new_or_default_via_args(args: &Args) -> Result<Tera> {
 // ```
 //
 fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<()> {
-    if let Some(files) = args.template_files.as_ref() {
+    if let Some(paths) = args.template_paths.as_ref() {
+        // TODO expand a directory path into its subfiles
         tera.add_template_files(
-            files.into_iter().map(|x| 
+            paths.into_iter().map(|x| 
                 (x.clone(), None)
             ).collect::<Vec<(PathBuf, Option<String>)>>()
         )
