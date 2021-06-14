@@ -1,4 +1,4 @@
-use crate::types;
+use crate::types::*;
 
 /// Create a "html" tag with default settings.
 ///
