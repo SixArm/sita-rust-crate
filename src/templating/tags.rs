@@ -1,8 +1,4 @@
-#[allow(dead_code)] type HtmlStr = str;
-#[allow(dead_code)] type HtmlString = String;
-
-#[allow(dead_code)] type UrlStr = str;
-#[allow(dead_code)] type UrlString = String;
+use crate::types;
 
 /// Create a "html" tag with default settings.
 ///
