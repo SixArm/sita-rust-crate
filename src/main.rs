@@ -44,8 +44,9 @@ pub(crate) mod app { // Application
 }
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
-    pub(crate) mod front_matter {
-        pub(crate) mod front;
+    pub(crate) mod matter {
+        pub(crate) mod state;
+        pub(crate) mod util;
         pub(crate) mod kinds {
             pub(crate) mod html;
             pub(crate) mod json;

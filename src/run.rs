@@ -72,19 +72,19 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
     // Parse front matter that holds variables
-    let (content_as_markdown_text, front_matter_option) = crate::markdown::front_matter::kinds::html::extract(&content_as_markdown_text);
-    let mut front_matter: HashMap<String, String> = front_matter_option.unwrap_or_else(|| crate::markdown::front_matter::kinds::html::blank());
-    debug!("front_matter: {:?}", &front_matter);
+    let (content_as_markdown_text, matter_option) = crate::markdown::matter::kinds::html::extract(&content_as_markdown_text);
+    let mut matter: HashMap<String, String> = matter_option.unwrap_or_else(|| crate::markdown::matter::kinds::html::blank());
+    debug!("matter: {:?}", &matter);
 
     // Convert from Markdown text to HTML text
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
     // Set the magic "content" key for the corresponding template tag "{{ content }}"
-    front_matter.insert("content".into(), content_as_html_text);
+    matter.insert("content".into(), content_as_html_text);
 
     // Create Tera context that holds variables
-    let context = ::tera::Context::from_serialize(front_matter)
+    let context = ::tera::Context::from_serialize(matter)
     .chain_err(|| "create context")?;
     debug!("context: {:?}", &context);
 

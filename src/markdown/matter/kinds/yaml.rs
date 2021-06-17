@@ -9,15 +9,15 @@ use regex::Regex;
 // }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A---\n(?P<front>.*?)\n---\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A---\n(?P<matter>.*?)\n---\n(?P<markdown>.*)\z").unwrap()
 });
 
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
     if let Some(captures) = REGEX.captures(input) {
-        if let Some(front) = captures.name("front") {
+        if let Some(matter) = captures.name("matter") {
             if let Some(markdown) = captures.name("markdown") {
-                match ::yaml_rust::YamlLoader::load_from_str(front.as_str()) {
+                match ::yaml_rust::YamlLoader::load_from_str(matter.as_str()) {
                     Ok(vec) => {
                         return (
                             markdown.as_str(),
@@ -63,14 +63,14 @@ mod tests {
             echo
             foxtrot
         "#};
-        let (output_markdown, front_option) = extract(input_markdown);
+        let (output_markdown, matter_option) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        assert!(front_option.is_some());
-        let front_result = front_option.unwrap();
-        assert!(front_result.is_ok());
-        let front: ::yaml_rust::yaml::Yaml = front_result.unwrap();
-        assert_eq!(front["alpha"].as_str().unwrap(), "bravo");
-        assert_eq!(front["charlie"].as_str().unwrap(), "delta");
+        assert!(matter_option.is_some());
+        let matter_result = matter_option.unwrap();
+        assert!(matter_result.is_ok());
+        let matter = matter_result.unwrap();
+        assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
+        assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
     }
 
     #[test]
@@ -79,9 +79,9 @@ mod tests {
             echo
             foxtrot
         "#};
-        let (output_markdown, front_option) = extract(input_markdown);
+        let (output_markdown, matter_option) = extract(input_markdown);
         assert_eq!(output_markdown, input_markdown);
-        assert!(front_option.is_none());
+        assert!(matter_option.is_none());
     }
 
 }

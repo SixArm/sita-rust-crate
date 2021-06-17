@@ -8,15 +8,15 @@ pub fn blank() -> HashMap<String, String> {
 }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<front>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
 });
 
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, Option<HashMap<String, String>>) {
     if let Some(captures) = REGEX.captures(input) {
-        if let Some(front) = captures.name("front") {
+        if let Some(matter) = captures.name("matter") {
             if let Some(markdown) = captures.name("markdown") {
-                return (markdown.as_str(), Some(parse_block_to_map(front.as_str())))
+                return (markdown.as_str(), Some(parse_block_to_map(matter.as_str())))
             }
         }
     }
@@ -84,10 +84,10 @@ mod tests {
             echo
             foxtrot
         "#};
-        let (output_markdown, front_option) = extract(input_markdown);
+        let (output_markdown, matter_option) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        assert!(front_option.is_some());
-        let map: HashMap<String, String> = front_option.unwrap();
+        assert!(matter_option.is_some());
+        let map: HashMap<String, String> = matter_option.unwrap();
         assert_eq!(map["alpha"], "bravo");
         assert_eq!(map["charlie"], "delta");
     }
@@ -98,9 +98,9 @@ mod tests {
             echo
             foxtrot
         "#};
-        let (output_markdown, front_option) = extract(input_markdown);
+        let (output_markdown, matter_option) = extract(input_markdown);
         assert_eq!(output_markdown, input_markdown);
-        assert!(front_option.is_none());
+        assert!(matter_option.is_none());
     }
 
     #[test]
