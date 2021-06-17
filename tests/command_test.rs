@@ -13,15 +13,15 @@ fn test_command_x_default() {
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("example.html");
     let expect: PathBuf = dir.join("expect.html");
-    assert!(input.exists());
-    assert!(expect.exists());
+    assert!(input.exists(), "input path: {:?}", input);
+    assert!(expect.exists(), "expect path: {:?}", expect);
     // Run
-    assert!(!actual.exists());
+    assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg(&input)
         .output()
         .expect("failure");
-    assert!(actual.exists());
+    assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,
@@ -38,17 +38,17 @@ fn test_command_x_output_file() {
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("custom-output-file.html");
     let expect: PathBuf = dir.join("expect.html");
-    assert!(input.exists());
-    assert!(expect.exists());
+    assert!(input.exists(), "input path: {:?}", input);
+    assert!(expect.exists(), "expect path: {:?}", expect);
     // Run
-    assert!(!actual.exists());
+    assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg(&input)
         .arg("--output-file")
         .arg(actual.as_os_str())
         .output()
         .expect("failure");
-    assert!(actual.exists());
+    assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,
@@ -66,18 +66,18 @@ fn test_command_x_template_file() {
     let template: PathBuf = dir.join("custom-template-file.html");
     let actual: PathBuf = dir.join("example.html");
     let expect: PathBuf = dir.join("expect.html");
-    assert!(input.exists());
-    assert!(template.exists());
-    assert!(expect.exists());
+    assert!(input.exists(), "input path: {:?}", input);
+    assert!(template.exists(), "template path: {:?}", template);
+    assert!(expect.exists(), "expect path: {:?}", expect);
     // Run
-    assert!(!actual.exists());
+    assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg(&input)
         .arg("--template-path")
         .arg(template.as_os_str())
         .output()
         .expect("failure");
-    assert!(actual.exists());
+    assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,

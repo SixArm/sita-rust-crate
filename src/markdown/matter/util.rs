@@ -1,5 +1,3 @@
-
-
 // Extract from markdown input to markdown output and matter variables.
 //
 // Example:

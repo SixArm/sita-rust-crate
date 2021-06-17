@@ -1,5 +1,12 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
+use serde_yaml;
+
+// TODO replace these older chunks...
+//
+//   ::yaml_rust::yaml::Yaml -> serde_yaml::Value
+//   ::yaml_rust::ScanError -> serde_yaml::Error
+//   ::yaml_rust::YamlLoader::load_from_str -> serde_yaml::from_str
 
 // #[allow(dead_code)]
 // pub fn blank() -> ::yaml_rust::yaml::Yaml {
@@ -13,15 +20,15 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 });
 
 #[allow(dead_code)]
-pub fn extract(input: &str) -> (&str, Option<Result<::yaml_rust::yaml::Yaml, ::yaml_rust::ScanError>>) {
+pub fn extract(input: &str) -> (&str, Option<Result<serde_yaml::Value, serde_yaml::Error>>) {
     if let Some(captures) = REGEX.captures(input) {
         if let Some(matter) = captures.name("matter") {
             if let Some(markdown) = captures.name("markdown") {
-                match ::yaml_rust::YamlLoader::load_from_str(matter.as_str()) {
-                    Ok(vec) => {
+                match serde_yaml::from_str(matter.as_str()) {
+                    Ok(x) => {
                         return (
                             markdown.as_str(),
-                            Some(Ok(vec[0].to_owned())),
+                            Some(Ok(x)),
                         )
                     },
                     Err(e) => {

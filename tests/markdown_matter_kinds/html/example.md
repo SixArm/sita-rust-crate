@@ -2,5 +2,4 @@
     alpha: bravo
     charlie: delta
 -->
-{{ alpha }}
-{{ charlie }}
+hello world

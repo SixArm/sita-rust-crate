@@ -1,6 +1,5 @@
 //! Run the app
 
-use ::std::collections::HashMap;
 use ::std::path::PathBuf;
 use ::tera::Tera;
 use crate::app::args::Args;
@@ -38,8 +37,12 @@ pub(crate) fn run() -> Result<()> {
     if args.test { println!("{:?}", args); }
 
     // Initialize templating
-    let tera: Tera = crate::templating::tera::init(&args)
+    let mut tera: Tera = crate::templating::tera::init(&args)
     .chain_err(|| "error: tera init")?;
+
+    // Initialize default template
+    tera.add_raw_template("default", "{{ content }}")
+    .chain_err(|| "error: tera add_raw_template")?;
 
     // Process each page
     if let Some(paths) = &args.paths {
@@ -72,21 +75,40 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
     // Parse front matter that holds variables
-    let (content_as_markdown_text, matter_option) = crate::markdown::matter::kinds::html::extract(&content_as_markdown_text);
-    let mut matter: HashMap<String, String> = matter_option.unwrap_or_else(|| crate::markdown::matter::kinds::html::blank());
+    let (content_as_markdown_text, matter) = crate::markdown::matter::util::extract(&content_as_markdown_text);
     debug!("matter: {:?}", &matter);
 
     // Convert from Markdown text to HTML text
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    // Set the magic "content" key for the corresponding template tag "{{ content }}"
-    matter.insert("content".into(), content_as_html_text);
-
     // Create Tera context that holds variables
-    let context = ::tera::Context::from_serialize(matter)
-    .chain_err(|| "create context")?;
+    let mut context = match matter {
+        crate::markdown::matter::state::State::HTML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "create context")?
+        }
+        crate::markdown::matter::state::State::JSON(x) =>  {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "create context")?
+        }
+        crate::markdown::matter::state::State::TOML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "create context")?
+        }            
+        crate::markdown::matter::state::State::YAML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "create context")?
+        }, 
+        crate::markdown::matter::state::State::None => {
+            ::tera::Context::new()
+        }
+    };
     debug!("context: {:?}", &context);
+
+    // Set the magic "content" key for the corresponding template tag "{{ content }}"
+    context.insert("content", &content_as_html_text);
+    debug!("context with content: {:?}", &context);
 
     // Select relevant template name
     let template_name = select_template_name(&args, &tera);

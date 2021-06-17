@@ -32,10 +32,12 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
 #[cfg(test)]
 #[allow(dead_code)]
 pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
+    // Prep
     let input = base_path.join("example.md");
     let actual = base_path.join("example.html");
     let expect = base_path.join("expect.html");
     remove_file_if_exists(&actual).expect("remove");
+    // Test
     let _output = Command::new(COMMAND)
         .arg(&input)
         .output()
@@ -45,17 +47,20 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
         &actual,
         &expect,
     );
+    // Done
     ::std::fs::remove_file(&actual).expect("remove");
 }
 
 #[cfg(test)]
 #[allow(dead_code)]
 pub fn test_with_base_path_and_default_input_actual_expect_template(base_path: PathBuf) {
+    // Prep
     let input = base_path.join("example.md");
     let actual = base_path.join("example.html");
     let expect = base_path.join("expect.html");
     let _template = base_path.join("template.html");
     remove_file_if_exists(&actual).expect("remove");
+    // Test
     let _output = Command::new(COMMAND)
         .arg(&input)
         .output()
@@ -65,5 +70,6 @@ pub fn test_with_base_path_and_default_input_actual_expect_template(base_path: P
         &actual,
         &expect,
     );
+    // Done
     ::std::fs::remove_file(&actual).expect("remove");
 }
