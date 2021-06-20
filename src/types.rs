@@ -1,3 +1,6 @@
+#[allow(dead_code)] pub type GlobStr = str;
+#[allow(dead_code)] pub type GlobString = String;
+
 #[allow(dead_code)] pub type HtmlStr = str;
 #[allow(dead_code)] pub type HtmlString = String;
 
