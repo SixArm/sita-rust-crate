@@ -13,8 +13,10 @@ clap = { version = "3.0.0-beta.2", features = ["regex", "yaml", "wrap_help"] } #
 confy = "0.4.0" # Boilerplate-free configuration management
 env_logger = "0.8.3" # A logger that can be configured via environment variables
 error-chain = "0.12.4" # Consistent error handling
+glob = "0.3.0" # Support for matching file paths against Unix shell style patterns
 handlebars = "*" #
 indoc = "1.0.3" # Indented document literals
+json = "0.12.4" # JSON parser
 lazy_static = "1.4.0" # A macro for declaring lazily evaluated statics
 liquid = "0.22.0" #  Liquid templating language for Rust
 log = "0.4.0" # A Rust library providing a lightweight logging facade
@@ -29,7 +31,6 @@ serde = { version = "1.0", features = ["derive"] } # Generic serialize/deseriali
 serde_json = "1.0.64" # JSON serialize/deserialize
 serde_yaml = "0.8.17" # YAML serialize/deserialize
 tera = "1.10.0" # Template engine based on Jinja2/Django templates
-yaml-rust = "0.4.5" # YAML parser
-json = "0.12.4" # JSON parser
 toml = "0.5.8" # TOML encoder/decoder
 url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
+yaml-rust = "0.4.5" # YAML parser
