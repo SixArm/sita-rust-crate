@@ -2,6 +2,42 @@
 // Semantic collections
 ////
 
+/// `List` is our typical list collection.
+///
+/// This is implemented in Rust by using `Vec`.
+///
+/// Example:
+///
+/// ```
+/// let my_list: List<i32> = List::new();
+/// ```
+///
+#[allow(dead_code)] pub type List<T> = ::std::vec::Vec<T>;
+
+/// Create a typical list collection with elements.
+///
+/// Example:
+///
+/// ```
+/// let x: List<i32> = list!(1, 2);
+/// assert!(x.contains(&1));
+/// ```
+///
+/// OPTIMIZE: add pre-allocation logic.
+///
+#[allow(unused_macros)]
+macro_rules! list {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut m = ::std::vec::Vec::new();
+            $(
+                m.push($x);
+            )*
+            m
+        }
+    };
+}
+
 /// `Map` is our typical map collection and is an ordered map.
 ///
 /// This is implemented in Rust by using `BTreeMap`.
@@ -9,7 +45,7 @@
 /// Example:
 ///
 /// ```
-/// let my_map: Map<String, String> = Map::new();
+/// let my_map: Map<i32, i32> = Map::new();
 /// ```
 ///
 #[allow(dead_code)] pub type Map<K,V> = ::std::collections::BTreeMap<K,V>;
@@ -19,7 +55,7 @@
 /// Example:
 ///
 /// ```
-/// let x: Map<String, String> = map!(
+/// let x: Map<i32, i32> = map!(
 ///     1 => 2,
 ///     3 => 4,
 /// );
@@ -41,6 +77,42 @@ macro_rules! map {
     };
 }
 
+/// `Queue` is our typical queue collection and is a double-ended queue.
+///
+/// This is implemented in Rust by using `VecDeque`.
+///
+/// Example:
+///
+/// ```
+/// let my_queue: Queue<i32> = Queue::new();
+/// ```
+///
+#[allow(dead_code)] pub type Queue<T> = ::std::collections::VecDeque<T>;
+
+/// Create a typical queue collection with elements.
+///
+/// Example:
+///
+/// ```
+/// let x: Queue<i32> = queue!(1, 2);
+/// assert!(x.contains(&1));
+/// ```
+///
+/// OPTIMIZE: add pre-allocation logic.
+///
+#[allow(unused_macros)]
+macro_rules! queue {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut m = ::std::collections::VecDeque::new();
+            $(
+                m.push_back($x);
+            )*
+            m
+        }
+    };
+}
+
 /// `Set` is our typical set collection and is an ordered set.
 ///
 /// This is implemented in Rust by using `BTreeSet`.
@@ -48,7 +120,7 @@ macro_rules! map {
 /// Example:
 ///
 /// ```
-/// let my_set: Set<String> = Set::new();
+/// let my_set: Set<i32> = Set::new();
 /// ```
 ///
 #[allow(dead_code)] pub type Set<T> = ::std::collections::BTreeSet<T>;
@@ -58,7 +130,7 @@ macro_rules! map {
 /// Example:
 ///
 /// ```
-/// let x: Set<String> = set!(1, 2);
+/// let x: Set<i32> = set!(1, 2);
 /// assert!(x.contains(&1));
 /// ```
 ///
@@ -84,7 +156,7 @@ macro_rules! set {
 /// Example:
 ///
 /// ```
-/// let my_stack: Stack<String> = Stack::new();
+/// let my_stack: Stack<i32> = Stack::new();
 /// ```
 ///
 #[allow(dead_code)] pub type Stack<T> = ::std::vec::Vec<T>;
@@ -94,7 +166,7 @@ macro_rules! set {
 /// Example:
 ///
 /// ```
-/// let x: Stack<String> = stack!(1, 2);
+/// let x: Stack<i32> = stack!(1, 2);
 /// assert!(x.contains(&1));
 /// ```
 ///
@@ -107,42 +179,6 @@ macro_rules! stack {
             let mut m = ::std::vec::Vec::new();
             $(
                 m.push($x);
-            )*
-            m
-        }
-    };
-}
-
-/// `Queue` is our typical queue collection and is a double-ended queue.
-///
-/// This is implemented in Rust by using `VecDeque`.
-///
-/// Example:
-///
-/// ```
-/// let my_queue: Queue<String> = Queue::new();
-/// ```
-///
-#[allow(dead_code)] pub type Queue<T> = ::std::collections::VecDeque<T>;
-
-/// Create a typical queue collection with elements.
-///
-/// Example:
-///
-/// ```
-/// let x: Queue<String> = queue!(1, 2);
-/// assert!(x.contains(&1));
-/// ```
-///
-/// OPTIMIZE: add pre-allocation logic.
-///
-#[allow(unused_macros)]
-macro_rules! queue {
-    ( $( $x:expr ),* ) => {
-        {
-            let mut m = ::std::collections::VecDeque::new();
-            $(
-                m.push_back($x);
             )*
             m
         }
@@ -296,6 +332,28 @@ macro_rules! queue {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn test_list_macro_with_oneline() {
+        let x = list!(1, 2);
+        assert!(x.contains(&1));
+    }
+
+    #[test]
+    fn test_list_macro_with_multiline() {
+        let x = list!(
+            1, 
+            2
+        );
+        assert!(x.contains(&1));
+    }
+
+    //TODO
+    // #[test]
+    // fn test_list_macro_with_empty() {
+    //     let x: list!();
+    //     assert_eq!(x.is_empty());
+    // }
 
     #[test]
     fn test_map_macro_with_oneline() {
