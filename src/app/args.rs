@@ -40,7 +40,7 @@ pub struct Args {
 
     /// Script URL list.
     /// Example: "https://example.com/script.js" is a JavaScript URL.
-    pub(crate) script_urls: Option<List<UrlString>>,
+    pub(crate) script_url_list: Option<List<UrlString>>,
 
     /// Settings for the program.
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
@@ -48,7 +48,7 @@ pub struct Args {
 
     /// Stylesheet URL list.
     /// Example: "https://example.com/stylesheet.css" is a stylesheet URL.
-    pub(crate) stylesheet_urls: Option<List<UrlString>>,
+    pub(crate) stylesheet_url_list: Option<List<UrlString>>,
 
     /// Template name that will be used for rendering.
     /// Example: "default" means use the default template.
@@ -85,8 +85,8 @@ impl ::std::default::Default for Args {
         output_extension: None,
         paths: None,
         settings: None,
-        script_urls: None,
-        stylesheet_urls: None,
+        script_url_list: None,
+        stylesheet_url_list: None,
         template_name: None,
         template_glob_set: None,
         template_html_set: None,
