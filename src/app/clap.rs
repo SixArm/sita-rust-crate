@@ -19,7 +19,6 @@
 
 use ::clap::{Arg, App};
 use ::std::path::PathBuf;
-use ::std::collections::BTreeMap;
 use crate::app::args::Args;
 use crate::types::*;
 
@@ -86,23 +85,20 @@ pub fn app() -> App<'static> {
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
-        .about("The template name; for example \"my-template.html\""))
-    .arg(Arg::new("template_path")
+        .multiple(true)
+        .about("The template name to use for this rendering; for example \"--template foo\""))
+    .arg(Arg::new("template_glob_set")
         .short('T')
-        .long("template-path")
-        .value_name("PATH, ...")
+        .long("template-glob")
+        .value_name("GLOB, ...")
         .takes_value(true)
         .multiple(true)
-        .about("The template path; for example \"my-template.html\""))
-    .arg(Arg::new("template_glob")
-        .long("template-glob")
-        .value_name("GLOB")
-        .takes_value(true)
-        .about("The template glob; for example \"templates/**/*\""))
-    .arg(Arg::new("template_html")
+        .about("A template glob; for example a glob \"templates/**/*\" or a file \"template.html\""))
+    .arg(Arg::new("template_html_set")
         .long("template-html")
-        .value_name("HTML")
+        .value_name("HTML, ...")
         .takes_value(true)
+        .multiple(true)
         .about("The template HTML; for example \"<p>{{ content }}</p>\""))
     .arg(Arg::new("test")
         .long("test")
@@ -168,28 +164,24 @@ pub fn args() -> Args {
         settings: match matches.values_of("set") {
             Some(x) => {
                 let vec: Vec<&str> = x.collect();
-                Some(vec_str_to_btreemap_string_string(&vec))
+                Some(vec_str_to_map_string_string(&vec))
             },
             _ => None,
         },
-        stylesheet_urls: match matches.values_of_os("stylesheet") {
-            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<UrlString>>()),
+        stylesheet_urls: match matches.values_of("stylesheet") {
+            Some(x) => Some(x.map(|x| String::from(x)).collect::<Vec<UrlString>>()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        template_paths: match matches.values_of_os("template_path") {
-            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+        template_glob_set: match matches.values_of("template_glob_set") {
+            Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<GlobString>>()),
             _ => None,
         },
-        template_glob: match matches.value_of_os("template_glob") {
-            Some(x) => Some(x.into()),
-            _ =>  None,
-        },
-        template_html: match matches.value_of("template_html") {
-            Some(x) => Some(x.into()),
+        template_html_set: match matches.values_of("template_html_set") {
+            Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<HtmlString>>()),
             _ =>  None,
         },
         test: matches.is_present("test"),
@@ -210,8 +202,8 @@ pub fn args() -> Args {
 
 }
 
-pub fn vec_str_to_btreemap_string_string(vec_str: &Vec<&str>) -> BTreeMap<String, String> {
-    let mut map: BTreeMap<String, String> = BTreeMap::new();
+pub fn vec_str_to_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
+    let mut map: Map<String, String> = Map::new();
     for i in (0..vec_str.len()-1).step_by(2) {
         let k = String::from(vec_str[i]);
         let v = String::from(vec_str[i+1]);

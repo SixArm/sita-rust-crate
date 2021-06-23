@@ -1,6 +1,5 @@
 use ::indoc::indoc;
 use ::tera::Tera;
-use ::std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 
@@ -14,8 +13,7 @@ use crate::errors::*;
 // ```
 //
 pub fn init(args: &Args) -> Result<Tera> {
-    let mut tera = new_or_default_via_args(args)
-        .chain_err(|| "tera_new_via_args")?;
+    let mut tera = ::tera::Tera::default();
     add_template_files_via_args(&mut tera, args)
         .chain_err(|| "add_template_files_via_args")?;
     if !has_template(&tera) {
@@ -26,38 +24,6 @@ pub fn init(args: &Args) -> Result<Tera> {
     //tera.autoescape_on(vec!["html", ".sql"]);
     //tera.register_filter("do_nothing", do_nothing_filter);
     Ok(tera)
-}
-
-// Create a new Tera isntance via Tera::new or Tera::default.
-//
-// If args has a template glob, then call Tera::new,
-// otherwise call Tera::default().
-//
-// ```
-// let args = Args::default();
-// let mut tera = new_or_default_via_args(args);
-// //-> A new Tera object via Tera::default()
-// ```
-//
-// ```
-// let mut args = Args::default();
-// args.template_glob = Some(PathBuf::from("./templates/**/*"));
-// let mut tera = new_or_default_via_args(args);
-// //-> A new Tera object via Tera::new(…) with the glob
-// ```
-//
-fn new_or_default_via_args(args: &Args) -> Result<Tera> {
-    match &args.template_glob {
-        Some(template_glob) => {
-            Ok(
-                ::tera::Tera::new(&*template_glob.as_os_str().to_string_lossy())
-                .chain_err(|| format!("create tera. template glob: {:?}", template_glob))?
-            )
-        },
-        _ => {
-            Ok(::tera::Tera::default())
-        }
-    }
 }
 
 // Tera: add_tempate_files() via args.
@@ -75,14 +41,17 @@ fn new_or_default_via_args(args: &Args) -> Result<Tera> {
 // add_template_files_via_vec_path_buf(tera, args);
 // ```
 //
-fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> ::tera::Result<()> {
-    if let Some(paths) = args.template_paths.as_ref() {
-        // TODO expand a directory path into its subfiles
-        tera.add_template_files(
-            paths.into_iter().map(|x| 
-                (x.clone(), None)
-            ).collect::<Vec<(PathBuf, Option<String>)>>()
-        )
+fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> Result<()> {
+    if let Some(template_glob_set) = args.template_glob_set.as_ref() {
+        for glob in template_glob_set {
+            for entry in ::glob::glob(glob).expect("Failed to read glob") {
+                match entry {
+                    Ok(path) => tera.add_template_file(path, None),
+                    Err(e) => bail!("Failed to match entry. {:?}", e),
+                };
+            };
+        };
+        Ok(())
     } else {
         Ok(())
     }
@@ -196,22 +165,6 @@ mod tests {
     fn test_init() {
         let args = Args::default();
         let tera = super::init(&args);
-        assert!(tera.is_ok());
-    }
-
-    #[test]
-    fn test_new_or_default_via_args_x_new() {
-        let mut args = Args::default();
-        args.template_glob = Some(PathBuf::from("./templates/**/*"));
-        let tera = super::new_or_default_via_args(&args);
-        assert!(tera.is_ok());
-    }
-
-    #[test]
-    fn test_new_or_default_via_args_x_default() {
-        let mut args = Args::default();
-        args.template_glob = None;
-        let tera = super::new_or_default_via_args(&args);
         assert!(tera.is_ok());
     }
 

@@ -5,7 +5,6 @@
 //! such as being able to start our app with other arg parsers.
 
 use ::std::path::PathBuf;
-use ::std::collections::BTreeMap;
 use crate::types::*;
 
 #[derive(Debug)]
@@ -18,12 +17,11 @@ pub struct Args {
     pub(crate) output_extension: Option<String>,
     pub(crate) paths: Option<Vec<PathBuf>>,
     pub(crate) script_urls: Option<Vec<UrlString>>,
-    pub(crate) settings: Option<BTreeMap<String, String>>,
+    pub(crate) settings: Option<Map<String, String>>,
     pub(crate) stylesheet_urls: Option<Vec<UrlString>>,
     pub(crate) template_name: Option<String>,
-    pub(crate) template_paths: Option<Vec<PathBuf>>,
-    pub(crate) template_glob: Option<PathBuf>,
-    pub(crate) template_html: Option<String>,
+    pub(crate) template_glob_set: Option<Set<GlobString>>,
+    pub(crate) template_html_set: Option<Set<HtmlString>>,
     pub(crate) test: bool,
     pub(crate) title: Option<String>,
     pub(crate) log_level: Option<::log::Level>,
@@ -42,9 +40,8 @@ impl ::std::default::Default for Args {
         script_urls: None,
         stylesheet_urls: None,
         template_name: None,
-        template_paths: None,
-        template_glob: None,
-        template_html: None,
+        template_glob_set: None,
+        template_html_set: None,
         test: false,
         title: None,
         log_level: None,

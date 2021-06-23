@@ -145,29 +145,74 @@ fn test_clap_template_name() {
 }
 
 #[test]
-fn test_clap_template_path() {
+fn test_clap_template_glob_set() {
+    let dir = "glob_string_set_to_path_buf_set/";
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--template-path", "alpha", "bravo", "--template-path", "charlie", "delta"], 
-        r#" template_paths: Some(["alpha", "bravo", "charlie", "delta"])"#
+        &[
+            "--test", 
+            "--template-glob", 
+            &format!("{}{}", &dir, "a/**/*"), 
+            &format!("{}{}", &dir, "b/**/*"), 
+            "--template-glob", 
+            &format!("{}{}", &dir, "c/**/*"), 
+            &format!("{}{}", &dir, "d/**/*"), 
+        ], 
+        &format!(" template_glob_set: Some({{\"{}\", \"{}\", \"{}\", \"{}\"}})",
+            &format!("{}{}", &dir, "a/**/*"), 
+            &format!("{}{}", &dir, "b/**/*"), 
+            &format!("{}{}", &dir, "c/**/*"), 
+            &format!("{}{}", &dir, "d/**/*"), 
+        )
     );
 }
 
-#[test]
-fn test_clap_template_glob() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--template-glob", "alpha"], 
-        r#" template_glob: Some("alpha")"#
-    );
-}
+// #[test]
+// fn test_clap_template_glob_to_template_path_set() {
+//     let dir = "glob_string_set_to_path_buf_set/";
+//     assert_command_stdout_contains(
+//         COMMAND, 
+//         &[
+//             "--test", 
+//             "--template-glob", 
+//             &format!("{}{}", &dir, "a/**/*"), 
+//             &format!("{}{}", &dir, "b/**/*"), 
+//             "--template-glob", 
+//             &format!("{}{}", &dir, "c/**/*"), 
+//             &format!("{}{}", &dir, "d/**/*"), 
+//         ], 
+//         &format!(" template_path_set:  Some([\"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\"]",
+//             &format!("{}{}", &dir, "a/aa"),
+//             &format!("{}{}", &dir, "a/aa/aaa"),
+//             &format!("{}{}", &dir, "a/aa/aab"),
+//             &format!("{}{}", &dir, "a/ab"),
+//             &format!("{}{}", &dir, "a/ab/aba"),
+//             &format!("{}{}", &dir, "a/ab/abb"),
+//             &format!("{}{}", &dir, "b/ba"),
+//             &format!("{}{}", &dir, "b/ba/baa"),
+//             &format!("{}{}", &dir, "b/ba/bab"),
+//             &format!("{}{}", &dir, "b/bb"),
+//             &format!("{}{}", &dir, "b/bb/bba"),
+//             &format!("{}{}", &dir, "b/bb/bbb"),
+//             &format!("{}{}", &dir, "b/bb/bbb"),
+//             &format!("{}{}", &dir, "c/ca/caa"),
+//             &format!("{}{}", &dir, "c/ca/cab"),
+//             &format!("{}{}", &dir, "c/cb/cba"),
+//             &format!("{}{}", &dir, "c/cb/cbb"),
+//             &format!("{}{}", &dir, "d/da/daa"),
+//             &format!("{}{}", &dir, "c/da/dab"),
+//             &format!("{}{}", &dir, "d/db/dba"),
+//             &format!("{}{}", &dir, "d/db/dbb"),
+//         )
+//     );
+// }
 
 #[test]
-fn test_clap_template_html() {
+fn test_clap_template_html_set() {
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--template-html", "alpha"], 
-        r#" template_html: Some("alpha")"#
+        &["--test", "--template-html", "<p>alpha</p>", "<p>bravo</p>", "--template-html", "<p>charlie</p>", "<p>delta</p>"], 
+        r#" template_html_set: Some({"<p>alpha</p>", "<p>bravo</p>", "<p>charlie</p>", "<p>delta</p>"})"#
     );
 }
 

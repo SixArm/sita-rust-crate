@@ -1,5 +1,3 @@
-//use std::collections::HashMap;
-
 // Extract from markdown input to markdown output and matter variables.
 //
 // Example:
@@ -59,7 +57,6 @@ pub fn extract(input: &str) -> (&str, Matter) {
 mod tests {
     use assertables;
     use indoc::indoc;
-    //use std::collections::HashMap;
     use super::*;
 
     fn assert_discriminant_eq<T>(a: &T, b: &T) {

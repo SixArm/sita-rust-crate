@@ -18,12 +18,12 @@ extern crate error_chain;
 // We put our errors in an `errors` module, and other modules in
 // this crate will `use errors::*;` to get access to everything
 // that `error_chain!` creates.
-mod errors {
+pub mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
     error_chain! { }
 }
 
-use errors::*;
+pub use errors::*;
 ```
 
 

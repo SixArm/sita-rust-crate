@@ -14,13 +14,13 @@ extern crate error_chain;
 // We put our errors in an `errors` module, and other modules in
 // this crate will `use errors::*;` to get access to everything
 // that `error_chain!` creates.
-mod errors {
+pub mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
     error_chain! { }
 }
 
 #[allow(unused_imports)]
-use errors::*;
+pub use errors::*;
 
 //// log
 #[macro_use]
@@ -33,8 +33,9 @@ extern crate env_logger;
 
 ////
 
-pub(crate) mod run; // Main run logic
-pub(crate) mod types; // Type aliases
+#[macro_use] pub(crate) mod run; // Main run logic
+#[macro_use] pub(crate) mod types; // Type aliases
+#[macro_use] pub(crate) mod util; // Generic utilities
 
 pub(crate) mod app { // Application
     pub(crate) mod args; // Arguments struct, such as set via `clap`.

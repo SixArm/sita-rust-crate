@@ -1,7 +1,7 @@
 use ::std::path::PathBuf;
 use crate::types::*;
 
-/// Process globs to paths
+/// Process globs to paths.
 /// 
 /// Example:
 //
@@ -14,10 +14,11 @@ use crate::types::*;
 /// This function deliberately ignores errors.
 ///
 #[allow(dead_code)]
-pub fn glob_string_bag_to_path_buf_bag(glob_string_bag: &Vec<GlobString>) -> Vec<PathBuf> {
-    glob_string_bag.iter().flat_map(|glob_string| 
+pub fn glob_string_set_to_path_buf_set(glob_string_set: &Set<GlobString>) -> Set<PathBuf> {
+    let x: Set<PathBuf> = glob_string_set.iter().flat_map(|glob_string| 
         ::glob::glob(&glob_string).unwrap().filter_map(|x| x.ok())
-    ).collect()
+    ).collect::<_>();
+    x
 }
 
 #[cfg(test)]
@@ -30,15 +31,15 @@ mod tests {
     }    
 
     #[test]
-    fn test_glob_string_bag_to_path_buf_bag() {
-        let dir_as_buf = TESTS_DIR.join("glob_string_bag_to_path_buf_bag");
+    fn test_glob_string_set_to_path_buf_set() {
+        let dir_as_buf = TESTS_DIR.join("glob_string_set_to_path_buf_set");
         let dir_as_string = dir_as_buf.to_string_lossy();
-        let globs: Vec<String> = vec![
+        let globs: Set<String> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),
-            format!("{}{}", dir_as_string, "/b/**/*"),
+            format!("{}{}", dir_as_string, "/b/**/*")
         ];
-        let actual = glob_string_bag_to_path_buf_bag(&globs);
-        let expect = vec![
+        let actual: Set<PathBuf> = glob_string_set_to_path_buf_set(&globs);
+        let expect: Set<PathBuf> = set![
             dir_as_buf.join("a/aa"),
             dir_as_buf.join("a/aa/aaa"),
             dir_as_buf.join("a/aa/aab"),
@@ -51,6 +52,7 @@ mod tests {
             dir_as_buf.join("b/bb"),
             dir_as_buf.join("b/bb/bba"),
             dir_as_buf.join("b/bb/bbb"),
+            dir_as_buf.join("b/bb/bbb")
         ];
         assert_eq!(actual, expect);
     }

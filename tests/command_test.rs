@@ -73,7 +73,7 @@ fn test_command_x_template_file() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg(&input)
-        .arg("--template-path")
+        .arg("--template-glob")
         .arg(template.as_os_str())
         .output()
         .expect("failure");
