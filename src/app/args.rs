@@ -9,21 +9,69 @@ use crate::types::*;
 
 #[derive(Debug)]
 pub struct Args {
-    pub(crate) input_paths: Option<Vec<PathBuf>>,
+
+    /// Input path list
+    /// Example: "example.md" is an input file.
+    pub(crate) input_paths: Option<List<PathBuf>>,
+
+    /// Input file name extension.
+    /// Example: "md" means a Markdown file extension.
     pub(crate) input_extension: Option<String>,
+
+    /// Language encoding.
+    /// Example: "en" means English language encoding.
     pub(crate) language: Option<String>,
+
+    /// Output directory path.
+    /// Example: "/tmp/build" is the output directory.
     pub(crate) output_directory_path: Option<PathBuf>,
+
+    /// Output file path.
+    /// Example: "/tmp/build/example.html" is the output file.
     pub(crate) output_file_path: Option<PathBuf>,
+
+    /// Output file name extension.
+    /// Example: "html" means a HTML file extension.
     pub(crate) output_extension: Option<String>,
-    pub(crate) paths: Option<Vec<PathBuf>>,
-    pub(crate) script_urls: Option<Vec<UrlString>>,
+
+    /// Paths that this program will process.
+    /// Example: "example.md"
+    pub(crate) paths: Option<List<PathBuf>>,
+
+    /// Script URL list.
+    /// Example: "https://example.com/script.js" is a JavaScript URL.
+    pub(crate) script_urls: Option<List<UrlString>>,
+
+    /// Settings for the program.
+    /// Example: {"alpha" => "bravo", "charlie" => "delta"}
     pub(crate) settings: Option<Map<String, String>>,
-    pub(crate) stylesheet_urls: Option<Vec<UrlString>>,
+
+    /// Stylesheet URL list.
+    /// Example: "https://example.com/stylesheet.css" is a stylesheet URL.
+    pub(crate) stylesheet_urls: Option<List<UrlString>>,
+
+    /// Template name that will be used for rendering.
+    /// Example: "default" means use the default template.
     pub(crate) template_name: Option<String>,
+
+    /// Template glob set.
+    /// Example: "templates/**/*.html"
     pub(crate) template_glob_set: Option<Set<GlobString>>,
+
+    /// Template HTML set.
+    /// Example: "<div>{{ content }}</div>"
     pub(crate) template_html_set: Option<Set<HtmlString>>,
+
+    /// Test flag that enables print diagnostics.
+    /// Example: true means print diagnostics.
     pub(crate) test: bool,
+
+    /// Title of the page being rendered.
+    /// Example: "My Page"
     pub(crate) title: Option<String>,
+
+    /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=trace, 5=debug.
+    /// Example: 5 means print debug diagnostics.
     pub(crate) log_level: Option<::log::Level>,
 }
 
