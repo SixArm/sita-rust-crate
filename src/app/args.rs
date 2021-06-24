@@ -10,10 +10,14 @@ use crate::types::*;
 #[derive(Debug)]
 pub struct Args {
 
-    /// Input pathable list
-    /// Example glob: "posts/**/*"
-    /// Example file: "posts/example.md"
-    pub(crate) input_pathable_list: Option<List<PathableString>>,
+    /// Input pathable string list.
+    /// Example glob: "articles/**/*"
+    /// Example file: "article.md"
+    pub(crate) input_pathable_string_list: Option<List<PathableString>>,
+
+    /// Input path buf list.
+    /// This is calculated from `input_pathable_string_list`.
+    pub(crate) input_path_buf_list: Option<List<PathBuf>>,
 
     /// Input file name extension.
     /// Example: "md" means a Markdown file extension.
@@ -55,9 +59,14 @@ pub struct Args {
     /// Example: "default" means use the default template.
     pub(crate) template_name: Option<String>,
 
-    /// Template glob set.
-    /// Example: "templates/**/*.html"
-    pub(crate) template_glob_set: Option<Set<GlobString>>,
+    /// Template pathable string list.
+    /// Example glob: "templates/**/*"
+    /// Example file: "template.html"
+    pub(crate) template_pathable_string_list: Option<List<PathableString>>,
+
+    /// Template path buf list.
+    /// This is calculated from `template_pathable_string_list`.
+    pub(crate) template_path_buf_list: Option<List<PathBuf>>,
 
     /// Template HTML set.
     /// Example: "<div>{{ content }}</div>"
@@ -78,7 +87,8 @@ pub struct Args {
 
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
-        input_pathable_list: None,
+        input_pathable_string_list: None,
+        input_path_buf_list: None,
         input_extension: None,
         language: None,
         output_file_path: None,
@@ -88,8 +98,9 @@ impl ::std::default::Default for Args {
         settings: None,
         script_url_list: None,
         stylesheet_url_list: None,
+        template_pathable_string_list: None,
+        template_path_buf_list: None,
         template_name: None,
-        template_glob_set: None,
         template_html_set: None,
         test: false,
         title: None,

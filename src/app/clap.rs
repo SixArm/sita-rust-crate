@@ -28,20 +28,14 @@ pub fn app() -> App<'static> {
     .version("1.0.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
     .about("Sita static site generator")
-    .arg(Arg::new("input_pathable_list")
+    .arg(Arg::new("input")
         .short('i')
         .long("input")
         .alias("inputs")
-        .value_name("GLOB …")
+        .value_name("FILE|GLOB …")
         .takes_value(true)
         .multiple(true)
         .about("An input glob string. Example glob: --input \"posts/**/*\" … Example file: --input \"input.html\" …"))
-    .arg(Arg::new("input_directory")
-        .short('I')
-        .long("input-directory")
-        .value_name("DIRECTORY")
-        .takes_value(true)
-        .about("The input directory. Example: --input-directory \"~/input/\" …"))
     .arg(Arg::new("input_extension")
         .long("input-extension")
         .value_name("EXTENSION")
@@ -81,17 +75,11 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple(true)
         .about("A stylesheet URL to add to the HTML header. Example: --stylesheet \"stylesheet.css\" …"))
-    .arg(Arg::new("template_name")
+    .arg(Arg::new("template")
         .short('t')
-        .long("template-name")
-        .value_name("NAME")
-        .takes_value(true)
-        .multiple(true)
-        .about("The template name to use for this rendering. Example: \"--template-name foo\" …"))
-    .arg(Arg::new("template_glob_set")
-        .short('T')
-        .long("template-glob")
-        .value_name("GLOB …")
+        .long("template")
+        .alias("templates")
+        .value_name("FILE|GLOB …")
         .takes_value(true)
         .multiple(true)
         .about("A template glob string. Example glob: --template-glob \"templates/**/*\" … Example file: --template-glob \"template.html\" …"))
@@ -101,6 +89,12 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple(true)
         .about("A template HTML string. Example: --template-html \"<p>{{ content }}</p>\" …"))
+    .arg(Arg::new("template_name")
+        .long("template-name")
+        .value_name("NAME")
+        .takes_value(true)
+        .multiple(true)
+        .about("The template name to use for this rendering. Example: \"--template-name foo\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
@@ -128,10 +122,11 @@ pub fn app() -> App<'static> {
 pub fn args() -> Args {
     let matches = app().get_matches();
     Args {
-        input_pathable_list: match matches.values_of("input_pathable_list") {
+        input_pathable_string_list: match matches.values_of("input") {
             Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
+        input_path_buf_list: None,
         input_extension: match matches.value_of("input_extension") {
             Some(x) => Some(String::from(x)),
             _ => None,
@@ -171,16 +166,17 @@ pub fn args() -> Args {
             Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
             _ => None,
         },
-        template_name: match matches.value_of("template_name") {
-            Some(x) => Some(x.into()),
-            _ =>  None,
-        },
-        template_glob_set: match matches.values_of("template_glob_set") {
-            Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<GlobString>>()),
+        template_pathable_string_list: match matches.values_of("template") {
+            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
+        template_path_buf_list: None,
         template_html_set: match matches.values_of("template_html_set") {
             Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<HtmlString>>()),
+            _ =>  None,
+        },
+        template_name: match matches.value_of("template_name") {
+            Some(x) => Some(x.into()),
             _ =>  None,
         },
         test: matches.is_present("test"),

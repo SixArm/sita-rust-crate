@@ -33,7 +33,13 @@ pub(crate) fn run() -> Result<()> {
     .chain_err(|| "error: confy load")?;
 
     // Initialize arguments
-    let args: Args = crate::app::clap::args();
+    let mut args: Args = crate::app::clap::args();
+    if let Some(x) = &args.input_pathable_string_list {
+        args.input_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
+    }
+    if let Some(x) = &args.template_pathable_string_list {
+        args.template_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
+    }
     if args.test { println!("{:?}", args); }
 
     // Initialize templating
@@ -45,13 +51,12 @@ pub(crate) fn run() -> Result<()> {
     .chain_err(|| "error: tera add_raw_template")?;
 
     // Process each page
-    if let Some(input_pathable_list) = &args.input_pathable_list {
-        let paths = crate::util::pathable_string_list_to_path_buf_list(input_pathable_list);
-        for path in paths {
+    if let Some(path_buf_list) = &args.input_path_buf_list {
+        for path_buf in path_buf_list {
             do_path(
                 &args,
                 &tera,
-                &path
+                &path_buf
             )?;
         }
     };

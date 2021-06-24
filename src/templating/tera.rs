@@ -42,8 +42,8 @@ pub fn init(args: &Args) -> Result<Tera> {
 // ```
 //
 fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> Result<()> {
-    if let Some(template_glob_set) = args.template_glob_set.as_ref() {
-        for glob in template_glob_set {
+    if let Some(template_pathable_string_list) = args.template_pathable_string_list.as_ref() {
+        for glob in template_pathable_string_list {
             for entry in ::glob::glob(glob).expect("Failed to read glob") {
                 match entry {
                     Ok(path) => tera.add_template_file(path, None),

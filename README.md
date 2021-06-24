@@ -40,49 +40,82 @@ $ sita --version
 ```
 
 
-### Hello world
+### Create hello.md
 
-Create a file `example.md` with this text:
+Create a file `hello.md` with this text:
 
-```
+```md
 hello world
 ```
 
-To generate a page:
 
-```
-$ sita --input example.md
+### -i --input
+
+To run Sita with an input file, use the command line option `-i` or `--input`:
+
+```sh
+sita --input hello.md
 ```
 
-The outcome is a new page file `example.html` with this text:
+The output is a file `hello.html` with this text:
 
 ```html
 <p>hello world</p>
 ```
 
 
+### -o --output
 
-### Template file option
-
-First create a file `template.html` with any HTML such as:
-
-```html
-<b>{{ content }}</b>
-```
-
-To use a template file, use the command line option `-t` or `--template-name`:
+To run Sita with an output file, use the command line option `-o` or `--output`:
 
 ```sh
-$ sita example.md --template-file template.html
+sita --input hello.md --output world.html
 ```
 
-The outcome is a new page file `hello.html` rendered with the template file `template.html`:
+The output is a file `world.html` with this text:
 
 ```html
-<b>hello world</b>
+<p>hello world</p>
 ```
 
-You can use `--template-file` multiple times; the template files are concatenated.
+
+### --io (TODO)
+
+To run Sita with an input file and output file, ue the command line option `--io` or `--input-output`:
+
+```sh
+sita --io hello.md world.html
+```
+
+The output is a file `world.html` with this text:
+
+```html
+<p>hello world</p>
+```
+
+
+### Create template.html
+
+Create a file `template.html` with this text:
+
+```html
+<html><body>{{ content }}</body></html>
+```
+
+
+### -t --template
+
+To run Sita with a template file, use the command line option `-t` or `--template`:
+
+```sh
+sita --input hello.md --template template.html
+```
+
+The output is the file `hello.html` and it is now rendered with the template file `template.html`:
+
+```html
+<html><body><p>hello world</p></body></html>
+```
 
 
 ### Output file option

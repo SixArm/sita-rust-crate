@@ -42,22 +42,26 @@ fn test_clap_test() {
 /// Normal-priority CLAP command args tests
 
 #[test]
-fn test_clap_input_pathable_list() {
-    let target = r#" input_pathable_list: Some(["alpha", "bravo", "charlie", "delta"])"#;
+fn test_clap_input() {
+    let s1 = "alpha";
+    let s2 = "bravo";
+    let s3 = "charlie";
+    let s4 = "delta";
+    let target = format!(" input_pathable_string_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "-i", "alpha", "bravo", "-i", "charlie", "delta"], 
-        target
+        &["--test", "-i", &s1, &s2, "-i", &s3, &s4], 
+        &target
     );
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--input", "alpha", "bravo", "--input", "charlie", "delta"], 
-        target
+        &["--test", "--input", &s1, &s2, "--input", &s3, &s4], 
+        &target
     );
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--inputs", "alpha", "bravo", "--inputs", "charlie", "delta"], 
-        target
+        &["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4], 
+        &target
     );
 }
 
@@ -134,34 +138,36 @@ fn test_clap_stylesheet() {
 }
 
 #[test]
+fn test_clap_template() {
+    let dir = "template_pathable_string_list";
+    let s1 = format!("{}{}", &dir, "a/**/*");
+    let s2 = format!("{}{}", &dir, "b/**/*");
+    let s3 = format!("{}{}", &dir, "c/**/*");
+    let s4 = format!("{}{}", &dir, "d/**/*");
+    let target = format!(" template_pathable_string_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "-t", &s1, &s2, "-t", &s3, &s4], 
+        &target
+    );
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--template", &s1, &s2, "--template", &s3, &s4], 
+        &target
+    );
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--templates", &s1, &s2, "--templates", &s3, &s4], 
+        &target
+    );
+}
+
+#[test]
 fn test_clap_template_name() {
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--template-name", "alpha"], 
         r#" template_name: Some("alpha")"#
-    );
-}
-
-#[test]
-fn test_clap_template_glob_set() {
-    let dir = "glob_string_set_to_path_buf_set/";
-    assert_command_stdout_contains(
-        COMMAND, 
-        &[
-            "--test", 
-            "--template-glob", 
-            &format!("{}{}", &dir, "a/**/*"), 
-            &format!("{}{}", &dir, "b/**/*"), 
-            "--template-glob", 
-            &format!("{}{}", &dir, "c/**/*"), 
-            &format!("{}{}", &dir, "d/**/*"), 
-        ], 
-        &format!(" template_glob_set: Some({{\"{}\", \"{}\", \"{}\", \"{}\"}})",
-            &format!("{}{}", &dir, "a/**/*"), 
-            &format!("{}{}", &dir, "b/**/*"), 
-            &format!("{}{}", &dir, "c/**/*"), 
-            &format!("{}{}", &dir, "d/**/*"), 
-        )
     );
 }
 
