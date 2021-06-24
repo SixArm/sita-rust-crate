@@ -31,30 +31,25 @@ pub fn init(args: &Args) -> Result<Tera> {
 // Example:
 //
 // ```rust
-// let files: Vec<PathBuf> = vec![
+// let paths: List<PathBuf> = vec![
 //     PathBuf::from("alpha.html"),
 //     PathBuf::from("bravo.html"),
 // ];
 // let mut args = Args::default();
-// args.template_files = Some(files);
+// args.template_path_buf_list = Some(paths);
 // let mut tera = Tera::default();
-// add_template_files_via_vec_path_buf(tera, args);
+// add_template_files_via_args(tera, args);
 // ```
 //
 fn add_template_files_via_args(tera: &mut Tera, args: &Args) -> Result<()> {
-    if let Some(template_pathable_string_list) = args.template_pathable_string_list.as_ref() {
-        for glob in template_pathable_string_list {
-            for entry in ::glob::glob(glob).expect("Failed to read glob") {
-                match entry {
-                    Ok(path) => tera.add_template_file(path, None),
-                    Err(e) => bail!("Failed to match entry. {:?}", e),
-                };
-            };
-        };
-        Ok(())
-    } else {
-        Ok(())
+    if let Some(ref path_buf_list) = args.template_path_buf_list {
+        for path_buf in path_buf_list {
+            trace!("sita::templating::tera::add_template_files_via_args path_buf: {:?}", &path_buf);
+            tera.add_template_file(path_buf, None)
+            .chain_err(|| "add_template_file")?;
+        }
     }
+    Ok(())
 }
 
 // Tera: use add_raw_template() to add a default template

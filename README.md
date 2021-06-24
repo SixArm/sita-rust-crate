@@ -79,21 +79,6 @@ The output is a file `world.html` with this text:
 ```
 
 
-### --io (TODO)
-
-To run Sita with an input file and output file, ue the command line option `--io` or `--input-output`:
-
-```sh
-sita --io hello.md world.html
-```
-
-The output is a file `world.html` with this text:
-
-```html
-<p>hello world</p>
-```
-
-
 ### Create template.html
 
 Create a file `template.html` with this text:
@@ -108,7 +93,7 @@ Create a file `template.html` with this text:
 To run Sita with a template file, use the command line option `-t` or `--template`:
 
 ```sh
-sita --input hello.md --template template.html
+sita --template template.html --input hello.md 
 ```
 
 The output is the file `hello.html` and it is now rendered with the template file `template.html`:
