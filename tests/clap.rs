@@ -140,10 +140,10 @@ fn test_clap_stylesheet() {
 #[test]
 fn test_clap_template() {
     let dir = "template_pathable_string_list";
-    let s1 = format!("{}{}", &dir, "a/**/*");
-    let s2 = format!("{}{}", &dir, "b/**/*");
-    let s3 = format!("{}{}", &dir, "c/**/*");
-    let s4 = format!("{}{}", &dir, "d/**/*");
+    let s1 = format!("{}/{}", &dir, "a/**/*");
+    let s2 = format!("{}/{}", &dir, "b/**/*");
+    let s3 = format!("{}/{}", &dir, "c/**/*");
+    let s4 = format!("{}/{}", &dir, "d/**/*");
     let target = format!(" template_pathable_string_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
     assert_command_stdout_contains(
         COMMAND, 

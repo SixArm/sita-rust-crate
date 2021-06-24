@@ -76,7 +76,7 @@ fn test_command_x_template_file() {
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(&input)
-        .arg("--template-glob")
+        .arg("--template")
         .arg(template.as_os_str())
         .output()
         .expect("failure");
