@@ -10,9 +10,10 @@ use crate::types::*;
 #[derive(Debug)]
 pub struct Args {
 
-    /// Input path list
-    /// Example: "example.md" is an input file.
-    pub(crate) input_paths: Option<List<PathBuf>>,
+    /// Input pathable list
+    /// Example glob: "posts/**/*"
+    /// Example file: "posts/example.md"
+    pub(crate) input_pathable_list: Option<List<PathableString>>,
 
     /// Input file name extension.
     /// Example: "md" means a Markdown file extension.
@@ -77,7 +78,7 @@ pub struct Args {
 
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
-        input_paths: None,
+        input_pathable_list: None,
         input_extension: None,
         language: None,
         output_file_path: None,

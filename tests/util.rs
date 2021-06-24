@@ -42,6 +42,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
+        .arg("--input")
         .arg(&input)
         .output()
         .expect("failure");
@@ -70,10 +71,10 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
-        .arg("--template-glob")
-        .arg(&template)
         .arg("--input")
         .arg(&input)
+        .arg("--template-glob")
+        .arg(&template)
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);

@@ -37,8 +37,8 @@ fn title_tag_with_option(title: Option<String>) -> HtmlString {
 /// TODO
 ///
 #[allow(dead_code)]
-fn script_tags_with_option(script_urls: Option<Vec<UrlString>>) -> HtmlString {
-    match script_urls {
+fn script_tags_with_option(script_url_list: Option<Vec<UrlString>>) -> HtmlString {
+    match script_url_list {
         Some(urls) => script_tags_with_urls(&urls),
         None => String::from(""),
     }
@@ -60,8 +60,8 @@ fn script_tags_with_urls(urls: &Vec<UrlString>) -> HtmlString {
 /// TODO
 ///
 #[allow(dead_code)]
-fn stylesheet_tags_with_option(stylesheet_urls: Option<Vec<UrlString>>) -> HtmlString {
-    match stylesheet_urls {
+fn stylesheet_tags_with_option(stylesheet_url_list: Option<Vec<UrlString>>) -> HtmlString {
+    match stylesheet_url_list {
         Some(urls) => stylesheet_tags_with_urls(&urls),
         None => String::from(""),
     }

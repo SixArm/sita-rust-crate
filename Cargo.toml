@@ -32,5 +32,6 @@ serde_json = "1.0.64" # JSON serialize/deserialize
 serde_yaml = "0.8.17" # YAML serialize/deserialize
 tera = "1.10.0" # Template engine based on Jinja2/Django templates
 toml = "0.5.8" # TOML encoder/decoder
+unicode-segmentation = "1.7.1" #  Iterators which split strings on graphemes, words, etc.
 url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
 yaml-rust = "0.4.5" # YAML parser

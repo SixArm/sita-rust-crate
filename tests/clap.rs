@@ -39,27 +39,25 @@ fn test_clap_test() {
     assert_command_stdout_contains(COMMAND, &["--test"], r#"Args { "#);
 }
 
-// Test that the special syntax of no argument options is working.
-//
-// This test must succeed in order for syntax such as `sita index.md`.
-//
-#[test]
-fn test_clap_paths() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "alpha", "bravo"], 
-        r#" paths: Some(["alpha", "bravo"])"#
-    );
-}
-
 /// Normal-priority CLAP command args tests
 
 #[test]
-fn test_clap_input_path() {
+fn test_clap_input_pathable_list() {
+    let target = r#" input_pathable_list: Some(["alpha", "bravo", "charlie", "delta"])"#;
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--input-path", "alpha", "bravo", "--input-path", "charlie", "delta"], 
-        r#" input_paths: Some(["alpha", "bravo", "charlie", "delta"])"#
+        &["--test", "-i", "alpha", "bravo", "-i", "charlie", "delta"], 
+        target
+    );
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--input", "alpha", "bravo", "--input", "charlie", "delta"], 
+        target
+    );
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--inputs", "alpha", "bravo", "--inputs", "charlie", "delta"], 
+        target
     );
 }
 
@@ -113,7 +111,7 @@ fn test_clap_script() {
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--script", "alpha", "bravo", "--script", "charlie", "delta"], 
-        r#" script_urls: Some(["alpha", "bravo", "charlie", "delta"])"#
+        r#" script_url_list: Some(["alpha", "bravo", "charlie", "delta"])"#
     );
 }
 
@@ -131,7 +129,7 @@ fn test_clap_stylesheet() {
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--stylesheet", "alpha", "bravo", "--stylesheet", "charlie", "delta"],
-        r#" stylesheet_urls: Some(["alpha", "bravo", "charlie", "delta"])"#
+        r#" stylesheet_url_list: Some(["alpha", "bravo", "charlie", "delta"])"#
     );
 }
 

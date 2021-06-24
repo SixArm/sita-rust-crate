@@ -45,7 +45,8 @@ pub(crate) fn run() -> Result<()> {
     .chain_err(|| "error: tera add_raw_template")?;
 
     // Process each page
-    if let Some(paths) = &args.paths {
+    if let Some(input_pathable_list) = &args.input_pathable_list {
+        let paths = crate::util::pathable_string_list_to_path_buf_list(input_pathable_list);
         for path in paths {
             do_path(
                 &args,

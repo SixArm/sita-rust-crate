@@ -1,6 +1,6 @@
 # Sita static site generator Rust crate
 
-Sita is a static site generator that aims to be simple for simple needs, and flexible for complex needs. Sita is similar in ways to Jekyll, Hugo, Zola, and other static site generators.
+Sita is a static site generator. Sita aims to be simple for simple needs, and flexible for complex needs.  Sita is similar in ways to Jekyll, Hugo, Zola, and other static site generators.
 
 Contents:
 
@@ -22,7 +22,7 @@ Sita aims to be simple for simple needs, and flexible for complex needs.
   that specify varibles as files. This is because Sita aims to work with a range
   of formats.
 
-Sita is currently being developed and we welcome help.
+Sita is currently being developed. We welcome help.
 
 We especially thank the authors of Zola and Tera.
 
@@ -51,95 +51,15 @@ hello world
 To generate a page:
 
 ```
-$ sita example.md
+$ sita --input example.md
 ```
 
 The outcome is a new page file `example.html` with this text:
 
 ```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>hello world</title>
-    <head>
-    <body>
-        hello world
-    </body>
-</html>
+<p>hello world</p>
 ```
 
-
-### Title option
-
-To set the title, use the command line option `--title` such as:
-
-```sh
-$ sita example.md --title Welcome
-```
-
-The output file adds this HTML:
-
-```html
-<title>Welcome</title>
-```
-
-
-### Language option
-
-To set the language, use the command line option `--lang` such as:
-
-```sh
-$ sita example.md --lang en
-```
-
-The output file adds this HTML attribute:
-
-```html
-<html lang="en">
-```
-
-
-### Stylesheet option
-
-To use a stylesheet file, use the command line option `--stylesheet` such as:
-
-```sh
-$ sita example.md --stylesheet my.css
-```
-
-The output file adds this HTML:
-
-```html
-<link rel="stylesheet" href="my.css">
-```
-
-You can use `--stylesheet` multiple times such as:
-
-```sh
-$ sita example.md --stylesheet reset.css --stylesheet screen.js
-```
-
-
-### Script option
-
-To use a script file, use the command line option `--script` such as:
-
-```sh
-$ sita example.md --script-file my.js
-```
-
-The output file adds this HTML:
-
-```html
-<script src="my.js"></script>
-```
-
-You can use `--script` multiple times such as:
-
-```sh
-$ sita example.md --script graphics.js --script utilities.js
-```
 
 
 ### Template file option
@@ -268,3 +188,78 @@ The command line options for `--script` and `--stylesheet` require UTF-8 strings
 * These options cannot currently use OS-specific non-UTF-8 file names.
 
 * This means the options cannot point to a non-UTF-8 URL, such as a local file name that uses ASCII-only encoding.
+
+
+## DEFERRED
+
+
+### Title option
+
+To set the title, use the command line option `--title` such as:
+
+```sh
+$ sita example.md --title Welcome
+```
+
+The output file adds this HTML:
+
+```html
+<title>Welcome</title>
+```
+
+
+### Language option
+
+To set the language, use the command line option `--lang` such as:
+
+```sh
+$ sita example.md --lang en
+```
+
+The output file adds this HTML attribute:
+
+```html
+<html lang="en">
+```
+
+
+### Stylesheet option
+
+To use a stylesheet file, use the command line option `--stylesheet` such as:
+
+```sh
+$ sita example.md --stylesheet my.css
+```
+
+The output file adds this HTML:
+
+```html
+<link rel="stylesheet" href="my.css">
+```
+
+You can use `--stylesheet` multiple times such as:
+
+```sh
+$ sita example.md --stylesheet reset.css --stylesheet screen.js
+```
+
+
+### Script option
+
+To use a script file, use the command line option `--script` such as:
+
+```sh
+$ sita example.md --script-file my.js
+```
+
+The output file adds this HTML:
+
+```html
+<script src="my.js"></script>
+```
+
+You can use `--script` multiple times such as:
+
+```sh
+$ sita example.md --script graphics.js --script utilities.js
+```

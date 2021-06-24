@@ -18,6 +18,7 @@ fn test_command_x_default() {
     // Run
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
+        .arg("--input")
         .arg(&input)
         .output()
         .expect("failure");
@@ -43,6 +44,7 @@ fn test_command_x_output_file() {
     // Run
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
+        .arg("--input")
         .arg(&input)
         .arg("--output-file")
         .arg(actual.as_os_str())
@@ -72,6 +74,7 @@ fn test_command_x_template_file() {
     // Run
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
+        .arg("--input")
         .arg(&input)
         .arg("--template-glob")
         .arg(template.as_os_str())

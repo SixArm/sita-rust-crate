@@ -28,109 +28,108 @@ pub fn app() -> App<'static> {
     .version("1.0.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
     .about("Sita static site generator")
-    .arg(Arg::new("input_path")
+    .arg(Arg::new("input_pathable_list")
         .short('i')
-        .long("input-path")
-        .value_name("PATH, ...")
+        .long("input")
+        .alias("inputs")
+        .value_name("GLOB …")
         .takes_value(true)
         .multiple(true)
-        .about("The input path; for example \"input.html\""))
+        .about("An input glob string. Example glob: --input \"posts/**/*\" … Example file: --input \"input.html\" …"))
     .arg(Arg::new("input_directory")
         .short('I')
         .long("input-directory")
         .value_name("DIRECTORY")
         .takes_value(true)
-        .about("The input directory; for example \"~/input/\""))
+        .about("The input directory. Example: --input-directory \"~/input/\" …"))
     .arg(Arg::new("input_extension")
         .long("input-extension")
         .value_name("EXTENSION")
         .takes_value(true)
-        .about("The input file name extension; default \"md\""))
+        .about("The input file name extension. Default: \"md\". Example: --input-extension \"md\" …"))
     .arg(Arg::new("language")
         .long("language")
         .value_name("LANGUAGE_ENCODING")
         .takes_value(true)
-        .about("The language encoding; for example \"en\" for English"))
+        .about("The language encoding; Default: \"en\" for English. Example: --input-language \"en\" …"))
     .arg(Arg::new("output_file")
         .short('o')
         .long("output-file")
         .value_name("FILE")
         .takes_value(true)
-        .about("The output file; for example \"output.html\""))
+        .about("The output file. Example: --output-file \"output.html\" …"))
     .arg(Arg::new("output_directory")
         .short('O')
         .long("output-directory")
         .value_name("DIRECTORY")
         .takes_value(true)
-        .about("The output directory; for example \"~/output/\""))
+        .about("The output directory. Example --output-directory \"~/output/\" …"))
     .arg(Arg::new("output_extension")
         .long("output-extension")
         .value_name("EXTENSION")
         .takes_value(true)
-        .about("The output file name extension; default \"html\""))
+        .about("The output file name extension. Default: \"html\". Example: --output-extension \"html\" …"))
     .arg(Arg::new("script")
         .long("script")
-        .value_name("URL, ...")
+        .value_name("URL …")
         .takes_value(true)
         .multiple(true)
-        .about("A script URL to add to the HTML header; for example \"script.js\""))
+        .about("A script URL to add to the HTML header. Example: --script \"script.js\" …"))
     .arg(Arg::new("stylesheet")
         .long("stylesheet")
         .value_name("URL, ...")
         .takes_value(true)
         .multiple(true)
-        .about("A stylesheet URL to add to the HTML header; for example \"stylesheet.css\""))
+        .about("A stylesheet URL to add to the HTML header. Example: --stylesheet \"stylesheet.css\" …"))
     .arg(Arg::new("template_name")
         .short('t')
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
         .multiple(true)
-        .about("The template name to use for this rendering; for example \"--template foo\""))
+        .about("The template name to use for this rendering. Example: \"--template-name foo\" …"))
     .arg(Arg::new("template_glob_set")
         .short('T')
         .long("template-glob")
-        .value_name("GLOB, ...")
+        .value_name("GLOB …")
         .takes_value(true)
         .multiple(true)
-        .about("A template glob; for example a glob \"templates/**/*\" or a file \"template.html\""))
+        .about("A template glob string. Example glob: --template-glob \"templates/**/*\" … Example file: --template-glob \"template.html\" …"))
     .arg(Arg::new("template_html_set")
         .long("template-html")
-        .value_name("HTML, ...")
+        .value_name("HTML …")
         .takes_value(true)
         .multiple(true)
-        .about("The template HTML; for example \"<p>{{ content }}</p>\""))
+        .about("A template HTML string. Example: --template-html \"<p>{{ content }}</p>\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
-        .about("Print test output for debugging, verifying, tracing, and the like"))
+        .about("Print test output for debugging, verifying, tracing, and the like. Example: --test …"))
     .arg(Arg::new("title")
         .long("title")
         .value_name("TEXT")
         .takes_value(true)
-        .about("The HTML title; for example \"Welcome\""))
+        .about("The HTML title. Example: --title \"Welcome\" …"))
     .arg(Arg::new("set")
         .short('s')
         .long("set")
         .value_names(&["NAME", "VALUE"])
-        .multiple(true))
+        .multiple(true)
+        .about("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
     .arg(Arg::new("verbose")
         .short('v')
         .long("verbose")
         .multiple(true)
         .takes_value(false)
-        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace"))
-    .arg(Arg::new("paths")
-        .value_name("FILES")
-        .multiple(true))
+        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
 }
 
 /// Create an Args struct initiatied with the clap App settings.
 pub fn args() -> Args {
     let matches = app().get_matches();
     Args {
-        input_paths: match matches.values_of_os("input_path") {
-            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
+        input_pathable_list: match matches.values_of("input_pathable_list") {
+            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
         input_extension: match matches.value_of("input_extension") {
@@ -157,8 +156,8 @@ pub fn args() -> Args {
             Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
             _ => None,
         },
-        script_urls: match matches.values_of_os("script") {
-            Some(x) => Some(x.map(|x| String::from(x.to_string_lossy())).collect::<Vec<UrlString>>()),
+        script_url_list: match matches.values_of("script") {
+            Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
             _ => None,
         },
         settings: match matches.values_of("set") {
@@ -168,8 +167,8 @@ pub fn args() -> Args {
             },
             _ => None,
         },
-        stylesheet_urls: match matches.values_of("stylesheet") {
-            Some(x) => Some(x.map(|x| String::from(x)).collect::<Vec<UrlString>>()),
+        stylesheet_url_list: match matches.values_of("stylesheet") {
+            Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
             _ => None,
         },
         template_name: match matches.value_of("template_name") {
