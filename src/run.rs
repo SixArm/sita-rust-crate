@@ -33,13 +33,7 @@ pub(crate) fn run() -> Result<()> {
     .chain_err(|| "error: confy load")?;
 
     // Initialize arguments
-    let mut args: Args = crate::app::clap::args();
-    if let Some(x) = &args.input_pathable_string_list {
-        args.input_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
-    }
-    if let Some(x) = &args.template_pathable_string_list {
-        args.template_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
-    }
+    let args: Args = crate::app::clap::args();
     if args.test { println!("{:?}", args); }
 
     // Initialize templating

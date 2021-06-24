@@ -121,7 +121,7 @@ pub fn app() -> App<'static> {
 /// Create an Args struct initiatied with the clap App settings.
 pub fn args() -> Args {
     let matches = app().get_matches();
-    Args {
+    let mut args = Args {
         input_pathable_string_list: match matches.values_of("input") {
             Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
@@ -193,8 +193,17 @@ pub fn args() -> Args {
             5 => Some(::log::Level::Trace),
             _ => Some(::log::Level::Trace),
         },
+    };
+
+    if let Some(ref x) = args.input_pathable_string_list {
+        args.input_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
     }
 
+    if let Some(ref x) = args.template_pathable_string_list {
+        args.template_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
+    }
+
+    args    
 }
 
 pub fn vec_str_to_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
