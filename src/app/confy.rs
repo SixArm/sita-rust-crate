@@ -1,4 +1,4 @@
-//! Configuration testing using the `confy` crate.
+//! Configuration test of the `confy` crate for the application.
 //!
 //! Our source code convention is using this file `confy.rs`
 //! in order to test configuration file loading and parsing.

@@ -1,3 +1,5 @@
+//! Markdown matter using JSON front matter.
+
 use once_cell::sync::Lazy;
 use regex::Regex;
 

@@ -1,3 +1,7 @@
+//! Markdown matter state management.
+//!
+//! This can use HTML, JSON, TOML, YAML, or None.
+
 use crate::types::*;
 
 #[derive(Debug)]

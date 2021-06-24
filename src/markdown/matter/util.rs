@@ -1,19 +1,21 @@
-// Extract from markdown input to markdown output and matter variables.
-//
-// Example:
-//
-// ```
-// let input_markdown = indoc!{r#"
-// <!--
-//   alpha: bravo
-//   charlie: delta
-// -->
-// echo
-// foxtrot
-// "#};
-// let (output_markdown: &str, matter: Option<Matter>) = extract(input_markdown);
-// ```
-//
+//! Markdown matter using HTML, JSON, TOML, YAML.
+
+/// Extract from markdown input to markdown output and matter variables.
+///
+/// Example:
+///
+/// ```
+/// let input_markdown = indoc!{r#"
+/// <!--
+///   alpha: bravo
+///   charlie: delta
+/// -->
+/// echo
+/// foxtrot
+/// "#};
+/// let (output_markdown: &str, matter: Option<Matter>) = extract(input_markdown);
+/// ```
+///
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, crate::markdown::matter::state::State) {
     match input.chars().next() {

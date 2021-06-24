@@ -1,3 +1,5 @@
+//! Markdown parser.
+
 use pulldown_cmark::{Options, Parser};
 
 pub fn parser(text: &str) -> Parser  {

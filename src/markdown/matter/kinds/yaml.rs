@@ -1,3 +1,5 @@
+//! Markdown matter using YAML front matter.
+
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde_yaml;
