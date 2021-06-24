@@ -40,10 +40,6 @@ pub(crate) fn run() -> Result<()> {
     let mut tera: Tera = crate::templating::tera::init(&args)
     .chain_err(|| "error: tera init")?;
 
-    // Initialize default template
-    tera.add_raw_template("default", "{{ content }}")
-    .chain_err(|| "error: tera add_raw_template")?;
-
     // Process each page
     if let Some(path_buf_list) = &args.input_path_buf_list {
         for path_buf in path_buf_list {
@@ -219,7 +215,8 @@ fn create_output_file_path(args: &Args, input_file_path: &PathBuf) -> Result<Pat
 ///
 fn read_content_as_markdown_text(input_file_path: &PathBuf) -> Result<String> {
     ::std::fs::read_to_string(input_file_path)
-    .chain_err(|| format!("read_content_as_markdown → input_file_path: {:?}", input_file_path))
+    .map(|s| s.trim_end().to_string())
+    .map_err(|e| Error::with_chain(e, "something went wrong"))
 }
 
 /// Convert from Markdown text to HTML text.
@@ -377,7 +374,7 @@ mod tests {
     fn test_read_content_as_markdown_text() {
         let input_file_path: PathBuf = TESTS_DIR.join("read_content_as_markdown_text").join("example.md");
         let content_as_markdown: String = read_content_as_markdown_text(&input_file_path).unwrap();
-        assert_eq!(content_as_markdown, "# alpha\nbravo\n");
+        assert_eq!(content_as_markdown, "# alpha\nbravo");
     }
 
     #[test]
