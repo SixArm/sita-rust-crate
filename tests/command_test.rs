@@ -20,7 +20,7 @@ fn test_command_x_default() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .output()
         .expect("failure");
     // Then
@@ -48,7 +48,7 @@ fn test_command_x_output_file() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .arg("--output-file")
         .arg(actual.as_os_str())
         .output()
@@ -80,7 +80,7 @@ fn test_command_x_template_file() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .arg("--template")
         .arg(template.as_os_str())
         .output()

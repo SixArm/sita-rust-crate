@@ -14,7 +14,7 @@ pub fn test_01_input() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .output()
         .expect("failure");
     // Then
@@ -40,7 +40,7 @@ pub fn test_02_output() {
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .arg("--output")
         .arg(&actual)
         .output()
@@ -71,7 +71,7 @@ pub fn test_03_template() {
         .arg("--template")
         .arg(&template)
         .arg("--input")
-        .arg(&input)
+        .arg(input.as_os_str())
         .output()
         .expect("failure");
     // Then
