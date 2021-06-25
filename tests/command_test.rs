@@ -8,20 +8,22 @@ use util::*;
 
 #[test]
 fn test_command_x_default() {
-    // Prep
+    // Given
     let dir: PathBuf = TESTS_DIR.join("command_x_default");
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("example.html");
-    let expect: PathBuf = dir.join("expect.html");
+    let expect: PathBuf = dir.join("example.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    // Run
+    remove_file_if_exists(&actual).expect("remove");
+    // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(&input)
         .output()
         .expect("failure");
+    // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
@@ -29,19 +31,20 @@ fn test_command_x_default() {
         &expect,
     );
     // Done
-    ::std::fs::remove_file(&actual).expect("remove");
+    remove_file_if_exists(&actual).expect("remove");
 }
 
 #[test]
 fn test_command_x_output_file() {
-    // Prep
+    // Given
     let dir: PathBuf = TESTS_DIR.join("command_x_output_file");
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("custom-output-file.html");
-    let expect: PathBuf = dir.join("expect.html");
+    let expect: PathBuf = dir.join("custom-output-file.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    // Run
+    remove_file_if_exists(&actual).expect("remove");
+    // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
@@ -50,6 +53,7 @@ fn test_command_x_output_file() {
         .arg(actual.as_os_str())
         .output()
         .expect("failure");
+    // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
@@ -57,21 +61,22 @@ fn test_command_x_output_file() {
         &expect,
     );
     // Done
-    ::std::fs::remove_file(&actual).unwrap();
+    remove_file_if_exists(&actual).expect("remove");
 }
 
 #[test]
 fn test_command_x_template_file() {
-    // Prep
+    // Given
     let dir: PathBuf = TESTS_DIR.join("command_x_template_file");
-    let input: PathBuf = dir.join("example.md");
     let template: PathBuf = dir.join("custom-template-file.html");
+    let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("example.html");
-    let expect: PathBuf = dir.join("expect.html");
+    let expect: PathBuf = dir.join("example.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(template.exists(), "template path: {:?}", template);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    // Run
+    remove_file_if_exists(&actual).expect("remove");
+    // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
@@ -80,6 +85,7 @@ fn test_command_x_template_file() {
         .arg(template.as_os_str())
         .output()
         .expect("failure");
+    // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
@@ -87,5 +93,5 @@ fn test_command_x_template_file() {
         &expect,
     );
     // Done
-    ::std::fs::remove_file(&actual).unwrap();
+    remove_file_if_exists(&actual).expect("remove");
 }

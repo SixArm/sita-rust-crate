@@ -35,7 +35,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     // Prep
     let input = base_path.join("example.md");
     let actual = base_path.join("example.html");
-    let expect = base_path.join("expect.html");
+    let expect = base_path.join("example.html=expect.html");
     remove_file_if_exists(&actual).expect("remove");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
@@ -63,7 +63,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     let input = base_path.join("example.md");
     let template = base_path.join("template.html");
     let actual = base_path.join("example.html");
-    let expect = base_path.join("expect.html");
+    let expect = base_path.join("example.html=expect.html");
     remove_file_if_exists(&actual).expect("remove");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(template.exists(), "template path: {:?}", template);
