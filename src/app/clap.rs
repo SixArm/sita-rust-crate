@@ -17,8 +17,8 @@
 //! rather than in `main.rs`, because we like the separation of concerns.
 
 
-use ::clap::{Arg, App};
-use ::std::path::PathBuf;
+use clap::{Arg, App};
+use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
 

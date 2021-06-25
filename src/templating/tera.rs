@@ -1,7 +1,7 @@
 //! Templating with Tera
 
-use ::indoc::indoc;
-use ::tera::Tera;
+use indoc::indoc;
+use tera::Tera;
 use crate::app::args::Args;
 use crate::errors::*;
 

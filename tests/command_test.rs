@@ -1,15 +1,20 @@
-use ::assertables::*;
-use ::std::path::PathBuf;
-use ::std::process::Command;
+use assertables::*;
+use lazy_static::*;
+use std::path::PathBuf;
+use std::process::Command;
 
 #[path = "util.rs"]
 mod util;
 use util::*;
 
+lazy_static! {
+    pub static ref DIR: PathBuf = TESTS_DIR.join("command");
+}
+
 #[test]
 fn test_command_x_default() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("command_x_default");
+    let dir: PathBuf = DIR.join("command_x_default");
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("example.html");
     let expect: PathBuf = dir.join("example.html=expect.html");
@@ -37,7 +42,7 @@ fn test_command_x_default() {
 #[test]
 fn test_command_x_output_file() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("command_x_output_file");
+    let dir: PathBuf = DIR.join("command_x_output_file");
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("custom-output-file.html");
     let expect: PathBuf = dir.join("custom-output-file.html=expect.html");
@@ -67,7 +72,7 @@ fn test_command_x_output_file() {
 #[test]
 fn test_command_x_template_file() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("command_x_template_file");
+    let dir: PathBuf = DIR.join("command_x_template_file");
     let template: PathBuf = dir.join("custom-template-file.html");
     let input: PathBuf = dir.join("example.md");
     let actual: PathBuf = dir.join("example.html");

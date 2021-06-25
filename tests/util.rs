@@ -1,9 +1,9 @@
-use ::std::path::Path;
-use ::std::path::PathBuf;
-use ::std::process::Command;
-use ::std::io::Result;
-use ::assertables::*;
-use ::lazy_static::lazy_static;
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::io::Result;
+use assertables::*;
+use lazy_static::lazy_static;
 
 pub const COMMAND: &str = "./target/debug/sita";
 

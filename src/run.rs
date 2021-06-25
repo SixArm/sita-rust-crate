@@ -1,7 +1,7 @@
 //! Run the app
 
-use ::std::path::PathBuf;
-use ::tera::Tera;
+use std::path::PathBuf;
+use tera::Tera;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;

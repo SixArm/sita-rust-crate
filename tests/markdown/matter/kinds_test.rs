@@ -1,31 +1,38 @@
+use lazy_static::*;
+use std::path::PathBuf;
+
 #[path = "util.rs"]
 mod util;
 use util::*;
 
+lazy_static! {
+    pub static ref DIR: PathBuf = TESTS_DIR.join("markdown").join("matter").join("kinds");
+}
+
 #[test]
-fn test_matter_html() {
+fn test_html() {
     test_with_base_path_and_default_input_actual_expect(
-        TESTS_DIR.join("markdown_matter_kinds").join("html")
+        MY_DIR.join("html")
     );
 }
 
 #[test]
-fn test_matter_json() {
+fn test_json() {
     test_with_base_path_and_default_input_actual_expect(
-        TESTS_DIR.join("markdown_matter_kinds").join("json")
+        DIR.join("json")
     );
 }
 
 #[test]
-fn test_matter_toml() {
+fn test_toml() {
     test_with_base_path_and_default_input_actual_expect(
-        TESTS_DIR.join("markdown_matter_kinds").join("toml")
+        DIR.join("toml")
     );
 }
 
 #[test]
-fn test_matter_yaml() {
+fn test_yaml() {
     test_with_base_path_and_default_input_actual_expect(
-        TESTS_DIR.join("markdown_matter_kinds").join("yaml")
+        DIR.join("yaml")
     );
 }

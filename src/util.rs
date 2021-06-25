@@ -1,4 +1,4 @@
-use ::std::path::PathBuf;
+use std::path::PathBuf;
 use crate::types::*;
 
 /// Process a glob string set to a path buf set.
