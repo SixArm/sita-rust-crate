@@ -52,7 +52,7 @@ mod tests {
 
     #[test]
     fn test_glob_string_set_to_path_buf_set() {
-        let dir_as_buf = TESTS_DIR.join("glob_string_set_to_path_buf_set");
+        let dir_as_buf = TESTS_DIR.join("function").join("glob_string_set_to_path_buf_set");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let globs: Set<String> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_pathable_string_list_to_path_buf_list() {
-        let dir_as_buf = TESTS_DIR.join("pathable_string_list_to_path_buf_list");
+        let dir_as_buf = TESTS_DIR.join("function").join("pathable_string_list_to_path_buf_list");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let globs: Set<String> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),

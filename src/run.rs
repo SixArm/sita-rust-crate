@@ -280,7 +280,7 @@ mod tests {
     #[test]
     fn test_vet_input_file_path_exists_x_ok() {
         let args = Args::default();
-        let input_file_path = TESTS_DIR.join("vet_input_file_path_exists").join("example.txt");
+        let input_file_path = TESTS_DIR.join("function").join("vet_input_file_path_exists").join("example.txt");
         let x = vet_input_file_path_exists(&args, &input_file_path);
         assert!(x.is_ok());
     }
@@ -288,7 +288,7 @@ mod tests {
     #[test]
     fn test_vet_input_file_path_exists_x_err() {
         let args = Args::default();
-        let input_file_path = TESTS_DIR.join("vet_input_file_path_exists").join("missing");
+        let input_file_path = TESTS_DIR.join("function").join("vet_input_file_path_exists").join("missing");
         let x = vet_input_file_path_exists(&args, &input_file_path);
         assert!(x.is_err());
     }
@@ -296,7 +296,7 @@ mod tests {
     #[test]
     fn test_vet_input_file_path_metadata_x_ok() {
         let args = Args::default();
-        let input_file_path = TESTS_DIR.join("vet_input_file_path_metadata").join("example.txt");
+        let input_file_path = TESTS_DIR.join("function").join("vet_input_file_path_metadata").join("example.txt");
         let x = vet_input_file_path_metadata(&args, &input_file_path);
         assert!(x.is_ok());
     }
@@ -304,7 +304,7 @@ mod tests {
     #[test]
     fn test_vet_input_file_path_metadata_x_err() {
         let args = Args::default();
-        let input_file_path = TESTS_DIR.join("vet_input_file_path_metadata").join("missing");
+        let input_file_path = TESTS_DIR.join("function").join("vet_input_file_path_metadata").join("missing");
         let x = vet_input_file_path_metadata(&args, &input_file_path);
         assert!(x.is_err());
     }
@@ -372,7 +372,7 @@ mod tests {
 
     #[test]
     fn test_read_content_as_markdown_text() {
-        let input_file_path: PathBuf = TESTS_DIR.join("read_content_as_markdown_text").join("example.md");
+        let input_file_path: PathBuf = TESTS_DIR.join("function").join("read_content_as_markdown_text").join("example.md");
         let content_as_markdown: String = read_content_as_markdown_text(&input_file_path).unwrap();
         assert_eq!(content_as_markdown, "# alpha\nbravo");
     }

@@ -7,7 +7,7 @@ Generator crates:
 
 App crates:
 
-* [`assertables`](https://crates.io/crates/assertables) # Runtime reliability checking macros
+* [`assertables`](https://crates.io/crates/assertables) - Runtime reliability checking macros
 * [`clap`](https://crates.io/crates/clap) - Command Line Argument Parser
 * [`confy`](https://crates.io/crates/confy) - Configuration management
 * [`indoc`](https://crates.io/crates/indoc) - Indented document literals
