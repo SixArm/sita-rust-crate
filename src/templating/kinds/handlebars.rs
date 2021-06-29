@@ -1,11 +1,12 @@
-//! Templating with Tera
+//! Templating with Handlebars
 
+use handlebars::Handlebars;
 use indoc::indoc;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 
-pub type Templater = ::tera::Tera;
+pub type Templater<'a> = handlebars::Handlebars<'a>;
 
 // Create a default templater.
 //
@@ -15,8 +16,8 @@ pub type Templater = ::tera::Tera;
 // let templater = default();
 // ```
 //
-pub fn default() -> Templater {
-    ::tera::Tera::default()
+pub fn default<'a>() -> Templater<'a> {
+    Handlebars::default()
 }
 
 // Create a default templater with args.
@@ -29,9 +30,7 @@ pub fn default() -> Templater {
 // ```
 //
 pub fn default_with_args(_args: &Args) -> Templater {
-    let mut templater = default();
-    templater.autoescape_on(vec![]); // disable autoescaping completely
-    templater
+    default()
 }
 
 // Add a template via name and text.
@@ -46,8 +45,8 @@ pub fn default_with_args(_args: &Args) -> Templater {
 // ```
 //
 pub fn add_template_via_name_and_text(templater: &mut Templater, name: &str, text: &str) -> Result<()> {
-    templater.add_raw_template(&name, &text)
-    .chain_err(|| "add_template_via_name_and_text")
+  templater.register_template_string(&name, &text)
+  .chain_err(|| "add_template_via_name_and_text")
 }
 
 // Add a template via name and file.
@@ -62,8 +61,10 @@ pub fn add_template_via_name_and_text(templater: &mut Templater, name: &str, tex
 // ```
 //
 pub fn add_template_via_name_and_file(templater: &mut Templater, name: &str, file: &PathBuf) -> Result<()> {
-    templater.add_template_file(&file, Some(&name))
-    .chain_err(|| "add_template_via_name_and_file")
+    let s = ::std::fs::read_to_string(file)
+    .chain_err(|| "add_template_via_name_and_text read_to_string")?;
+    templater.register_template_string(&name, &s)
+    .chain_err(|| "add_template_via_name_and_text register_template_string")
 }
 
 // Add tempate files via args, such as template file name.
@@ -100,7 +101,7 @@ pub fn add_template_files_via_args(templater: &mut Templater, args: &Args) -> Re
 // ```
 // let mut templater = new();
 // add_template_default(templater);
-// //-> Tera now has a template name "default" with content "{{ content }}"
+// //-> Templater now has a template name "default" with content "{{ content }}"
 // ```
 //
 pub fn add_template_default(templater: &mut Templater) -> Result<()> {
@@ -117,7 +118,7 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 //
 // ```
 // let mut templater = new();
-// let flag = tera_has_template(templater);
+// let flag = has_template(templater);
 // assert_eq!(flag, false);
 // ```
 //
@@ -129,7 +130,7 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 // ```
 //
 pub fn has_template(templater: &Templater) -> bool {
-    templater.get_template_names().nth(0).is_some()
+    !templater.get_templates().is_empty()
 }
 
 // Get the best template name.
@@ -155,7 +156,7 @@ pub fn has_template(templater: &Templater) -> bool {
 // ```
 //
 pub fn best_template_name(templater: &Templater) -> String {
-    if let Some(name) = templater.get_template_names().min() {
+    if let Some(name) = templater.get_templates().keys().min() {
         String::from(name)
     } else {
         template_default_name()
@@ -194,7 +195,7 @@ mod tests {
     lazy_static! {
         pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
     }
-
+    
     const FAB_OUTPUT_HTML: &str = "my content";
 
     #[test]
@@ -204,7 +205,7 @@ mod tests {
     }
 
     #[test]
-    fn test_default_with_args() {
+    fn test_new_with_args() {
         let args = Args::default();
         let _templater = super::default_with_args(&args);
         //TODO
@@ -227,11 +228,11 @@ mod tests {
         add_template_via_name_and_file(&mut templater, &name, &file);
         assert!(super::has_template(&templater));
     }
-
+        
     #[test]
     fn test_has_template_x_true() {
         let mut templater  = super::default();
-        templater.add_raw_template("my-name", "my-content").unwrap();
+        templater.register_template_string("my-name", "my-content").unwrap();
         let flag = super::has_template(&templater);
         assert_eq!(flag, true);
     }
@@ -253,7 +254,7 @@ mod tests {
     #[test]
     fn test_best_template_name_x_custom_name() {
         let mut templater = super::default();
-        templater.add_raw_template("my-name", "{{ my-content }}").unwrap();
+        templater.register_template_string("my-name", "{{ my-content }}").unwrap();
         let name = best_template_name(&templater);
         assert_eq!(name, "my-name");
     }
@@ -289,7 +290,7 @@ mod tests {
         let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
         let actual = templater.render(
             &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
+            &vars
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
@@ -305,7 +306,7 @@ mod tests {
         let vars: ::toml::Value = vars.parse::<::toml::Value>().unwrap();
         let actual = templater.render(
             &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
+            &vars
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
@@ -321,7 +322,7 @@ mod tests {
         let vars: ::serde_yaml::Value = ::serde_yaml::from_str(&vars).unwrap();
         let actual = templater.render(
             &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
+            &vars
         ).unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }

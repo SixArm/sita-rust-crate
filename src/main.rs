@@ -60,6 +60,7 @@ pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tags;
     pub(crate) mod kinds {
+        pub(crate) mod handlebars;
         pub(crate) mod tera;
     }
 }

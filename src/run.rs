@@ -5,7 +5,7 @@ use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
 
-type TEMPLATER = ::tera::Tera;
+type Templater = ::tera::Tera;
 
 /// Run everything.
 ///
@@ -38,7 +38,7 @@ pub(crate) fn run() -> Result<()> {
     if args.test { println!("{:?}", args); }
 
     // Initialize templating
-    let mut templater = crate::templating::kinds::tera::new_with_args(&args);
+    let mut templater = crate::templating::kinds::tera::default_with_args(&args);
 
     // Add templates
     crate::templating::kinds::tera::add_template_files_via_args(&mut templater, &args)
@@ -63,7 +63,7 @@ pub(crate) fn run() -> Result<()> {
     Ok(())
 }
 
-fn do_path(args: &Args, templater: &TEMPLATER, input_file_path: &PathBuf) -> Result<()> {
+fn do_path(args: &Args, templater: &Templater, input_file_path: &PathBuf) -> Result<()> {
     trace!("do path(…) → input_file_path: {:?}", input_file_path);
 
     // Vet input file path
@@ -251,12 +251,12 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
 /// Example:
 ///
 /// ```
-/// let templater = crate::templating::kinds::tera::new();
+/// let templater = crate::templating::kinds::tera::default();
 /// let template_name = select_template_name(&args, &templater);
 /// assert_eq!(template_name, "default");
 /// ```
 ///
-fn select_template_name(args: &Args, templater: &TEMPLATER) -> String {
+fn select_template_name(args: &Args, templater: &Templater) -> String {
     trace!("template_name(…)");
     if let Some(s) = &args.template_name {
         s.clone()
@@ -396,7 +396,7 @@ mod tests {
     #[test]
     fn test_select_template_name_x_default() {
         let args = Args::default();
-        let templater = crate::templating::kinds::tera::new();
+        let templater = crate::templating::kinds::tera::default();
         let template_name = select_template_name(&args, &templater);
         assert_eq!(template_name, "default");
     }
