@@ -60,7 +60,6 @@ pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tags;
     pub(crate) mod tera;
-    pub(crate) mod xml;
 }
 
 fn main() {
