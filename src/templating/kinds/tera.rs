@@ -1,6 +1,7 @@
 //! Templating with Tera
 
 use indoc::indoc;
+use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 
@@ -33,6 +34,38 @@ pub fn new() -> TEMPLATER {
 //
 pub fn new_with_args(_args: &Args) -> TEMPLATER {
     new()
+}
+
+// Add a template via name and text.
+//
+// Example:
+//
+// ```
+// let mut templater = new();
+// let name = "alpha";
+// let text = "<p>{{ bravo }}</p>";
+// add_template_via_name_and_text(&name, &text);
+// ```
+//
+pub fn add_template_via_name_and_text(templater: &mut TEMPLATER, name: &str, text: &str) -> Result<()> {
+    templater.add_raw_template(&name, &text)
+    .chain_err(|| "add_template_via_name_and_text")
+}
+
+// Add a template via name and file.
+//
+// Example:
+//
+// ```
+// let mut templater = new();
+// let name = "alpha";
+// let file = PathBuf::from("template.html")
+// add_template_via_name_and_file(&name, &file);
+// ```
+//
+pub fn add_template_via_name_and_file(templater: &mut TEMPLATER, name: &str, file: &PathBuf) -> Result<()> {
+    templater.add_template_file(&file, Some(&name))
+    .chain_err(|| "add_template_via_name_and_file")
 }
 
 // Add tempate files via args, such as template file name.
@@ -154,8 +187,13 @@ pub fn template_default_content() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::indoc::indoc;
+    use indoc::indoc;
+    use lazy_static::*;
     use crate::app::args::Args;
+
+    lazy_static! {
+        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
+    }
 
     const FAB_OUTPUT_HTML: &str = "my content";
 
@@ -170,6 +208,24 @@ mod tests {
         let args = Args::default();
         let _templater = super::new_with_args(&args);
         //TODO
+    }
+
+    #[test]
+    fn test_add_template_via_name_and_text() {
+        let mut templater = super::new();
+        let name = "alpha";
+        let text = "{{ bravo }}";
+        add_template_via_name_and_text(&mut templater, &name, &text);
+        assert!(super::has_template(&templater));
+    }
+
+    #[test]
+    fn test_add_template_via_name_and_file() {
+        let mut templater = super::new();
+        let name = "alpha";
+        let file = TESTS_DIR.join("function").join("add_template_via_name_and_file").join("template.html");
+        add_template_via_name_and_file(&mut templater, &name, &file);
+        assert!(super::has_template(&templater));
     }
 
     #[test]
