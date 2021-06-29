@@ -16,12 +16,16 @@
         * `matter/` - Markdown front matter and back matter files
             * `state.rs` - state that holds front matter as a kind.
             * `kinds/` - kinds of front matter
-                * `html` - Hyper Text Markup Language
-                * `json` - JavaScript Object Notation
-                * `toml` - Tom's Obvious Minimal Language
-                * `yaml` - Yet Another Markup Language
+                * `html.rs` - Hyper Text Markup Language
+                * `json.rs` - JavaScript Object Notation
+                * `toml.rs` - Tom's Obvious Minimal Language
+                * `yaml.rs` - Yet Another Markup Language
+    * `templating/` - Templating-related
+        * `kinds/` - kinds of templating engines
+            * `handlebars.rs` - Handlebars templating
+            * `tera.rs` - Tera templating
 * `tests/` - system tests
     * `command/` - tests that run the command with various args
     * `function/` - each subdirectory relates to one function
-    * `tutorial/` - tutorial files that match the README documentation
     * `markdown/` - tests of markdown parsing, including front matter kinds
+    * `tutorial/` - tutorial files that match the README documentation
