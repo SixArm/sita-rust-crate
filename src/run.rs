@@ -1,10 +1,11 @@
 //! Run the app
 
 use std::path::PathBuf;
-use tera::Tera;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
+
+type TEMPLATER = ::tera::Tera;
 
 /// Run everything.
 ///
@@ -37,15 +38,24 @@ pub(crate) fn run() -> Result<()> {
     if args.test { println!("{:?}", args); }
 
     // Initialize templating
-    let mut tera: Tera = crate::templating::tera::init(&args)
-    .chain_err(|| "error: tera init")?;
+    let mut templater = crate::templating::kinds::tera::new_with_args(&args);
+
+    // Add templates
+    crate::templating::kinds::tera::add_template_files_via_args(&mut templater, &args)
+    .chain_err(|| "add_template_files_via_args")?;
+
+    // Add default template as needed
+    if !crate::templating::kinds::tera::has_template(&templater) {
+        crate::templating::kinds::tera::add_template_default(&mut templater)
+        .chain_err(|| "add_template_default")?;
+    }
 
     // Process each page
     if let Some(path_buf_list) = &args.input_path_buf_list {
         for path_buf in path_buf_list {
             do_path(
                 &args,
-                &tera,
+                &templater,
                 &path_buf
             )?;
         }
@@ -53,7 +63,7 @@ pub(crate) fn run() -> Result<()> {
     Ok(())
 }
 
-fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
+fn do_path(args: &Args, templater: &TEMPLATER, input_file_path: &PathBuf) -> Result<()> {
     trace!("do path(…) → input_file_path: {:?}", input_file_path);
 
     // Vet input file path
@@ -78,7 +88,7 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    // Create Tera context that holds variables
+    // Create templater context that holds variables
     let mut context = match matter {
         crate::markdown::matter::state::State::HTML(x) => {
             ::tera::Context::from_serialize(&x)
@@ -107,11 +117,11 @@ fn do_path(args: &Args, tera: &Tera, input_file_path: &PathBuf) -> Result<()> {
     debug!("context with content: {:?}", &context);
 
     // Select relevant template name
-    let template_name = select_template_name(&args, &tera);
+    let template_name = select_template_name(&args, &templater);
     debug!("template_name: {:?}", &template_name);
 
     // Render template with context
-    let output_as_html_text = tera.render(&template_name, &context)
+    let output_as_html_text = templater.render(&template_name, &context)
     .chain_err(|| "render template")?;
     debug!("output_as_html_text: {:?}", &output_as_html_text);
 
@@ -236,23 +246,22 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
     html_text
 }
 
-/// Select the revelant Tera template name.
+/// Select the revelant template name.
 ///
 /// Example:
 ///
 /// ```
-/// let args = Args::default();
-/// let tera = Tera::default();
-/// let template_name = select_template_name(&args, &tera);
+/// let templater = crate::templating::kinds::tera::new();
+/// let template_name = select_template_name(&args, &templater);
 /// assert_eq!(template_name, "default");
 /// ```
 ///
-fn select_template_name(args: &Args, tera: &Tera) -> String {
+fn select_template_name(args: &Args, templater: &TEMPLATER) -> String {
     trace!("template_name(…)");
     if let Some(s) = &args.template_name {
         s.clone()
     } else {
-        crate::templating::tera::best_template_name(&tera)
+        crate::templating::kinds::tera::best_template_name(&templater)
     }
 }
 
@@ -387,8 +396,8 @@ mod tests {
     #[test]
     fn test_select_template_name_x_default() {
         let args = Args::default();
-        let tera = Tera::default();
-        let template_name = select_template_name(&args, &tera);
+        let templater = crate::templating::kinds::tera::new();
+        let template_name = select_template_name(&args, &templater);
         assert_eq!(template_name, "default");
     }
 

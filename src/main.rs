@@ -59,7 +59,9 @@ pub(crate) mod markdown {
 pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tags;
-    pub(crate) mod tera;
+    pub(crate) mod kinds {
+        pub(crate) mod tera;
+    }
 }
 
 fn main() {
