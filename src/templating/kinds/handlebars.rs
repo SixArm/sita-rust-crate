@@ -31,7 +31,9 @@ pub fn default<'a>() -> Templater<'a> {
 // ```
 //
 pub fn default_with_args(_args: &Args) -> Templater {
-    default()
+    let mut templater = default();
+    templater.set_strict_mode(true);
+    templater
 }
 
 // Add a template via name and text.

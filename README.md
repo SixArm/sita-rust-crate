@@ -18,13 +18,10 @@ Sita aims to be simple for simple needs, and flexible for complex needs.
   use defaults for all settingqs.
 
 * Sita is flexible for complex needs. For example Sita can use front matter
-  variables that can be set via HTML, JSON, TOML, YAML, or command line options
-  that specify varibles as files. This is because Sita aims to work with a range
-  of formats.
+  variables that can be set via HTML, JSON, TOML, YAML, or other options.
+  This is because Sita aims to work with a range of publishing formats.
 
 Sita is currently being developed. We welcome help.
-
-We especially thank the authors of Zola and Tera.
 
 
 ## Examples
@@ -57,6 +54,8 @@ To run Sita with an input file, use the command line option `-i` or `--input`:
 sita --input hello.md
 ```
 
+Sita converts the input Markdown text to output HTML text.
+
 The output is a file `hello.html` with this text:
 
 ```html
@@ -71,6 +70,8 @@ To run Sita with an output file, use the command line option `-o` or `--output`:
 ```sh
 sita --input hello.md --output world.html
 ```
+
+Sita converts the input Markdown text to output HTML text.
 
 The output is a file `world.html` with this text:
 
@@ -95,8 +96,9 @@ To run Sita with a template file, use the command line option `-t` or `--templat
 ```sh
 sita --template template.html --input hello.md 
 ```
+Sita converts the input Markdown text to intermediate HTML text, then renders it via the template file `template.html`.
 
-The output is the file `hello.html` and it is now rendered with the template file `template.html`:
+The output is the file `hello.html` with this text:
 
 ```html
 <html><body><p>hello world</p></body></html>
@@ -122,6 +124,19 @@ The output file name can be:
   * An absolute path such as `/tmp/output.html`
 
 
+## Template engines
+
+Sita is being developed to use multiple template engines.
+
+The roadmap is:
+
+* Handlebars - because of speed and simplicity.
+
+* Tera - because of advanced capabilties and pure Rust.
+
+* Liquid - because of popularity with ecommerce developers.
+
+
 ## Front matter variables
 
 Front matter variables can be set by using HTML, JSON, TOML, YAML, or command line options.
@@ -131,44 +146,58 @@ Front matter variables can be set by using HTML, JSON, TOML, YAML, or command li
 
 Example:
 
-```md
+```html
 <!--
 title: My Title
 subtitle: My Subtitle
 -->
+```
+```md
 The content starts here.
 ```
 
 
 ### JSON
 
-```md
+Example:
+
+```json
 {
     "title": "My Title",
     "subtitle": "My Subtitle"
 }
+```
+```md
 The content starts here.
 ```
 
 
 ### TOML
 
-```md
+Example:
+
+```toml
 +++
 title = "My Title"
 subtitle = "My Subtitle"
 +++
+```
+```md
 The content starts here.
 ```
 
 
 ### YAML
 
-```md
+Example:
+
+```yaml
 ---
 title: My Title
 subtitle: My Subtitle
 ---
+```
+```md
 The content starts here.
 ```
 
