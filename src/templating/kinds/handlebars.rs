@@ -5,6 +5,7 @@ use indoc::indoc;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
+use crate::types::*;
 
 pub type Templater<'a> = handlebars::Handlebars<'a>;
 
@@ -38,7 +39,7 @@ pub fn default_with_args(_args: &Args) -> Templater {
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = "alpha";
 // let text = "<p>{{ bravo }}</p>";
 // add_template_via_name_and_text(&name, &text);
@@ -54,7 +55,7 @@ pub fn add_template_via_name_and_text(templater: &mut Templater, name: &str, tex
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = "alpha";
 // let file = PathBuf::from("template.html")
 // add_template_via_name_and_file(&name, &file);
@@ -78,7 +79,7 @@ pub fn add_template_via_name_and_file(templater: &mut Templater, name: &str, fil
 // ];
 // let mut args = Args::default();
 // args.template_path_buf_list = Some(paths);
-// let mut templater = new();
+// let mut templater = default();
 // add_template_files_via_args(templater, args);
 // ```
 //
@@ -99,7 +100,7 @@ pub fn add_template_files_via_args(templater: &mut Templater, args: &Args) -> Re
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // add_template_default(templater);
 // //-> Templater now has a template name "default" with content "{{ content }}"
 // ```
@@ -117,13 +118,13 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let flag = has_template(templater);
 // assert_eq!(flag, false);
 // ```
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // templater.add_raw_template("my-template", "{{ my-content }}");
 // let flag = has_template(templater);
 // assert_eq!(flag, true);
@@ -131,6 +132,22 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 //
 pub fn has_template(templater: &Templater) -> bool {
     !templater.get_templates().is_empty()
+}
+
+// Get the template names.
+//
+// Example:
+//
+// ```
+// let mut templater = default();
+// add_template_via_name_and_text("alpha".into(), "alpha text".into());
+// add_template_via_name_and_text("bravo".into(), "bravo text".into());
+// let template_names: Set<&String> = template_names_as_set_string(&templater);
+// assert_eq!(template_names, set![&"alpha".into(), &"bravo".into()]);
+// ```
+//
+pub fn template_names_as_set_string<'a>(templater: &'a Templater) -> Set<&'a String> {
+    templater.get_templates().keys().collect::<Set<&'a String>>()
 }
 
 // Get the best template name.
@@ -141,7 +158,7 @@ pub fn has_template(templater: &Templater) -> bool {
 // Example with default template:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = best_template_name(templater);
 // assert_eq!(name, "default");
 // ```
@@ -149,7 +166,7 @@ pub fn has_template(templater: &Templater) -> bool {
 // Example with custom template:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // templater.add_raw_template("my-template", "{{ my-content }}");
 // let name = best_template_name(templater);
 // assert_eq!(name, "my-template");
@@ -245,6 +262,18 @@ mod tests {
     }
 
     #[test]
+    pub fn test_template_names_as_set_string() {
+        let mut templater = default();
+        let name_0: String = "my-name-0".into();
+        let name_1: String = "my-name-1".into();
+        add_template_via_name_and_text(&mut templater, &name_0, "my text 0").expect("add_template_via_name_and_text");
+        add_template_via_name_and_text(&mut templater, &name_1, "my text 1").expect("add_template_via_name_and_text");
+        let actual: Set<&String> = template_names_as_set_string(&templater);
+        let expect: Set<&String> = set!(&name_0, &name_1);
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
     fn test_best_template_name_x_default_name() {
         let templater = super::default();
         let name = best_template_name(&templater);
@@ -272,7 +301,7 @@ mod tests {
     //     let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
     //     let actual = templater.render(
     //         &template_default_name(),
-    //         &::tera::Context::from_serialize(&vars).unwrap()
+    //         &::tera::= super::default()t::from_serialize(&vars).unwrap()
     //     ).unwrap();
     //     assert_eq!(actual, FAB_OUTPUT_HTML);
     // }

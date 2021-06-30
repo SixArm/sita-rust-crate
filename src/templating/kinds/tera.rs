@@ -4,6 +4,7 @@ use indoc::indoc;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
+use crate::types::*;
 
 pub type Templater = ::tera::Tera;
 
@@ -39,7 +40,7 @@ pub fn default_with_args(_args: &Args) -> Templater {
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = "alpha";
 // let text = "<p>{{ bravo }}</p>";
 // add_template_via_name_and_text(&name, &text);
@@ -55,7 +56,7 @@ pub fn add_template_via_name_and_text(templater: &mut Templater, name: &str, tex
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = "alpha";
 // let file = PathBuf::from("template.html")
 // add_template_via_name_and_file(&name, &file);
@@ -77,7 +78,7 @@ pub fn add_template_via_name_and_file(templater: &mut Templater, name: &str, fil
 // ];
 // let mut args = Args::default();
 // args.template_path_buf_list = Some(paths);
-// let mut templater = new();
+// let mut templater = default();
 // add_template_files_via_args(templater, args);
 // ```
 //
@@ -98,7 +99,7 @@ pub fn add_template_files_via_args(templater: &mut Templater, args: &Args) -> Re
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // add_template_default(templater);
 // //-> Tera now has a template name "default" with content "{{ content }}"
 // ```
@@ -116,13 +117,13 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 // Example:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let flag = tera_has_template(templater);
 // assert_eq!(flag, false);
 // ```
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // templater.add_raw_template("my-template", "{{ my-content }}");
 // let flag = has_template(templater);
 // assert_eq!(flag, true);
@@ -130,6 +131,22 @@ pub fn add_template_default(templater: &mut Templater) -> Result<()> {
 //
 pub fn has_template(templater: &Templater) -> bool {
     templater.get_template_names().nth(0).is_some()
+}
+
+// Get the template names.
+//
+// Example:
+//
+// ```
+// let mut templater = default();
+// add_template_via_name_and_text("alpha", "alpha text".into());
+// add_template_via_name_and_text("bravo", "bravo text".into());
+// let template_names: Set<&String> = template_names(&templater);
+// assert_eq!(template_names, set!["alpha", "bravo"]);
+// ```
+//
+pub fn template_names_as_set_str<'a>(templater: &'a Templater) -> Set<&'a str> {
+    templater.get_template_names().collect::<_>()
 }
 
 // Get the best template name.
@@ -140,7 +157,7 @@ pub fn has_template(templater: &Templater) -> bool {
 // Example with default template:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // let name = best_template_name(templater);
 // assert_eq!(name, "default");
 // ```
@@ -148,7 +165,7 @@ pub fn has_template(templater: &Templater) -> bool {
 // Example with custom template:
 //
 // ```
-// let mut templater = new();
+// let mut templater = default();
 // templater.add_raw_template("my-template", "{{ my-content }}");
 // let name = best_template_name(templater);
 // assert_eq!(name, "my-template");
@@ -241,6 +258,18 @@ mod tests {
         let templater = super::default();
         let flag = super::has_template(&templater);
         assert_eq!(flag, false);
+    }
+
+    #[test]
+    pub fn test_template_names_as_set_str() {
+        let mut templater = default();
+        let name_0: &str = "my-name-0";
+        let name_1: &str = "my-name-1";
+        add_template_via_name_and_text(&mut templater, &name_0, "my text 0").expect("add_template_via_name_and_text");
+        add_template_via_name_and_text(&mut templater, &name_1, "my text 1").expect("add_template_via_name_and_text");
+        let actual: Set<&str> = super::template_names_as_set_str(&templater);
+        let expect: Set<&str> = set!(name_0, name_1);
+        assert_eq!(actual, expect);
     }
 
     #[test]
