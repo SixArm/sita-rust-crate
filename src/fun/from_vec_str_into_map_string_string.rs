@@ -1,5 +1,15 @@
 use crate::types::*;
 
+/// Convert from &Vec<&str> into Map<String, String>.
+/// 
+/// Example:
+//
+/// ```rust
+/// let from: Vec<&str> = vec!["alpha", "bravo", "charlie", "delta"];
+/// let int: Map<String, String> = from_vec_str_into_map_string_string(&from);
+/// //=> ["alpha" => "bravo", "charlie" => "delta"]
+/// ```
+///
 pub fn from_vec_str_into_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
     let mut map: Map<String, String> = Map::new();
     for i in (0..vec_str.len()-1).step_by(2) {

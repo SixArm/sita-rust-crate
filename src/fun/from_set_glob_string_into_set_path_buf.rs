@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use crate::types::*;
 
-/// Process a glob string set to a path buf set.
+/// Convert from &Set<GlobString> into Set<PathBuf>.
 /// 
 /// Example:
 //
