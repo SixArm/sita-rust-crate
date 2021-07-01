@@ -21,6 +21,7 @@ use clap::{Arg, App};
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
+use crate::fun::from_vec_str_into_map_string_string::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {
@@ -158,7 +159,7 @@ pub fn args() -> Args {
         settings: match matches.values_of("set") {
             Some(x) => {
                 let vec: Vec<&str> = x.collect();
-                Some(vec_str_to_map_string_string(&vec))
+                Some(from_vec_str_into_map_string_string(&vec))
             },
             _ => None,
         },
@@ -206,12 +207,3 @@ pub fn args() -> Args {
     args    
 }
 
-pub fn vec_str_to_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
-    let mut map: Map<String, String> = Map::new();
-    for i in (0..vec_str.len()-1).step_by(2) {
-        let k = String::from(vec_str[i]);
-        let v = String::from(vec_str[i+1]);
-        map.insert(k, v);
-    }
-    map
-}

@@ -9,6 +9,7 @@
         * `args.rs` - arguments as a struct; can be created by `clap.rs`.
         * `clap.rs` - command line argument parsing, which creates an `args` struct.
         * `confy.rs` - configuration file parsing tests, which load configuration variables.
+    * `fun/` - functions such as utilties and helpers.
     * `markdown/` - Mardown-related
         * `matter/` - Markdown front matter and back matter files
             * `state.rs` - state that holds front matter as a kind.

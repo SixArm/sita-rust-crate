@@ -43,6 +43,10 @@ pub(crate) mod app { // Application
     pub(crate) mod config; // Configuration struct, such as set via `confy`
     pub(crate) mod confy; // Configuration tests for loading and parsing
 }
+pub(crate) mod fun { // Functions 
+    pub(crate) mod from_vec_str_into_map_string_string; // from Vec<&str> into Map<String, String>
+}
+
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
     pub(crate) mod matter {
