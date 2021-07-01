@@ -173,7 +173,7 @@ fn test_clap_template_name() {
 
 // #[test]
 // fn test_clap_template_glob_to_template_path_set() {
-//     let dir = "glob_string_set_to_path_buf_set/";
+//     let dir = "from_set_glob_string_into_set_path_buf/";
 //     assert_command_stdout_contains(
 //         COMMAND, 
 //         &[
