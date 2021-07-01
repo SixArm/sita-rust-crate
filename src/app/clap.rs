@@ -22,7 +22,7 @@ use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
 use crate::fun::from_list_pathable_string_into_list_path_buf::*;
-use crate::fun::from_vec_str_into_map_string_string::*;
+use crate::fun::from_list_str_into_map_string_string::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {
@@ -160,7 +160,7 @@ pub fn args() -> Args {
         settings: match matches.values_of("set") {
             Some(x) => {
                 let vec: Vec<&str> = x.collect();
-                Some(from_vec_str_into_map_string_string(&vec))
+                Some(from_list_str_into_map_string_string(&vec))
             },
             _ => None,
         },

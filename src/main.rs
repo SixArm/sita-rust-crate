@@ -44,8 +44,8 @@ pub(crate) mod app { // Application
 }
 pub(crate) mod fun { // Functions 
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
-    pub(crate) mod from_set_glob_string_into_set_path_buf; // from Set<GlobString> into Set<PathBuf>
-    pub(crate) mod from_vec_str_into_map_string_string; // from Vec<&str> into Map<String, String>
+    pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
+    pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
 }
 
 pub(crate) mod markdown {

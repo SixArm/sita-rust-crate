@@ -6,11 +6,11 @@ use crate::types::*;
 //
 /// ```rust
 /// let from: Vec<&str> = vec!["alpha", "bravo", "charlie", "delta"];
-/// let int: Map<String, String> = from_vec_str_into_map_string_string(&from);
+/// let int: Map<String, String> = from_list_str_into_map_string_string(&from);
 /// //=> ["alpha" => "bravo", "charlie" => "delta"]
 /// ```
 ///
-pub fn from_vec_str_into_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
+pub fn from_list_str_into_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
     let mut map: Map<String, String> = Map::new();
     for i in (0..vec_str.len()-1).step_by(2) {
         let k = String::from(vec_str[i]);
@@ -25,9 +25,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_from_vec_str_into_map_string_string() {
+    fn test_from_list_str_into_map_string_string() {
         let from: Vec<&str> = vec!["alpha", "bravo", "charlie", "delta"];
-        let actual: Map<String, String> = from_vec_str_into_map_string_string(&from);
+        let actual: Map<String, String> = from_list_str_into_map_string_string(&from);
         let mut expect: Map<String, String> = Map::new();
         expect.insert("alpha".into(), "bravo".into());
         expect.insert("charlie".into(), "delta".into());
