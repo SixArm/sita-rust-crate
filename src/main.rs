@@ -35,7 +35,6 @@ extern crate env_logger;
 
 #[macro_use] pub(crate) mod run; // Main run logic
 #[macro_use] pub(crate) mod types; // Type aliases
-#[macro_use] pub(crate) mod util; // Generic utilities
 
 pub(crate) mod app { // Application
     pub(crate) mod args; // Arguments struct, such as set via `clap`.
@@ -44,8 +43,9 @@ pub(crate) mod app { // Application
     pub(crate) mod confy; // Configuration tests for loading and parsing
 }
 pub(crate) mod fun { // Functions 
-    pub(crate) mod from_vec_str_into_map_string_string; // from Vec<&str> into Map<String, String>
+    pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_set_glob_string_into_set_path_buf; // from Set<GlobString> into Set<PathBuf>
+    pub(crate) mod from_vec_str_into_map_string_string; // from Vec<&str> into Map<String, String>
 }
 
 pub(crate) mod markdown {

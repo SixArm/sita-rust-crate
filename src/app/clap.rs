@@ -21,6 +21,7 @@ use clap::{Arg, App};
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
+use crate::fun::from_list_pathable_string_into_list_path_buf::*;
 use crate::fun::from_vec_str_into_map_string_string::*;
 
 /// Create a clap app.
@@ -197,11 +198,11 @@ pub fn args() -> Args {
     };
 
     if let Some(ref x) = args.input_pathable_string_list {
-        args.input_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
+        args.input_path_buf_list = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
     if let Some(ref x) = args.template_pathable_string_list {
-        args.template_path_buf_list = Some(crate::util::pathable_string_list_to_path_buf_list(x));
+        args.template_path_buf_list = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
     args    
