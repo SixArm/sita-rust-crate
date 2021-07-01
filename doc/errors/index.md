@@ -1,4 +1,4 @@
-# error-chain
+# Errors using error-chain
 
 
 ## Initialize errors
