@@ -16,9 +16,18 @@ Initialization:
 * [`once_cell`](https://crates.io/crates/once_cell) - Single assignment cells and lazy values
 * [`lazy_static`](https://crates.io/crates/lazy_static) - Lazy evaluated statics
 
+Utilities:
+
+* [`glob`](https://crates.io/crates/glob) - Support for matching file paths against Unix shell style patterns
+* [`maplit`](https://crates.io/crates/maplit) - Macros for container literals with specific type
+* [`regex`](https://crates.io/crates/regex) - Regular expressions parser, compiler, and executer
+* [`unicode-segmentation`]((https://crates.io/crates/unicode-segmentation) - Iterators which split strings on graphemes, words, etc.
+* [`url`](https://crates.io/crates/url) - URL library for Rust, based on the WHATWG URL Standard
+
 Parsers and serialize/deserialize:
 
 * [`json`](https://crates.io/crates/json) - JSON parser
+* [`minidom`](https://crates.io/crates/minidom) - A small, simple DOM implementation on top of quick-xml
 * [`pulldown-cmark`](https://crates.io/crates/pulldown-cmark) - A pull parser for CommonMark
 * [`quick-xml`](https://crates.io/crates/quick-xml) - High-performance XML reader and writer
 * [`serde`](https://crates.io/crates/serde) - Generic serialize/deserialize framework
@@ -43,14 +52,3 @@ Maybe:
 * [`ammonia`](https://crates.io/crates/ammonia) - HTML sanitization
 * [`liquid`](https://crates.io/crates/liquid) - Liquid templating language
 * [`minidom`](https://crates.io/crates/minidom) - A small, simple DOM implementation on top of quick-xml
-
-TODO:
-
-```
-glob = "0.3.0" # Support for matching file paths against Unix shell style patterns
-maplit = "1.0.2" # Macros for container literals with specific type
-minidom = "0.13.0" # A small, simple DOM implementation on top of quick-xml
-regex = "1.4.5" # Regular expressions parser, compiler, and executer
-unicode-segmentation = "1.7.1" #  Iterators which split strings on graphemes, words, etc.
-url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
-```
