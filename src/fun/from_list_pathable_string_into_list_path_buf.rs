@@ -51,7 +51,6 @@ mod tests {
             dir_as_buf.join("b/ba/bab"),
             dir_as_buf.join("b/bb"),
             dir_as_buf.join("b/bb/bba"),
-            dir_as_buf.join("b/bb/bbb"),
             dir_as_buf.join("b/bb/bbb")
         ];
         assert_eq!(actual, expect);
