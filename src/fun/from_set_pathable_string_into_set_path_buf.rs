@@ -34,11 +34,11 @@ mod tests {
     fn test_from_set_pathable_string_into_set_path_buf() {
         let dir_as_buf = TESTS_DIR.join("function").join("from_set_pathable_string_into_set_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
-        let globs: Set<PathableString> = set![
+        let from: Set<PathableString> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),
             format!("{}{}", dir_as_string, "/b/**/*")
         ];
-        let actual: Set<PathBuf> = from_set_pathable_string_into_set_path_buf(&globs);
+        let actual: Set<PathBuf> = from_set_pathable_string_into_set_path_buf(&from);
         let expect: Set<PathBuf> = set![
             dir_as_buf.join("a/aa"),
             dir_as_buf.join("a/aa/aaa"),

@@ -33,7 +33,6 @@ extern crate env_logger;
 
 ////
 
-#[macro_use] pub(crate) mod run; // Main run logic
 #[macro_use] pub(crate) mod types; // Type aliases
 
 pub(crate) mod app { // Application
@@ -41,7 +40,9 @@ pub(crate) mod app { // Application
     pub(crate) mod clap; // Command line argument parser
     pub(crate) mod config; // Configuration struct, such as set via `confy`
     pub(crate) mod confy; // Configuration tests for loading and parsing
+    pub(crate) mod run; // Run function that handles everything
 }
+
 pub(crate) mod fun { // Functions 
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
@@ -72,7 +73,7 @@ pub(crate) mod templating {
 
 fn main() {
     env_logger::init();
-    if let Err(ref e) = crate::run::run() {
+    if let Err(ref e) = crate::app::run::run() {
         println!("error: {}", e);
         for e in e.iter().skip(1) {
             println!("caused by: {}", e);

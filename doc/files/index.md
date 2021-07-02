@@ -1,28 +1,29 @@
 # Files
 
 * `src/`
-    * `main.rs` - the main function that loads everything then calls `run.rs`.
-    * `run.rs` - the core business logic that runs everything; called by `main`.
-    * `types.rs` - type aliases and related macros.
-    * `app/` - application files typical of any of our apps
-        * `args.rs` - arguments as a struct; can be created by `clap.rs`.
-        * `clap.rs` - command line argument parsing, which creates an `args` struct.
-        * `confy.rs` - configuration file parsing tests, which load configuration variables.
-    * `fun/` - functions, including utilties, helpers, converters, etc.
+    * `main.rs` - Main function that loads everything; calls `run.rs`.
+    * `types.rs` - Type aliases and related macros.
+    * `app/` - Application files typical of any of our apps
+        * `args.rs` - Arguments as a struct; can be created by `clap.rs`.
+        * `clap.rs` - Command line argument parsing, which creates an `args` struct.
+        * `config.rs` - Configuration struct, such as set via `confy`
+        * `confy.rs` - Configuration file parsing tests, which load configuration variables.
+        * `run.rs` - Run function that does the core business logic; called by `main.rs`.
+    * `fun/` - Functions, including utilties, helpers, converters, etc.
     * `markdown/` - Mardown-related
         * `matter/` - Markdown front matter and back matter files
-            * `state.rs` - state that holds front matter as a kind.
-            * `kinds/` - kinds of front matter
+            * `state.rs` - State that holds front matter as a kind.
+            * `kinds/` - Kinds of front matter
                 * `html.rs` - Hyper Text Markup Language
                 * `json.rs` - JavaScript Object Notation
                 * `toml.rs` - Tom's Obvious Minimal Language
                 * `yaml.rs` - Yet Another Markup Language
     * `templating/` - Templating-related
-        * `kinds/` - kinds of templating engines
+        * `kinds/` - Kinds of templating engines
             * `handlebars.rs` - Handlebars templating
             * `tera.rs` - Tera templating
-* `tests/` - system tests
-    * `command/` - tests that run the command with various args
-    * `function/` - each subdirectory relates to one function
-    * `markdown/` - tests of markdown parsing, including front matter kinds
-    * `tutorial/` - tutorial files that match the README documentation
+* `tests/` - Tests of the system
+    * `command/` - Command tests that run the app with various args
+    * `function/` - Function tests, such as function example data and example files.
+    * `markdown/` - Markdown tests, such as parsing, including front matter kinds
+    * `tutorial/` - Tutorial tests that match the README documentation
