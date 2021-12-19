@@ -39,6 +39,28 @@ fn test_clap_test() {
     assert_command_stdout_contains(COMMAND, &["--test"], r#"Args { "#);
 }
 
+
+// Test that the special argument `--verbose` is working.
+//
+// This test must succeed in order for any of the rest of the tests here to
+// show diagnostics, because the `--verbose` argument turns on logging output,
+// which can include debugging messages, warnings, errors, and so on.
+//
+#[test]
+fn test_clap_verbose() {
+    assert_command_stdout_contains(COMMAND, &["--test"], r#" log_level: None"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
+    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
+}
+
 /// Normal-priority CLAP command args tests
 
 #[test]
@@ -47,17 +69,20 @@ fn test_clap_input() {
     let s2 = "bravo";
     let s3 = "charlie";
     let s4 = "delta";
-    let target = format!(" input_pathable_string_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+    let target = format!(" input_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+    // Test short `-i` with multiple occurrences and multiple values
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "-i", &s1, &s2, "-i", &s3, &s4], 
         &target
     );
+    // Test long `--input` with multiple occurrences and multiple values
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--input", &s1, &s2, "--input", &s3, &s4], 
         &target
     );
+    // Test alias `--inputs` with multiple occurrences and multiple values
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4], 
@@ -66,11 +91,11 @@ fn test_clap_input() {
 }
 
 #[test]
-fn test_clap_input_extension() {
+fn test_clap_input_file_name_extension() {
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--input-extension", "alpha"], 
-        r#" input_extension: Some("alpha")"#
+        r#" input_file_name_extension: Some("alpha")"#
     );
 }
 
@@ -84,29 +109,38 @@ fn test_clap_language() {
 }
 
 #[test]
-fn test_clap_output_file() {
+fn test_clap_output() {
+    let s1 = "alpha";
+    let s2 = "bravo";
+    let s3 = "charlie";
+    let s4 = "delta";
+    let target = format!(" output_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+    // Test short `-o` with multiple occurrences and multiple values
     assert_command_stdout_contains(
         COMMAND, 
-        &["--test", "--output-file", "alpha"], 
-        r#" output_file_path: Some("alpha")"#
+        &["--test", "-o", &s1, &s2, "-o", &s3, &s4], 
+        &target
+    );
+    // Test long `--output` with multiple occurrences and multiple values
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--output", &s1, &s2, "--output", &s3, &s4], 
+        &target
+    );
+    // Test alias `--outputs` with multiple occurrences and multiple values
+    assert_command_stdout_contains(
+        COMMAND, 
+        &["--test", "--outputs", &s1, &s2, "--outputs", &s3, &s4], 
+        &target
     );
 }
 
 #[test]
-fn test_clap_output_directory() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--output-directory", "alpha"], 
-        r#" output_directory_path: Some("alpha")"#
-    );
-}
-
-#[test]
-fn test_clap_output_extension() {
+fn test_clap_output_file_name_extension() {
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "--output-extension", "alpha"], 
-        r#" output_extension: Some("alpha")"#
+        r#" output_file_name_extension: Some("alpha")"#
     );
 }
 
@@ -129,22 +163,13 @@ fn test_clap_set() {
 }
 
 #[test]
-fn test_clap_stylesheet() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--stylesheet", "alpha", "bravo", "--stylesheet", "charlie", "delta"],
-        r#" stylesheet_url_list: Some(["alpha", "bravo", "charlie", "delta"])"#
-    );
-}
-
-#[test]
 fn test_clap_template() {
-    let dir = "template_pathable_string_list";
+    let dir = "template_list_pathable_string";
     let s1 = format!("{}/{}", &dir, "a/**/*");
     let s2 = format!("{}/{}", &dir, "b/**/*");
     let s3 = format!("{}/{}", &dir, "c/**/*");
     let s4 = format!("{}/{}", &dir, "d/**/*");
-    let target = format!(" template_pathable_string_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+    let target = format!(" template_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
     assert_command_stdout_contains(
         COMMAND, 
         &["--test", "-t", &s1, &s2, "-t", &s3, &s4], 
@@ -218,14 +243,4 @@ fn test_clap_template_html_set() {
         &["--test", "--template-html", "<p>alpha</p>", "<p>bravo</p>", "--template-html", "<p>charlie</p>", "<p>delta</p>"], 
         r#" template_html_set: Some({"<p>alpha</p>", "<p>bravo</p>", "<p>charlie</p>", "<p>delta</p>"})"#
     );
-}
-
-#[test]
-fn test_clap_verbose() {
-    assert_command_stdout_contains(COMMAND, &["--test"], r#" log_level: None"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
 }
