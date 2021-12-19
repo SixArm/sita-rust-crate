@@ -7,8 +7,6 @@ App crates:
 * [`indoc`](https://crates.io/crates/indoc) - Indented document literals
 * [`error-chain`](https://crates.io/crates/error-chain) - Consistent error handling
 * [`log`](https://crates.io/crates/env_logger) A lightweight logging facade
-* [`regex`](https://crates.io/crates/regex) - Regular expressions parser
-* [`serde`](https://crates.io/crates/serde) - Generic serialize/deserialize framework
 * [`env_logger`](https://crates.io/crates/env_logger) - A logger configurable via environment variables
 
 Initialization:
@@ -19,21 +17,28 @@ Initialization:
 Utilities:
 
 * [`glob`](https://crates.io/crates/glob) - Support for matching file paths against Unix shell style patterns
+* [`ipnet`](https://crates.io/crates/ipnet) - Types and methods for working with IPv4 and IPv6 network addresses
 * [`maplit`](https://crates.io/crates/maplit) - Macros for container literals with specific type
-* [`regex`](https://crates.io/crates/regex) - Regular expressions parser, compiler, and executer
-* [`unicode-segmentation`]((https://crates.io/crates/unicode-segmentation) - Iterators which split strings on graphemes, words, etc.
-* [`url`](https://crates.io/crates/url) - URL library for Rust, based on the WHATWG URL Standard
+* [`matches`](https://crates.io/crates/matches) - A macro to evaluate if an expression matches a pattern
+* [`strsim`](https://crates.io/crates/strsim) - String similarity metrics
+* [`version_check`](https://crates.io/crates/version_check) - Check the version of the installed/running rustc
 
-Parsers and serialize/deserialize:
+Parsers, coders, serializers:
 
+* [`base64`](https://crates.io/crates/base64) - Encode and decode base64 as bytes or utf8
+* [`httpdate`](https://crates.io/crates/httpdate) - HTTP date parsing and formatting
 * [`json`](https://crates.io/crates/json) - JSON parser
+* [`mime`](https://crates.io/crates/mime) - Strongly Typed Mimes
 * [`minidom`](https://crates.io/crates/minidom) - A small, simple DOM implementation on top of quick-xml
 * [`pulldown-cmark`](https://crates.io/crates/pulldown-cmark) - A pull parser for CommonMark
+* [`regex`](https://crates.io/crates/regex) - Regular expressions parser, compiler, and executer
 * [`quick-xml`](https://crates.io/crates/quick-xml) - High-performance XML reader and writer
 * [`serde`](https://crates.io/crates/serde) - Generic serialize/deserialize framework
 * [`serde_json`](https://crates.io/crates/serde_json) -  JSON serialize/deserialize
 * [`serde_yaml`]((https://crates.io/crates/serde_yaml) - YAML serialize/deserialize
 * [`toml`](https://crates.io/crates/toml) - TOML encoder/decoder
+* [`unicode-segmentation`]((https://crates.io/crates/unicode-segmentation) - Iterators which split strings on graphemes, words, etc.
+* [`url`](https://crates.io/crates/url) - URL library for Rust, based on the WHATWG URL Standard
 * [`yaml-rust`](https://crates.io/crates/yaml-rust) - YAML parser
 
 Templating kinds:
@@ -41,6 +46,7 @@ Templating kinds:
 * [`handlebars`](https://crates.io/crates/handlebars) - Template engine based on JavaScript Handlebars templates
 * [`liquid`](https://crates.io/crates/liquid) - Template engine based on Shopify Liquid templates
 * [`tera`](https://crates.io/crates/tera) - Template engine based on Jinja2/Django templates
+* [`rhai`](https://crates.io/crates/rhai) - Embedded scripting for Rust
 
 Testing-related:
 
