@@ -80,13 +80,13 @@ pub fn add_template_via_name_and_file(templater: &mut Templater, name: &str, fil
 //     PathBuf::from("bravo.html"),
 // ];
 // let mut args = Args::default();
-// args.template_path_buf_list = Some(paths);
+// args.template_list_path_buf = Some(paths);
 // let mut templater = default();
 // add_template_files_via_args(templater, args);
 // ```
 //
 pub fn add_template_files_via_args(templater: &mut Templater, args: &Args) -> Result<()> {
-    if let Some(ref path_buf_list) = args.template_path_buf_list {
+    if let Some(ref path_buf_list) = args.template_list_path_buf {
         for path_buf in path_buf_list {
             trace!("add_template_files_via_args path_buf: {:?}", &path_buf);
             let name = path_buf.file_name().unwrap().to_string_lossy(); //TODO err
