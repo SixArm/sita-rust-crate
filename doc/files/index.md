@@ -13,7 +13,7 @@
     * `markdown/` - Mardown-related
         * `matter/` - Markdown front matter and back matter files
             * `state.rs` - State that holds front matter as a kind.
-            * `kinds/` - Kinds of front matter
+            * `kinds/` - Kinds of matter
                 * `html.rs` - Hyper Text Markup Language
                 * `json.rs` - JavaScript Object Notation
                 * `toml.rs` - Tom's Obvious Minimal Language
