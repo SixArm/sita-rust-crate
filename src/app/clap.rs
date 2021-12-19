@@ -34,11 +34,12 @@ pub fn app() -> App<'static> {
         .short('i')
         .long("input")
         .alias("inputs")
-        .value_name("FILE|GLOB …")
+        .value_name("FILE | DIRECTORY | GLOB")
         .takes_value(true)
-        .multiple(true)
-        .about("An input path string. Example glob: --input \"posts/**/*\" … Example file: --input \"input.html\" …"))
-    .arg(Arg::new("input_extension")
+        .multiple_occurrences(true)
+        .multiple_values(true)
+        .about("An input path string. Example file: --input \"input.html\" … Example directory: --input \"inputs/\" … Example glob: --input \"inputs/**/*\" …"))
+    .arg(Arg::new("input_file_name_extension")
         .long("input-extension")
         .value_name("EXTENSION")
         .takes_value(true)
@@ -47,20 +48,17 @@ pub fn app() -> App<'static> {
         .long("language")
         .value_name("LANGUAGE_ENCODING")
         .takes_value(true)
-        .about("The language encoding; Default: \"en\" for English. Example: --input-language \"en\" …"))
-    .arg(Arg::new("output_file")
+        .about("The language encoding; Default: \"en\" for English. Example: --language \"en\""))
+    .arg(Arg::new("output")
         .short('o')
-        .long("output-file")
-        .value_name("FILE")
+        .long("output")
+        .alias("outputs")
+        .value_name("FILE | DIRECTORY | GLOB")
         .takes_value(true)
-        .about("The output file. Example: --output-file \"output.html\" …"))
-    .arg(Arg::new("output_directory")
-        .short('O')
-        .long("output-directory")
-        .value_name("DIRECTORY")
-        .takes_value(true)
-        .about("The output directory. Example --output-directory \"~/output/\" …"))
-    .arg(Arg::new("output_extension")
+        .multiple_occurrences(true)
+        .multiple_values(true)
+        .about("An output path string. Example file: --output \"output.html\" … Example directory: --output \"outputs/\" … Example glob: --output \"outputs/**/*\" …"))
+    .arg(Arg::new("output_file_name_extension")
         .long("output-extension")
         .value_name("EXTENSION")
         .takes_value(true)
@@ -69,33 +67,31 @@ pub fn app() -> App<'static> {
         .long("script")
         .value_name("URL …")
         .takes_value(true)
-        .multiple(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
         .about("A script URL to add to the HTML header. Example: --script \"script.js\" …"))
-    .arg(Arg::new("stylesheet")
-        .long("stylesheet")
-        .value_name("URL, ...")
-        .takes_value(true)
-        .multiple(true)
-        .about("A stylesheet URL to add to the HTML header. Example: --stylesheet \"stylesheet.css\" …"))
     .arg(Arg::new("template")
         .short('t')
         .long("template")
         .alias("templates")
-        .value_name("FILE|GLOB …")
+        .value_name("FILE | DIRECTORY | GLOB")
         .takes_value(true)
-        .multiple(true)
-        .about("A template path string. Example glob: --template-glob \"templates/**/*\" … Example file: --template-glob \"template.html\" …"))
+        .multiple_occurrences(true)
+        .multiple_values(true)
+        .about("A template path string. Example file: --template \"template.html\" … Example directory: --template \"templates/\" … Example glob: --template \"templates/**/*\" …"))
     .arg(Arg::new("template_html_set")
         .long("template-html")
         .value_name("HTML …")
         .takes_value(true)
-        .multiple(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
         .about("A template HTML string. Example: --template-html \"<p>{{ content }}</p>\" …"))
     .arg(Arg::new("template_name")
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
-        .multiple(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
         .about("The template name to use for this rendering. Example: \"--template-name foo\" …"))
     .arg(Arg::new("test")
         .long("test")
@@ -110,12 +106,14 @@ pub fn app() -> App<'static> {
         .short('s')
         .long("set")
         .value_names(&["NAME", "VALUE"])
-        .multiple(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
         .about("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
     .arg(Arg::new("verbose")
         .short('v')
         .long("verbose")
-        .multiple(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
         .takes_value(false)
         .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
 }
@@ -124,12 +122,12 @@ pub fn app() -> App<'static> {
 pub fn args() -> Args {
     let matches = app().get_matches();
     let mut args = Args {
-        input_pathable_string_list: match matches.values_of("input") {
+        input_list_pathable_string: match matches.values_of("input") {
             Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
-        input_path_buf_list: None,
-        input_extension: match matches.value_of("input_extension") {
+        input_list_path_buf: None, // Set below
+        input_file_name_extension: match matches.value_of("input_file_name_extension") {
             Some(x) => Some(String::from(x)),
             _ => None,
         },
@@ -137,15 +135,12 @@ pub fn args() -> Args {
             Some(x) => Some(x.into()),
             _ =>  None,
         },
-        output_file_path: match matches.value_of("output_file") {
-            Some(x) => Some(PathBuf::from(x)),
+        output_list_pathable_string: match matches.values_of("output") {
+            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
-        output_directory_path: match matches.value_of("output_directory") {
-            Some(x) => Some(PathBuf::from(x)),
-            _ => None,
-        },
-        output_extension: match matches.value_of("output_extension") {
+        output_list_path_buf: None, // Set below
+        output_file_name_extension: match matches.value_of("output_file_name_extension") {
             Some(x) => Some(String::from(x)),
             _ => None,
         },
@@ -164,15 +159,11 @@ pub fn args() -> Args {
             },
             _ => None,
         },
-        stylesheet_url_list: match matches.values_of("stylesheet") {
-            Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
-            _ => None,
-        },
-        template_pathable_string_list: match matches.values_of("template") {
+        template_list_pathable_string: match matches.values_of("template") {
             Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
             _ => None,
         },
-        template_path_buf_list: None,
+        template_list_path_buf: None, // Set below
         template_html_set: match matches.values_of("template_html_set") {
             Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<HtmlString>>()),
             _ =>  None,
@@ -197,12 +188,16 @@ pub fn args() -> Args {
         },
     };
 
-    if let Some(ref x) = args.input_pathable_string_list {
-        args.input_path_buf_list = Some(from_list_pathable_string_into_list_path_buf(x));
+    if let Some(ref x) = args.input_list_pathable_string {
+        args.input_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
-    if let Some(ref x) = args.template_pathable_string_list {
-        args.template_path_buf_list = Some(from_list_pathable_string_into_list_path_buf(x));
+    if let Some(ref x) = args.output_list_pathable_string {
+        args.output_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
+    }
+
+    if let Some(ref x) = args.template_list_pathable_string {
+        args.template_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
     args    

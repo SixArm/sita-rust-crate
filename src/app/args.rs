@@ -13,31 +13,34 @@ pub struct Args {
     /// Input pathable string list.
     /// Example glob: "articles/**/*"
     /// Example file: "article.md"
-    pub(crate) input_pathable_string_list: Option<List<PathableString>>,
+    pub(crate) input_list_pathable_string: Option<List<PathableString>>,
 
-    /// Input path buf list.
-    /// This is calculated from `input_pathable_string_list`.
-    pub(crate) input_path_buf_list: Option<List<PathBuf>>,
+    /// Input file path list.
+    /// This is typically calculated from `input_list_pathable_string`.
+    /// Each item points to a file, not a directory, glob, etc.
+    pub(crate) input_list_path_buf: Option<List<PathBuf>>,
 
     /// Input file name extension.
     /// Example: "md" means a Markdown file extension.
-    pub(crate) input_extension: Option<String>,
+    pub(crate) input_file_name_extension: Option<String>,
 
     /// Language encoding.
     /// Example: "en" means English language encoding.
     pub(crate) language: Option<String>,
 
-    /// Output directory path.
-    /// Example: "/tmp/build" is the output directory.
-    pub(crate) output_directory_path: Option<PathBuf>,
+    /// Output pathable string list.
+    /// Example directory: "results/"
+    /// Example file: "article.html"
+    pub(crate) output_list_pathable_string: Option<List<PathableString>>,
 
-    /// Output file path.
-    /// Example: "/tmp/build/example.html" is the output file.
-    pub(crate) output_file_path: Option<PathBuf>,
+    /// Output path list.
+    /// This is typically calculated from `output_list_pathable_string`.
+    /// Each item points to a file, not a directory, glob, etc.
+    pub(crate) output_list_path_buf: Option<List<PathBuf>>,
 
     /// Output file name extension.
     /// Example: "html" means a HTML file extension.
-    pub(crate) output_extension: Option<String>,
+    pub(crate) output_file_name_extension: Option<String>,
 
     /// Paths that this program will process.
     /// Example: "example.md"
@@ -51,10 +54,6 @@ pub struct Args {
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
     pub(crate) settings: Option<Map<String, String>>,
 
-    /// Stylesheet URL list.
-    /// Example: "https://example.com/stylesheet.css" is a stylesheet URL.
-    pub(crate) stylesheet_url_list: Option<List<UrlString>>,
-
     /// Template name that will be used for rendering.
     /// Example: "default" means use the default template.
     pub(crate) template_name: Option<String>,
@@ -62,17 +61,18 @@ pub struct Args {
     /// Template pathable string list.
     /// Example glob: "templates/**/*"
     /// Example file: "template.html"
-    pub(crate) template_pathable_string_list: Option<List<PathableString>>,
+    pub(crate) template_list_pathable_string: Option<List<PathableString>>,
 
-    /// Template path buf list.
-    /// This is calculated from `template_pathable_string_list`.
-    pub(crate) template_path_buf_list: Option<List<PathBuf>>,
+    /// Template file path buf list.
+    /// This is typically calculated from `template_list_pathable_string`.
+    /// Each item points to a file, not a directory, glob, etc.
+    pub(crate) template_list_path_buf: Option<List<PathBuf>>,
 
     /// Template HTML set.
     /// Example: "<div>{{ content }}</div>"
     pub(crate) template_html_set: Option<Set<HtmlString>>,
 
-    /// Test flag that enables print diagnostics.
+    /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
     pub(crate) test: bool,
 
@@ -87,19 +87,18 @@ pub struct Args {
 
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
-        input_pathable_string_list: None,
-        input_path_buf_list: None,
-        input_extension: None,
+        input_list_pathable_string: None,
+        input_list_path_buf: None,
+        input_file_name_extension: None,
         language: None,
-        output_file_path: None,
-        output_directory_path: None,
-        output_extension: None,
+        output_list_pathable_string: None,
+        output_list_path_buf: None,
+        output_file_name_extension: None,
         paths: None,
         settings: None,
         script_url_list: None,
-        stylesheet_url_list: None,
-        template_pathable_string_list: None,
-        template_path_buf_list: None,
+        template_list_pathable_string: None,
+        template_list_path_buf: None,
         template_name: None,
         template_html_set: None,
         test: false,
