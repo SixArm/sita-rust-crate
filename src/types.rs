@@ -280,7 +280,6 @@ macro_rules! stack {
 ///
 #[allow(dead_code)] pub type PathableString = String;
 
-
 /// TOML `str` typically for Tom's Obvious Minimal Language.
 ///
 /// Example:
