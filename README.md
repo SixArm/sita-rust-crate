@@ -1,6 +1,10 @@
 # Sita static site generator Rust crate
 
-Sita is a static site generator. Sita aims to be simple for simple needs, and flexible for complex needs.  Sita is similar in ways to Jekyll, Hugo, Zola, and other static site generators.
+Sita is a static site generator.
+
+Sita aims to be simple for simple needs, and flexible for complex needs.
+
+Sita is similar in ways to other static site generators, such as Jekyll, Hugo, Zola, etc.
 
 Contents:
 
@@ -10,18 +14,25 @@ Contents:
 ## Introduction
 
 
-Sita aims to be simple for simple needs, and flexible for complex needs. 
+Sita aims to be simple for simple needs:
 
-* Sita is simple for simple needs. For example Sita can process one text file
-  from Markdown to HTML, without needing any special directories,
-  configurations, templates, variables, and so on. This is because Sita aims to
-  use defaults for all settingqs.
+* Sita uses simple default settings to get you up and running.
 
-* Sita is flexible for complex needs. For example Sita can use front matter
-  variables that can be set via HTML, JSON, TOML, YAML, or other options.
-  This is because Sita aims to work with a range of publishing formats.
+* For example Sita can process one text file from Markdown to HTML,
+  without needing any special setup or configuration.
 
-Sita is currently being developed. We welcome help.
+Sita aims to be flexible for complex needs:
+
+* Sita uses more capabilties to integrate your work in more ways.
+
+* For example Sita can use front matter variables that can be set
+  via HTML, or JSON, or TOML, or YAML, or other options.
+
+Sita is currently being developed:
+
+* We welcome help and constructive feedback.
+
+* You can open a GitHub issue or contact us at sita@sixarm.com.
 
 
 ## Examples
@@ -29,99 +40,114 @@ Sita is currently being developed. We welcome help.
 
 ### Beginner commands
 
-The beginner commands are:
+To get help, or version, or usage:
 
 ```
 $ sita --help
 $ sita --version
+$ sita --usage
 ```
 
+### --input or -i
 
-### Create hello.md
 
-Create a file `hello.md` with this text:
+Create an example file `hello.md` with this text:
 
 ```md
 hello world
 ```
 
-
-### -i --input
-
-To run Sita with an input file, use the command line option `-i` or `--input`:
+Run Sita with an input file name:
 
 ```sh
 sita --input hello.md
 ```
 
-Sita converts the input Markdown text to output HTML text.
-
-The output is a file `hello.html` with this text:
+The outcome is the file `hello.html` with this text:
 
 ```html
 <p>hello world</p>
 ```
 
+Sita can process multiple items such as:
 
-### -o --output
+```sh
+sita --input a.md b.md c.md
+```
 
-To run Sita with an output file, use the command line option `-o` or `--output`:
+Sita can process a directory recursively such as:
+
+```sh
+sita --input my-markdown-directory
+```
+
+
+### --output or -o
+
+Run Sita with an output file name:
 
 ```sh
 sita --input hello.md --output world.html
 ```
 
-Sita converts the input Markdown text to output HTML text.
-
-The output is a file `world.html` with this text:
+The result is the file `world.html` with this text:
 
 ```html
 <p>hello world</p>
 ```
 
+Sita can process multiple items such as:
 
-### Create template.html
+```sh
+sita --input a.md b.md c.md --output a.html b.html c.html
+```
+
+Sita can process a directory recursively such as:
+
+```sh
+sita --input my-markdown-directory --output my-html-directory
+```
+
+
+### --template or -t
 
 Create a file `template.html` with this text:
 
 ```html
-<html><body>{{ content }}</body></html>
+<html>
+  <body>
+    {{ content }}
+  </body>
+</html>
 ```
 
-
-### -t --template
-
-To run Sita with a template file, use the command line option `-t` or `--template`:
+Run Sita with a template file name:
 
 ```sh
-sita --template template.html --input hello.md 
+sita --input hello.md --template template.html
 ```
-Sita converts the input Markdown text to intermediate HTML text, then renders it via the template file `template.html`.
 
-The output is the file `hello.html` with this text:
+The result is the file `hello.html` with this text:
 
 ```html
-<html><body><p>hello world</p></body></html>
+<html>
+  <body>
+    <p>hello world</p>
+  </body>
+</html>
 ```
 
+Sita can process multiple items such as:
 
-### Output file option
-
-To choose an ouput file use the command line option `-o` or `--output-file`:
-
-```
-$ sita example.md --output-file output.html
+```sh
+sita --input hello.md --template x.html y.html z.html
 ```
 
-The outcome is a new page file `output.html`.
+Sita can process a directory recursively such as:
 
-The output file name can be:
-
-  * A base name such as `output.html`
-
-  * A relative path such as `build/output.html` 
-
-  * An absolute path such as `/tmp/output.html`
+```sh
+sita --input hello.md --template my-template-directory
+```
 
 
 ## Template engines
@@ -132,9 +158,9 @@ The roadmap is:
 
 * Handlebars - because of speed and simplicity.
 
-* Tera - because of advanced capabilties and pure Rust.
-
 * Liquid - because of popularity with ecommerce developers.
+
+* Tera - because of advanced capabilties and pure Rust.
 
 
 ## Front matter variables
@@ -207,10 +233,10 @@ The content starts here.
 Sita can use front matter variables that are set using files such as:
 
 ```sh
-$ sita example.md --variable-file var.html
-$ sita example.md --variable-file var.json
-$ sita example.md --variable-file var.toml
-$ sita example.md --variable-file var.yaml
+sita example.md --variable-file var.html
+sita example.md --variable-file var.json
+sita example.md --variable-file var.toml
+sita example.md --variable-file var.yaml
 ```
 
 Sita chooses the format based on the file name.
@@ -223,18 +249,9 @@ Sita chooses the format based on the file name.
 
 TODO list in priority order:
 
-* HTML default templates using the options `--lang`, `--title`, `--script`, `--stylesheet`.
+* HTML default templates using the options `--lang`, `--title`, `--script`.
 
 * Front matter variables via JON, TOML, YAML, and the option `--variable-file`.
-
-
-### UTF-8
-
-The command line options for `--script` and `--stylesheet` require UTF-8 strings in order to create valid URLs. 
-
-* These options cannot currently use OS-specific non-UTF-8 file names.
-
-* This means the options cannot point to a non-UTF-8 URL, such as a local file name that uses ASCII-only encoding.
 
 
 ## DEFERRED
@@ -270,33 +287,12 @@ The output file adds this HTML attribute:
 ```
 
 
-### Stylesheet option
-
-To use a stylesheet file, use the command line option `--stylesheet` such as:
-
-```sh
-$ sita example.md --stylesheet my.css
-```
-
-The output file adds this HTML:
-
-```html
-<link rel="stylesheet" href="my.css">
-```
-
-You can use `--stylesheet` multiple times such as:
-
-```sh
-$ sita example.md --stylesheet reset.css --stylesheet screen.js
-```
-
-
 ### Script option
 
 To use a script file, use the command line option `--script` such as:
 
 ```sh
-$ sita example.md --script-file my.js
+$ sita example.md --script my.js
 ```
 
 The output file adds this HTML:
@@ -308,5 +304,5 @@ The output file adds this HTML:
 You can use `--script` multiple times such as:
 
 ```sh
-$ sita example.md --script graphics.js --script utilities.js
+$ sita example.md --script graphics.js utilities.js
 ```
