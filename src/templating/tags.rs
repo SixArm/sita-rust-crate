@@ -25,64 +25,50 @@ fn html_tag_with_default() -> HtmlString {
 /// ```
 ///
 #[allow(dead_code)]
-fn html_tag_with_lang(lang: &str) -> HtmlString {
-    format!("<html lang=\"{}\">", lang)
+fn html_tag_with_lang<S: AsRef<str> + Sized>(lang: S) -> HtmlString {
+    format!("<html lang=\"{}\">", lang.as_ref())
 }
 
-/// Create a "title" tag with default settings, 
-/// which is always blank.
-///
-/// Example:
+/// Create a "link" tag with a rel and href URL.
 ///
 /// ```
-/// let x = title_tag_with_default();
-/// assert_eq!(x, "");
+/// let rel = "stylesheet";
+/// let href = "example.css";
+/// let html = link_tagger_with_rel_and_href(rel, href);
+/// assert_eq!(x, "<link rel=\"stylesheet\" href=\"example.css\">");
 /// ```
 ///
 #[allow(dead_code)]
-fn title_tag_with_default() -> HtmlString {
-    String::from("<title></title>")
+fn link_tagger_with_rel_and_href<S: AsRef<str> + Sized>(rel: S, href: S) -> HtmlString {
+    format!("<link rel=\"{}\" href=\"{}\" />", rel.as_ref(), href.as_ref())
 }
 
-/// Create a "title" tag with a title setting.
+/// Create a "title" tag pair with a title setting.
 ///
 /// Example:
 ///
 /// ```
 /// let title = "Welcome";
-/// let x = title_tag_with_title(title);
+/// let x = title_tagger_with_title(title);
 /// assert_eq!(x, "<title>Welcome</title>");
 /// ```
 ///
 #[allow(dead_code)]
-fn title_tag_with_title(title: &str) -> HtmlString {
-    format!("<title>{}</title>", title)
+fn title_tagger_with_title<S: AsRef<str> + Sized>(title: S) -> HtmlString {
+    format!("<title>{}</title>", title.as_ref())
 }
 
 /// Create a "script" tag string with a URL.
 ///
 /// ```
 /// let url: &UrlStr = "my.js";
-/// let x = script_tag_with_url(&url);
+/// let x = script_tagger_with_src(&url);
 /// assert_eq!(x, "<script src=\"my.js\"></script>");
 /// ```
 ///
 #[allow(dead_code)]
-fn script_tag_with_url(url: &UrlStr) -> HtmlString {
+fn script_tagger_with_src(url: &UrlStr) -> HtmlString {
     format!("<script src=\"{}\"></script>", url)
-}
-
-/// Create a stylesheet "link" tag with a URL.
-///
-/// ```
-/// let url: &UrlStr = "my.css";
-/// let x = stylesheet_tag_with_url(url);
-/// assert_eq!(x, "<link rel=\"stylesheet\" href=\"my.css\">");
-/// ```
-///
-#[allow(dead_code)]
-fn stylesheet_tag_with_url(url: &UrlStr) -> HtmlString {
-    format!("<link rel=\"stylesheet\" href=\"{}\">", url)
 }
 
 #[cfg(test)]
@@ -104,35 +90,28 @@ mod tests {
         assert_eq!(actual, expect);
     }
 
-
     #[test]
-    fn test_title_tag_with_default() {
-        let actual = super::title_tag_with_default();
-        let expect = "<title></title>";
+    fn test_link_tagger_with_rel_and_href() {
+        let rel = "alpha";
+        let href: &UrlStr = "bravo";
+        let actual = super::link_tagger_with_rel_and_href(&rel, &href);
+        let expect = "<link rel=\"alpha\" href=\"bravo\">";
         assert_eq!(actual, expect);
     }
 
     #[test]
-    fn test_title_tag_with_title() {
-        let title = "Welcome";
-        let actual = super::title_tag_with_title(&title);
-        let expect = "<title>Welcome</title>";
+    fn test_title_tagger_with_title() {
+        let title = "alpha";
+        let actual = super::title_tagger_with_title(&title);
+        let expect = "<title>alpha</title>";
         assert_eq!(actual, expect);
     }
 
     #[test]
-    fn test_script_tag_with_url() {
+    fn test_script_tagger_with_src() {
         let url: &UrlStr = "alpha";
-        let actual = super::script_tag_with_url(&url);
+        let actual = super::script_tagger_with_src(&url);
         let expect = "<script src=\"alpha\"></script>";
-        assert_eq!(actual, expect);
-    }
-
-    #[test]
-    fn test_stylesheet_tag_with_url() {
-        let url: &UrlStr = "alpha";
-        let actual = super::stylesheet_tag_with_url(&url);
-        let expect = "<link rel=\"stylesheet\" href=\"alpha\">";
         assert_eq!(actual, expect);
     }
 
