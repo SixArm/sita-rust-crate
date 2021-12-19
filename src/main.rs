@@ -31,7 +31,7 @@ extern crate env_logger;
 // #[macro_use]
 // extern crate maplit;
 
-////
+//// Modules
 
 #[macro_use] pub(crate) mod types; // Type aliases
 
@@ -47,6 +47,7 @@ pub(crate) mod fun { // Functions
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
+    pub(crate) mod path_buf_to_sibling;
 }
 
 pub(crate) mod markdown {
@@ -70,6 +71,8 @@ pub(crate) mod templating {
         pub(crate) mod tera;
     }
 }
+
+//// Main error-chain
 
 fn main() {
     env_logger::init();
