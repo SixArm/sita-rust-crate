@@ -29,7 +29,7 @@ We create a typical output file with HTML:
 echo "<p>hello world</p>" > bravo.html
 ```
 
-We create a corresponding output file with our naming convention of a file name suffix "=expect.html", that the tests  use to compare actual output with expected output:
+We create a corresponding output file with our naming convention of a file name suffix "=expect.html", that the tests use to compare actual output with expected output:
 
 ```sh
 echo "<p>hello world</p>" > bravo.html=expect.html
