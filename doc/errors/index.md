@@ -31,7 +31,7 @@ pub use errors::*;
 
 Our convention is a file `main.rs` where the setup happens:
 
-```
+```rust
 fn main() {
     if let Err(ref e) = crate::run::run() {
         println!("error: {}", e);
@@ -48,7 +48,7 @@ fn main() {
 
 Our convention is a file `run.rs` where the work happens:
 
-```
+```rust
 pub(crate) fn run() -> Result<()> {
     …
     Ok(())
