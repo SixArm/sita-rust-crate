@@ -127,7 +127,7 @@ fn do_path<T: Templater>(
     Ok(())
 }
 
-/// Vet input path buffer exists.
+/// Vet input file path buffer exists.
 ///
 /// Example:
 ///
