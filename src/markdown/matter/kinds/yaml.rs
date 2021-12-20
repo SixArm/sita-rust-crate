@@ -18,7 +18,7 @@ use serde_yaml;
 // }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A---\n(?P<matter>.*?)\n---\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A---\n(?P<matter>.*?\n)---\n(?P<markdown>.*)\z").unwrap()
 });
 
 #[allow(dead_code)]

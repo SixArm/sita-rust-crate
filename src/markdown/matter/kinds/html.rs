@@ -5,7 +5,7 @@ use regex::Regex;
 use crate::types::*;
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?)\n-->\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?\n)-->\n(?P<markdown>.*)\z").unwrap()
 });
 
 pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
