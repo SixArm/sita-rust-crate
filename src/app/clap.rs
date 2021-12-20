@@ -106,15 +106,15 @@ pub fn app() -> App<'static> {
         .short('s')
         .long("set")
         .value_names(&["NAME", "VALUE"])
+        .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
         .about("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
     .arg(Arg::new("verbose")
         .short('v')
         .long("verbose")
-        .multiple_occurrences(true)
-        .multiple_values(true)
         .takes_value(false)
+        .multiple_occurrences(true)
         .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
 }
 
