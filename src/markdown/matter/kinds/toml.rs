@@ -29,11 +29,11 @@ pub fn extract(input: &str) -> Option<(&str, &str)> {
 /// Example:
 ///
 /// ```
-/// let block = indoc!{r#"
+/// let text = indoc!{r#"
 ///     alpha = "bravo"
 ///     charlie = "delta"
 /// "#};
-/// let x: ::toml::Value = parse(&block).unwrap();
+/// let x: ::toml::Value = parse(&text).unwrap();
 /// assert_eq!(x["alpha"], "bravo");
 /// assert_eq!(x["charlie"], "delta");
 /// ```
@@ -41,6 +41,28 @@ pub fn extract(input: &str) -> Option<(&str, &str)> {
 #[allow(dead_code)]
 pub fn parse<S: AsRef<str> + Sized>(text: S) -> Result<::toml::Value, ::toml::de::Error> {
     text.as_ref().parse::<::toml::Value>()
+}
+
+/// Parse a block of text to a matter state struct TOML enum.
+///
+/// Example:
+///
+/// ```
+/// let text = indoc!{r#"
+///     alpha = "bravo"
+///     charlie = "delta"
+/// "#};
+/// let state: crate::markdown::matter::state::State = parse_to_state(&text);
+/// assert_eq!(state["alpha"], "bravo");
+/// assert_eq!(state["charlie"], "delta");
+/// ```
+///
+#[allow(dead_code)]
+pub fn parse_to_state<S: AsRef<str> + Sized>(text: S) -> crate::markdown::matter::state::State {
+    match parse(text) {
+        Ok(x) => crate::markdown::matter::state::State::TOML(x),
+        _ => crate::markdown::matter::state::State::None,
+    }
 }
 
 #[cfg(test)]
@@ -85,15 +107,25 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let s = indoc!{r#"
+        let text = indoc!{r#"
             alpha = "bravo"
             charlie = "delta"
         "#};
-        let matter_result = parse(s);
+        let matter_result = parse(&text);
         assert!(matter_result.is_ok());
         let matter = matter_result.unwrap();
         assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
         assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
+    }
+
+    #[test]
+    fn test_parse_to_state() {
+        let text = indoc!{r#"
+            alpha = "bravo"
+            charlie = "delta"
+        "#};
+        let _state = parse_to_state(&text);
+        //TODO
     }
 
 }

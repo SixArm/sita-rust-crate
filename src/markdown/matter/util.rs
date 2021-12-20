@@ -21,16 +21,16 @@ use crate::errors::*;
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, crate::markdown::matter::state::State) {
     if let Some((markdown, matter)) = crate::markdown::matter::kinds::html::extract(input) {
-        return (markdown, crate::markdown::matter::state::State::HTML(matter));
+        return (markdown, crate::markdown::matter::kinds::html::parse_to_state(matter));
     };
-    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::json::extract(input) {
-        return (markdown, crate::markdown::matter::state::State::JSON(matter));
+    if let Some((markdown, matter)) = crate::markdown::matter::kinds::json::extract(input) {
+        return (markdown, crate::markdown::matter::kinds::json::parse_to_state(matter));
     };
-    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::toml::extract(input) {
-        return (markdown, crate::markdown::matter::state::State::TOML(matter))
+    if let Some((markdown, matter)) = crate::markdown::matter::kinds::toml::extract(input) {
+        return (markdown, crate::markdown::matter::kinds::toml::parse_to_state(matter));
     }
-    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::yaml::extract(input) {
-        return (markdown, crate::markdown::matter::state::State::YAML(matter));
+    if let Some((markdown, matter)) = crate::markdown::matter::kinds::yaml::extract(input) {
+        return (markdown, crate::markdown::matter::kinds::yaml::parse_to_state(matter));
     }
     return (input, crate::markdown::matter::state::State::None)
 }

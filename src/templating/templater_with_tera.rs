@@ -1,204 +1,138 @@
-//! Templating with Tera
+//! Templater with Tera
 
-use indoc::indoc;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 use crate::types::*;
+use crate::templating::templater::Templater;
 
-pub type Templater = ::tera::Tera;
-
-// Create a default templater.
-//
-// Example:
-//
-// ```
-// let templater = default();
-// ```
-//
-pub fn default() -> Templater {
-    ::tera::Tera::default()
+pub struct TemplaterWithTera {
+    pub tera: ::tera::Tera,
 }
 
-// Create a default templater with args.
-//
-// Example:
-//
-// ```
-// let args = Args::default();
-// let templater = default_with_args(&args);
-// ```
-//
-pub fn default_with_args(_args: &Args) -> Templater {
-    let mut templater = default();
-    templater.autoescape_on(vec![]); // disable autoescaping completely
-    templater
-}
+impl Templater for TemplaterWithTera {
 
-// Add a template via name and text.
-//
-// Example:
-//
-// ```
-// let mut templater = default();
-// let name = "alpha";
-// let text = "<p>{{ bravo }}</p>";
-// add_template_via_name_and_text(&name, &text);
-// ```
-//
-pub fn add_template_via_name_and_text(templater: &mut Templater, name: &str, text: &str) -> Result<()> {
-    templater.add_raw_template(&name, &text)
-    .chain_err(|| "add_template_via_name_and_text")
-}
-
-// Add a template via name and file.
-//
-// Example:
-//
-// ```
-// let mut templater = default();
-// let name = "alpha";
-// let file = PathBuf::from("template.html")
-// add_template_via_name_and_file(&name, &file);
-// ```
-//
-pub fn add_template_via_name_and_file(templater: &mut Templater, name: &str, file: &PathBuf) -> Result<()> {
-    templater.add_template_file(&file, Some(&name))
-    .chain_err(|| "add_template_via_name_and_file")
-}
-
-// Add tempate files via args, such as template file name.
-//
-// Example:
-//
-// ```rust
-// let paths: List<PathBuf> = vec![
-//     PathBuf::from("alpha.html"),
-//     PathBuf::from("bravo.html"),
-// ];
-// let mut args = Args::default();
-// args.template_list_path_buf = Some(paths);
-// let mut templater = default();
-// add_template_files_via_args(templater, args);
-// ```
-//
-pub fn add_template_files_via_args(templater: &mut Templater, args: &Args) -> Result<()> {
-    if let Some(ref path_buf_list) = args.template_list_path_buf {
-        for path_buf in path_buf_list {
-            trace!("add_template_files_via_args path_buf: {:?}", &path_buf);
-            let name = path_buf.file_name().unwrap().to_string_lossy(); //TODO err
-            add_template_via_name_and_file(templater, &name, path_buf)
-            .chain_err(|| "add_template_via_name_and_file")?;
+    // Create a new templater.
+    //
+    // Example:
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // ```
+    //
+    fn new() -> Self {
+        let my_tera = ::tera::Tera::default();
+        TemplaterWithTera {
+            tera: my_tera,
         }
     }
-    Ok(())
-}
 
-// Add a default template.
-//
-// Example:
-//
-// ```
-// let mut templater = default();
-// add_template_default(templater);
-// //-> Tera now has a template name "default" with content "{{ content }}"
-// ```
-//
-pub fn add_template_default(templater: &mut Templater) -> Result<()> {
-    add_template_via_name_and_text(
-        templater,
-        &template_default_name(),
-        &template_default_content(),
-    )
-}
-
-// Does the templater have any templates?
-//
-// Example:
-//
-// ```
-// let mut templater = default();
-// let flag = tera_has_template(templater);
-// assert_eq!(flag, false);
-// ```
-//
-// ```
-// let mut templater = default();
-// templater.add_raw_template("my-template", "{{ my-content }}");
-// let flag = has_template(templater);
-// assert_eq!(flag, true);
-// ```
-//
-pub fn has_template(templater: &Templater) -> bool {
-    templater.get_template_names().nth(0).is_some()
-}
-
-// Get the template names.
-//
-// Example:
-//
-// ```
-// let mut templater = default();
-// add_template_via_name_and_text("alpha", "alpha text".into());
-// add_template_via_name_and_text("bravo", "bravo text".into());
-// let template_names: Set<&String> = template_names(&templater);
-// assert_eq!(template_names, set!["alpha", "bravo"]);
-// ```
-//
-pub fn template_names_as_set_str<'a>(templater: &'a Templater) -> Set<&'a str> {
-    templater.get_template_names().collect::<_>()
-}
-
-// Get the best template name.
-//
-// The best template name is currently 
-// chosen as the first name alphabetically.
-//
-// Example with default template:
-//
-// ```
-// let mut templater = default();
-// let name = best_template_name(templater);
-// assert_eq!(name, "default");
-// ```
-//
-// Example with custom template:
-//
-// ```
-// let mut templater = default();
-// templater.add_raw_template("my-template", "{{ my-content }}");
-// let name = best_template_name(templater);
-// assert_eq!(name, "my-template");
-// ```
-//
-pub fn best_template_name(templater: &Templater) -> String {
-    if let Some(name) = templater.get_template_names().min() {
-        String::from(name)
-    } else {
-        template_default_name()
+    // Create a new templater with args.
+    //
+    // Example:
+    //
+    // ```
+    // let args = Args::default();
+    // let mut templater = TemplaterWithTera::new_with_args(&args);
+    // ```
+    //
+    fn new_with_args(_args: &Args) -> Self {
+        let mut my_tera = ::tera::Tera::default();
+        my_tera.autoescape_on(vec![]); // disable autoescaping completely
+        TemplaterWithTera {
+            tera: my_tera,
+        }        
     }
-}
 
-// Get the template default name, which is "default".
-//
-// ```
-// let name = template_default_name();
-// assert_eq!(name, "default");
-// ```
-//
-pub fn template_default_name() -> String {
-    String::from("default")
-}
+    // Add a template via name and text.
+    //
+    // Example:
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // let name = "alpha";
+    // let text = "<p>{{ bravo }}</p>";
+    // add_template_via_name_and_text(&name, &text);
+    // ```
+    //
+    fn add_template_via_name_and_text(&mut self, name: &str, text: &str) -> Result<()> {
+        self.tera.add_raw_template(&name, &text)
+        .chain_err(|| "add_template_via_name_and_text")
+    }
 
-// Get the template default content, which is "{{ content }}".
-//
-// ```
-// let content = template_default_content();
-// assert_eq!(content, "{{ content }}");
-// ```
-//
-pub fn template_default_content() -> String {
-    String::from(indoc!{r#"{{ content }}"#})
+    // Add a template via name and file.
+    //
+    // Example:
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // let name = "alpha";
+    // let file = PathBuf::from("template.html")
+    // add_template_via_name_and_file(&name, &file);
+    // ```
+    //
+    fn add_template_via_name_and_file(&mut self, name: &str, file: &PathBuf) -> Result<()> {
+        self.tera.add_template_file(&file, Some(&name))
+        .chain_err(|| "add_template_via_name_and_file")
+    }
+
+    // Does the templater have any templates?
+    //
+    // Example:
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // let flag = tera_has_template(templater);
+    // assert_eq!(flag, false);
+    // ```
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // templater.add_template_via_name_and_text("my-template", "{{ my-content }}");
+    // let flag = has_template(templater);
+    // assert_eq!(flag, true);
+    // ```
+    //
+    fn has_template(&self) -> bool {
+        self.tera.get_template_names().nth(0).is_some()
+    }
+
+    // Get the template names.
+    //
+    // Example:
+    //
+    // ```
+    // let mut templater = TemplaterWithTera::new();
+    // add_template_via_name_and_text("alpha", "alpha text".into());
+    // add_template_via_name_and_text("bravo", "bravo text".into());
+    // let template_names: Set<&str> = templater.template_names_as_set_str();
+    // assert_eq!(template_names, set!["alpha", "bravo"]);
+    // ```
+    //
+    fn template_names_as_set_str(&self) -> Set<&str> {
+        self.tera.get_template_names().collect::<_>()
+    }
+
+    // Render a template name with the given variables as JSON.
+    //
+    // ```
+    // let templater: Templater = TemplaterWithTera::new();
+    // templater.add_default_template();
+    // let name = template_default_name();
+    // let vars: ::serde_json::Value = ::serde_json::from_str(indoc!{r#"{"content": "alpha"}"#}).unwrap();
+    // let html = templater.render(&name, &vars);
+    // assert_eq!(html, "alpha");
+    // ```
+    //
+    fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::markdown::matter::state::State) -> Result<HtmlString> {
+        let context = crate::markdown::matter::util::from_state_to_tera_context(&vars)
+        .chain_err(|| "create tera context")?;
+        debug!("context: {:?}", &context);
+        let html = self.tera.render(template_name.as_ref(), &context)
+        .chain_err(|| "render template with tera context")?;
+        Ok(html)
+    }
+
 }
 
 #[cfg(test)]
@@ -214,144 +148,131 @@ mod tests {
 
     const FAB_OUTPUT_HTML: &str = "my content";
 
+    type TemplaterX = TemplaterWithTera;
+
     #[test]
     fn test_default() {
-        let _templater = super::default();
+        let _templater = TemplaterX::new();
         //TODO
     }
 
     #[test]
     fn test_default_with_args() {
         let args = Args::default();
-        let _templater = super::default_with_args(&args);
+        let _templater = TemplaterX::new_with_args(&args);
         //TODO
     }
 
     #[test]
     fn test_add_template_via_name_and_text() {
-        let mut templater = super::default();
+        let mut templater = TemplaterX::new();
         let name = "alpha";
         let text = "{{ bravo }}";
-        add_template_via_name_and_text(&mut templater, &name, &text);
-        assert!(super::has_template(&templater));
+        templater.add_template_via_name_and_text(&name, &text);
+        assert!(templater.has_template());
     }
 
     #[test]
     fn test_add_template_via_name_and_file() {
-        let mut templater = super::default();
+        let mut templater = TemplaterX::new();
         let name = "alpha";
         let file = TESTS_DIR.join("function").join("add_template_via_name_and_file").join("template.html");
-        add_template_via_name_and_file(&mut templater, &name, &file);
-        assert!(super::has_template(&templater));
+        templater.add_template_via_name_and_file(&name, &file);
+        assert!(templater.has_template());
     }
 
     #[test]
     fn test_has_template_x_true() {
-        let mut templater  = super::default();
-        templater.add_raw_template("my-name", "my-content").unwrap();
-        let flag = super::has_template(&templater);
+        let mut templater  = TemplaterX::new();
+        templater.add_template_via_name_and_text("my-name", "my-content").unwrap();
+        let flag = templater.has_template();
         assert_eq!(flag, true);
     }
 
     #[test]
     fn test_has_template_x_false() {
-        let templater = super::default();
-        let flag = super::has_template(&templater);
+        let templater = TemplaterX::new();
+        let flag = templater.has_template();
         assert_eq!(flag, false);
     }
 
     #[test]
-    pub fn test_template_names_as_set_str() {
-        let mut templater = default();
+    fn test_template_names_as_set_str() {
+        let mut templater = TemplaterX::new();
         let name_0: &str = "my-name-0";
         let name_1: &str = "my-name-1";
-        add_template_via_name_and_text(&mut templater, &name_0, "my text 0").expect("add_template_via_name_and_text");
-        add_template_via_name_and_text(&mut templater, &name_1, "my text 1").expect("add_template_via_name_and_text");
-        let actual: Set<&str> = super::template_names_as_set_str(&templater);
+        templater.add_template_via_name_and_text(&name_0, "my text 0").expect("add_template_via_name_and_text");
+        templater.add_template_via_name_and_text(&name_1, "my text 1").expect("add_template_via_name_and_text");
+        let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);
     }
 
     #[test]
-    fn test_best_template_name_x_default_name() {
-        let templater = super::default();
-        let name = best_template_name(&templater);
-        assert_eq!(name, "default");
+    fn test_render_template_with_vars_x_html() {
+        let mut templater = TemplaterX::new();
+        templater.add_template_default().expect("default");
+        let matter = indoc!{r#"
+            <!--
+                title: my title
+                content: my content
+            -->
+        "#};
+        let _name = templater.template_default_name();
+        let _vars =  crate::markdown::matter::kinds::html::parse_to_state(&matter);
+        // let result = templater.render_template_with_vars(&name, &vars);
+        // assert!(result.is_ok());
+        // let actual = result.unwrap();
+        // assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_best_template_name_x_custom_name() {
-        let mut templater = super::default();
-        templater.add_raw_template("my-name", "{{ my-content }}").unwrap();
-        let name = best_template_name(&templater);
-        assert_eq!(name, "my-name");
-    }
-
-    // #[test]
-    // fn test_render_x_html() {
-    //     let mut templater = super::default();
-    //     add_template_default(&mut templater).expect("default");
-    //     let vars = indoc!{r#"
-    //         <!--
-    //             title: my title
-    //             content: my content
-    //         -->
-    //     "#};
-    //     let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
-    //     let actual = templater.render(
-    //         &template_default_name(),
-    //         &::tera::Context::from_serialize(&vars).unwrap()
-    //     ).unwrap();
-    //     assert_eq!(actual, FAB_OUTPUT_HTML);
-    // }
-
-    #[test]
-    fn test_render_x_json() {
-        let mut templater = super::default();
-        add_template_default(&mut templater).expect("default");
-        let vars = indoc!{r#"
+    fn test_render_template_with_vars_x_json() {
+        let mut templater = TemplaterX::new();
+        templater.add_template_default().expect("default");
+        let matter = indoc!{r#"
             {
                 "title": "my title",
                 "content": "my content"
             }
         "#};
-        let vars: ::serde_json::Value = ::serde_json::from_str(vars).unwrap();
-        let actual = templater.render(
-            &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
-        ).unwrap();
+        let name = templater.template_default_name();
+        let vars = crate::markdown::matter::kinds::json::parse_to_state(&matter);
+        let result = templater.render_template_with_vars(&name, &vars);
+        assert!(result.is_ok());
+        let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_x_toml() {
-        let mut templater = super::default();
-        add_template_default(&mut templater).expect("default");
-        let vars = indoc!{r#"
+    fn test_render_template_with_vars_x_toml() {
+        let mut templater = TemplaterX::new();
+        templater.add_template_default().expect("default");
+        let matter = indoc!{r#"
             title = "my title"
             content = "my content"
         "#};
-        let vars: ::toml::Value = vars.parse::<::toml::Value>().unwrap();
-        let actual = templater.render(
-            &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
-        ).unwrap();
+        let name = templater.template_default_name();
+        let vars = crate::markdown::matter::kinds::toml::parse_to_state(&matter);
+        let result = templater.render_template_with_vars(&name, &vars);
+        assert!(result.is_ok());
+        let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_x_yaml() {
-        let mut templater = super::default();
-        add_template_default(&mut templater).expect("default");
-        let vars = indoc!{r#"
+    fn test_render_template_with_vars_x_yaml() {
+        let mut templater = TemplaterX::new();
+        templater.add_template_default().expect("default");
+        let matter = indoc!{r#"
             title: "my title"
             content: "my content"
         "#};
-        let vars: ::serde_yaml::Value = ::serde_yaml::from_str(&vars).unwrap();
-        let actual = templater.render(
-            &template_default_name(),
-            &::tera::Context::from_serialize(&vars).unwrap()
-        ).unwrap();
+        let name = templater.template_default_name();
+        let vars = crate::markdown::matter::kinds::yaml::parse_to_state(&matter);
+        let result = templater.render_template_with_vars(&name, &vars);
+        assert!(result.is_ok());
+        let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 

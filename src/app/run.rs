@@ -5,8 +5,8 @@ use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
 use crate::fun::path_buf_to_sibling::*;
-
-type Templater = ::tera::Tera;
+use crate::templating::templater::Templater;
+use crate::templating::templater_with_tera::TemplaterWithTera;
 
 /// Run everything.
 ///
@@ -39,16 +39,15 @@ pub(crate) fn run() -> Result<()> {
     if args.test { println!("{:?}", args); }
 
     // Initialize templating
-    let mut templater_handlebars = crate::templating::kinds::handlebars::default_with_args(&args);
-    let mut templater = crate::templating::kinds::tera::default_with_args(&args);
+    let mut templater = TemplaterWithTera::new_with_args(&args);
 
     // Add templates
-    crate::templating::kinds::tera::add_template_files_via_args(&mut templater, &args)
+    templater.add_template_files_via_args(&args)
     .chain_err(|| "add_template_files_via_args")?;
 
     // Add default template as needed
-    if !crate::templating::kinds::tera::has_template(&templater) {
-        crate::templating::kinds::tera::add_template_default(&mut templater)
+    if !templater.has_template() {
+        templater.add_template_default()
         .chain_err(|| "add_template_default")?;
     }
 
@@ -76,8 +75,9 @@ pub(crate) fn run() -> Result<()> {
     Ok(())
 }
 
-fn do_path(
-    args: &Args, templater: &Templater, 
+fn do_path<T: Templater>(
+    args: &Args, 
+    templater: &T, 
     input: &PathBuf, 
     output: &PathBuf
 ) -> Result<()> {
@@ -105,42 +105,17 @@ fn do_path(
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    // Create templater context that holds variables
-    let mut context = match matter {
-        crate::markdown::matter::state::State::HTML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "create context")?
-        }
-        crate::markdown::matter::state::State::JSON(x) =>  {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "create context")?
-        }
-        crate::markdown::matter::state::State::TOML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "create context")?
-        }            
-        crate::markdown::matter::state::State::YAML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "create context")?
-        }, 
-        crate::markdown::matter::state::State::None => {
-            ::tera::Context::new()
-        }
-    };
-    debug!("context: {:?}", &context);
-
-    // Set the magic "content" key for the corresponding template tag "{{ content }}"
-    context.insert("content", &content_as_html_text);
-    debug!("context with content: {:?}", &context);
-
     // Select relevant template name
-    let template_name = select_template_name(&args, &templater);
+    let template_name = select_template_name(&args, templater);
     debug!("template_name: {:?}", &template_name);
 
-    // Render template with context
-    let output_as_html_text = templater.render(&template_name, &context)
-    .chain_err(|| "render template")?;
-    debug!("output_as_html_text: {:?}", &output_as_html_text);
+    // Set the magic "content" key for the corresponding template tag "{{ content }}"
+    //tera_context.insert("content", &content_as_html_text);
+    //debug!("tera_context with content: {:?}", &tera_context);
+
+    // Render template
+    let output_as_html_text = templater.render_template_with_vars(&template_name, &matter)
+    .chain_err(|| "render template with vars")?;
 
     // Write output
     debug!("write file");
@@ -244,17 +219,17 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
 /// Example:
 ///
 /// ```
-/// let templater = crate::templating::kinds::tera::default();
+/// let mut templater = TemplaterWithTera::new();
 /// let template_name = select_template_name(&args, &templater);
 /// assert_eq!(template_name, "default");
 /// ```
 ///
-fn select_template_name(args: &Args, templater: &Templater) -> String {
-    trace!("template_name(…)");
+fn select_template_name<T: Templater>(args: &Args, templater: &T) -> String {
+    trace!("select_template_name(…)");
     if let Some(s) = &args.template_name {
         s.clone()
     } else {
-        crate::templating::kinds::tera::best_template_name(&templater)
+        templater.template_default_name()
     }
 }
 
@@ -264,6 +239,7 @@ mod tests {
     use ::std::path::PathBuf;
     use ::lazy_static::lazy_static;
     use crate::app::args::Args;
+    use crate::templating::templater_with_tera::TemplaterWithTera;
 
     lazy_static! {
         pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
@@ -362,7 +338,7 @@ mod tests {
     #[test]
     fn test_select_template_name_x_default() {
         let args = Args::default();
-        let templater = crate::templating::kinds::tera::default();
+        let mut templater = TemplaterWithTera::new();
         let template_name = select_template_name(&args, &templater);
         assert_eq!(template_name, "default");
     }

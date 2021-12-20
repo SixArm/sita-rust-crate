@@ -29,11 +29,11 @@ pub fn extract(input: &str) -> Option<(&str, &str)> {
 /// Example:
 ///
 /// ```
-/// let block = indoc!{r#"
+/// let text = indoc!{r#"
 ///     alpha: bravo
 ///     charlie: delta
 /// "#};
-/// let x: Map<String, String> = parse(&block);
+/// let x: Map<String, String> = parse(&text);
 /// assert_eq!(x["alpha"], "bravo");
 /// assert_eq!(x["charlie"], "delta");
 /// ```
@@ -51,6 +51,29 @@ pub fn parse<S: AsRef<str> + Sized>(text: S) -> Map<String, String> {
         }
     }
     map
+}
+
+/// Parse a block of text to a matter state struct HTML enum.
+///
+/// Example:
+///
+/// ```
+/// let text = indoc!{r#"
+///     alpha: bravo
+///     charlie: delta
+/// "#};
+/// let state: crate::markdown::matter::state::State = parse_to_state(&text);
+/// assert_eq!(state["alpha"], "bravo");
+/// assert_eq!(state["charlie"], "delta");
+/// ```
+///
+#[allow(dead_code)]
+pub fn parse_to_state<S: AsRef<str> + Sized>(text: S) -> crate::markdown::matter::state::State {
+    let map = parse(text);
+    match map.is_empty() {
+        false => crate::markdown::matter::state::State::HTML(map),
+        _ => crate::markdown::matter::state::State::None,
+    }
 }
 
 #[cfg(test)]
@@ -98,13 +121,23 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let block = indoc!{r#"
+        let text = indoc!{r#"
             alpha: bravo
             charlie: delta
         "#};
-        let actual: Map<String, String> = parse_block_to_map(&block);
+        let actual: Map<String, String> = parse(&text);
         assert_eq!(actual["alpha"], "bravo");
         assert_eq!(actual["charlie"], "delta");
+    }
+
+    #[test]
+    fn test_parse_to_state() {
+        let text = indoc!{r#"
+            alpha: bravo
+            charlie: delta
+        "#};
+        let _state = parse_to_state(&text);
+        //TODO
     }
 
 }
