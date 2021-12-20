@@ -1,5 +1,7 @@
 //! Markdown matter using HTML, JSON, TOML, YAML.
 
+use crate::errors::*;
+
 /// Extract from markdown input to markdown output and matter variables.
 ///
 /// Example:
@@ -18,41 +20,44 @@
 ///
 #[allow(dead_code)]
 pub fn extract(input: &str) -> (&str, crate::markdown::matter::state::State) {
-    match input.chars().next() {
-        Some('<') => {
-            let (markdown, matter) = crate::markdown::matter::kinds::html::extract(input);
-            if let Some(matter) = matter {
-                (markdown, crate::markdown::matter::state::State::HTML(matter))
-            } else {
-                (input, crate::markdown::matter::state::State::None)
-            }
-        },
-        Some('{') => {
-            let (markdown, matter) = crate::markdown::matter::kinds::json::extract(input);
-            if let Some(Ok(matter)) = matter {
-                (markdown, crate::markdown::matter::state::State::JSON(matter))
-            } else {
-                (input, crate::markdown::matter::state::State::None)
-            }
-        },
-        Some('+') => {
-            let (markdown, matter) = crate::markdown::matter::kinds::toml::extract(input);
-            if let Some(Ok(matter)) = matter {
-                (markdown, crate::markdown::matter::state::State::TOML(matter))
-            } else {
-                (input, crate::markdown::matter::state::State::None)
-            }
-        }
-        Some('-') => {
-            let (markdown, matter) = crate::markdown::matter::kinds::yaml::extract(input);
-            if let Some(Ok(matter)) = matter {
-                (markdown, crate::markdown::matter::state::State::YAML(matter))
-            } else {
-                (input, crate::markdown::matter::state::State::None)
-            }
-        },
-        _ => (input, crate::markdown::matter::state::State::None),
+    if let Some((markdown, matter)) = crate::markdown::matter::kinds::html::extract(input) {
+        return (markdown, crate::markdown::matter::state::State::HTML(matter));
+    };
+    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::json::extract(input) {
+        return (markdown, crate::markdown::matter::state::State::JSON(matter));
+    };
+    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::toml::extract(input) {
+        return (markdown, crate::markdown::matter::state::State::TOML(matter))
     }
+    if let Some((markdown, Ok(matter))) = crate::markdown::matter::kinds::yaml::extract(input) {
+        return (markdown, crate::markdown::matter::state::State::YAML(matter));
+    }
+    return (input, crate::markdown::matter::state::State::None)
+}
+
+pub fn from_state_to_tera_context(state: &crate::markdown::matter::state::State) -> Result<::tera::Context> {
+    let mut context = match state {
+        crate::markdown::matter::state::State::HTML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter HTML to Tera context")?
+        }
+        crate::markdown::matter::state::State::JSON(x) =>  {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter JSON to Tera context")?
+        }
+        crate::markdown::matter::state::State::TOML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter TOML to Tera context")?
+        }            
+        crate::markdown::matter::state::State::YAML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter YAML to Tera context")?
+        }, 
+        crate::markdown::matter::state::State::None => {
+            ::tera::Context::new()
+        }
+    };
+    Ok(context)
 }
 
 #[cfg(test)]

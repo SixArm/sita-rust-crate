@@ -13,18 +13,36 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 });
 
 #[allow(dead_code)]
-pub fn extract(input: &str) -> (&str, Option<Result<::serde_json::Value, ::serde_json::Error>>) {
+pub fn extract(input: &str) -> Option<(&str, &str)> {
     if let Some(captures) = REGEX.captures(input) {
-        if let Some(matter) = captures.name("matter") {
-            if let Some(markdown) = captures.name("markdown") {
-                return (
-                    markdown.as_str(),
-                    Some(::serde_json::from_str(matter.as_str()))
-                )
-            }
-        }
+        Some((
+            captures.name("markdown").unwrap().as_str(),
+            captures.name("matter").unwrap().as_str(),
+        ))
+    } else {
+        None
     }
-    (input, None)
+}
+
+/// Parse a block of text to a JSON value.
+///
+/// Example:
+///
+/// ```
+/// let block = indoc!{r#"
+///     {
+///         "alpha": "bravo",
+///         "charlie": "delta"
+///     }
+/// "#};
+/// let x: ::serde_json::Value = parse(&block).unwrap();
+/// assert_eq!(x["alpha"], "bravo");
+/// assert_eq!(x["charlie"], "delta");
+/// ```
+///
+#[allow(dead_code)]
+pub fn parse<S: AsRef<str> + Sized>(text: S) -> Result<::serde_json::Value, ::serde_json::Error> {
+    ::serde_json::from_str(text.as_ref())
 }
 
 #[cfg(test)]
@@ -32,15 +50,8 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
 
-    // #[test]
-    // fn test_blank() {
-    //     let actual: ::serde_json::Value = super::blank();
-    //     let expect: ::serde_json::Value = ::serde_json::from_str("").unwrap();
-    //     assert_eq!(actual, expect);
-    // }
-
     #[test]
-    fn test_present() {
+    fn test_extract_x_present() {
         let input_markdown = indoc!{r#"
             {
                 "alpha": "bravo",
@@ -49,29 +60,47 @@ mod tests {
             echo
             foxtrot
         "#};
+        let expect_matter = indoc!{r#"
+            {
+                "alpha": "bravo",
+                "charlie": "delta"
+            }
+        "#};
         let expect_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
-        let (output_markdown, matter_option) = extract(input_markdown);
-        assert_eq!(output_markdown, expect_markdown);
-        assert!(matter_option.is_some());
-        let matter_result = matter_option.unwrap();
-        assert!(matter_result.is_ok());
-        let matter = matter_result.unwrap();
-        assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
-        assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
+        let option = extract(input_markdown);
+        assert!(option.is_some());
+        let (actual_markdown, actual_matter) = option.unwrap();
+        assert_eq!(actual_markdown, expect_markdown);
+        assert_eq!(actual_matter, expect_matter);
     }
 
     #[test]
-    fn test_absent() {
+    fn test_extract_x_absent() {
         let input_markdown = indoc!{r#"
             echo
             foxtrot
         "#};
-        let (output_markdown, json_option) = extract(input_markdown);
-        assert_eq!(output_markdown, input_markdown);
-        assert!(json_option.is_none());
+        let option = extract(input_markdown);
+        assert!(option.is_none());
+    }
+
+
+    #[test]
+    fn test_parse() {
+        let s = indoc!{r#"
+            {
+                "alpha": "bravo",
+                "charlie": "delta"
+            }
+        "#};
+        let matter_result = parse(s);
+        assert!(matter_result.is_ok());
+        let matter = matter_result.unwrap();
+        assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
+        assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
     }
 
 }
