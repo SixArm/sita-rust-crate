@@ -40,7 +40,7 @@ fn html_tag_with_lang<S: AsRef<str> + Sized>(lang: S) -> HtmlString {
 ///
 #[allow(dead_code)]
 fn link_tagger_with_rel_and_href<S: AsRef<str> + Sized>(rel: S, href: S) -> HtmlString {
-    format!("<link rel=\"{}\" href=\"{}\" />", rel.as_ref(), href.as_ref())
+    format!("<link rel=\"{}\" href=\"{}\">", rel.as_ref(), href.as_ref())
 }
 
 /// Create a "title" tag pair with a title setting.
