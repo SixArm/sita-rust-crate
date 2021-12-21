@@ -162,7 +162,7 @@ pub trait Templater {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::markdown::matter::state::State) -> Result<HtmlString>;
+    fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::matter::state::State) -> Result<HtmlString>;
 
 }
 

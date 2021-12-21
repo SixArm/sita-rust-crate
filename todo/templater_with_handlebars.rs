@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
 use crate::types::*;
+use crate::matter::matter_parser::MatterParser;
 use crate::templating::templater::Templater;
 
 pub struct TemplaterWithHandlebars<'a> {
@@ -218,7 +219,7 @@ mod tests {
             -->
         "#};
         let _name = templater.template_default_name();
-        let _vars =  crate::markdown::matter::kinds::html::parse_to_state(&matter);
+        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_to_matter_state(&matter);
         // let result = templater.render_template_with_vars(&name, &vars);
         // assert!(result.is_ok());
         // let actual = result.unwrap();
@@ -236,7 +237,7 @@ mod tests {
             }
         "#};
         let name = templater.template_default_name();
-        let vars = crate::markdown::matter::kinds::json::parse_to_state(&matter);
+        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -252,7 +253,7 @@ mod tests {
             content = "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::markdown::matter::kinds::toml::parse_to_state(&matter);
+        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -268,7 +269,7 @@ mod tests {
             content: "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::markdown::matter::kinds::yaml::parse_to_state(&matter);
+        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();

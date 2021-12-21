@@ -1,6 +1,11 @@
 //! Markdown matter using HTML, JSON, TOML, YAML.
 
 use crate::errors::*;
+use crate::matter::matter_parser::MatterParser;
+use crate::matter::matter_parser_with_html::MatterParserWithHTML;
+use crate::matter::matter_parser_with_json::MatterParserWithJSON;
+use crate::matter::matter_parser_with_toml::MatterParserWithTOML;
+use crate::matter::matter_parser_with_yaml::MatterParserWithYAML;
 
 /// Extract from markdown input to markdown output and matter variables.
 ///
@@ -19,41 +24,41 @@ use crate::errors::*;
 /// ```
 ///
 #[allow(dead_code)]
-pub fn extract(input: &str) -> (&str, crate::markdown::matter::state::State) {
-    if let Some((markdown, matter)) = crate::markdown::matter::kinds::html::extract(input) {
-        return (markdown, crate::markdown::matter::kinds::html::parse_to_state(matter));
+pub fn extract(input: &str) -> (&str, crate::matter::state::State) {
+    if let Some((markdown, matter)) = MatterParserWithHTML::parse(input) {
+        return (markdown, MatterParserWithHTML::parse_to_matter_state(matter));
     };
-    if let Some((markdown, matter)) = crate::markdown::matter::kinds::json::extract(input) {
-        return (markdown, crate::markdown::matter::kinds::json::parse_to_state(matter));
+    if let Some((markdown, matter)) = MatterParserWithJSON::parse(input) {
+        return (markdown, MatterParserWithJSON::parse_to_matter_state(matter));
     };
-    if let Some((markdown, matter)) = crate::markdown::matter::kinds::toml::extract(input) {
-        return (markdown, crate::markdown::matter::kinds::toml::parse_to_state(matter));
+    if let Some((markdown, matter)) = MatterParserWithTOML::parse(input) {
+        return (markdown, MatterParserWithTOML::parse_to_matter_state(matter));
     }
-    if let Some((markdown, matter)) = crate::markdown::matter::kinds::yaml::extract(input) {
-        return (markdown, crate::markdown::matter::kinds::yaml::parse_to_state(matter));
+    if let Some((markdown, matter)) = MatterParserWithYAML::parse(input) {
+        return (markdown, MatterParserWithYAML::parse_to_matter_state(matter));
     }
-    return (input, crate::markdown::matter::state::State::None)
+    return (input, crate::matter::state::State::None)
 }
 
-pub fn from_state_to_tera_context(state: &crate::markdown::matter::state::State) -> Result<::tera::Context> {
+pub fn from_state_to_tera_context(state: &crate::matter::state::State) -> Result<::tera::Context> {
     let mut context = match state {
-        crate::markdown::matter::state::State::HTML(x) => {
+        crate::matter::state::State::HTML(x) => {
             ::tera::Context::from_serialize(&x)
             .chain_err(|| "matter HTML to Tera context")?
         }
-        crate::markdown::matter::state::State::JSON(x) =>  {
+        crate::matter::state::State::JSON(x) =>  {
             ::tera::Context::from_serialize(&x)
             .chain_err(|| "matter JSON to Tera context")?
         }
-        crate::markdown::matter::state::State::TOML(x) => {
+        crate::matter::state::State::TOML(x) => {
             ::tera::Context::from_serialize(&x)
             .chain_err(|| "matter TOML to Tera context")?
         }            
-        crate::markdown::matter::state::State::YAML(x) => {
+        crate::matter::state::State::YAML(x) => {
             ::tera::Context::from_serialize(&x)
             .chain_err(|| "matter YAML to Tera context")?
         }, 
-        crate::markdown::matter::state::State::None => {
+        crate::matter::state::State::None => {
             ::tera::Context::new()
         }
     };
@@ -88,7 +93,7 @@ mod tests {
         "#};
         let (output_markdown, matter) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        if let crate::markdown::matter::state::State::HTML(matter) = matter {
+        if let crate::matter::state::State::HTML(matter) = matter {
             assert_eq!(matter["alpha"].as_str(), "bravo");
             assert_eq!(matter["charlie"].as_str(), "delta");
         } else {
@@ -112,7 +117,7 @@ mod tests {
         "#};
         let (output_markdown, matter) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        if let crate::markdown::matter::state::State::JSON(matter) = matter {
+        if let crate::matter::state::State::JSON(matter) = matter {
             assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
             assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
         } else {
@@ -136,7 +141,7 @@ mod tests {
         "#};
         let (output_markdown, matter) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        if let crate::markdown::matter::state::State::TOML(matter) = matter {
+        if let crate::matter::state::State::TOML(matter) = matter {
             assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
             assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
         } else {
@@ -160,7 +165,7 @@ mod tests {
         "#};
         let (output_markdown, matter) = extract(input_markdown);
         assert_eq!(output_markdown, expect_markdown);
-        if let crate::markdown::matter::state::State::YAML(matter) = matter {
+        if let crate::matter::state::State::YAML(matter) = matter {
             assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
             assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
         } else {

@@ -22,14 +22,14 @@ fn test_command_x_default() {
     assert!(expect.exists(), "expect path: {:?}", expect);
     remove_file_if_exists(&actual).expect("remove");
     // When
-    assert!(!actual.exists(), "actual path: {:?}", actual);
+    assert!(!actual.exists(), "!actual.exists() path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(input.as_os_str())
         .output()
         .expect("failure");
     // Then
-    assert!(actual.exists(), "actual path: {:?}", actual);
+    assert!(actual.exists(), "actual.exists() path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,
@@ -50,7 +50,7 @@ fn test_command_x_output_file() {
     assert!(expect.exists(), "expect path: {:?}", expect);
     remove_file_if_exists(&actual).expect("remove");
     // When
-    assert!(!actual.exists(), "actual path: {:?}", actual);
+    assert!(!actual.exists(), "!actual.exists() path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(input.as_os_str())
@@ -59,7 +59,7 @@ fn test_command_x_output_file() {
         .output()
         .expect("failure");
     // Then
-    assert!(actual.exists(), "actual path: {:?}", actual);
+    assert!(actual.exists(), "actual.exists() path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,
@@ -82,7 +82,7 @@ fn test_command_x_template_file() {
     assert!(expect.exists(), "expect path: {:?}", expect);
     remove_file_if_exists(&actual).expect("remove");
     // When
-    assert!(!actual.exists(), "actual path: {:?}", actual);
+    assert!(!actual.exists(), "!actual.exists() path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(input.as_os_str())
@@ -91,7 +91,7 @@ fn test_command_x_template_file() {
         .output()
         .expect("failure");
     // Then
-    assert!(actual.exists(), "actual path: {:?}", actual);
+    assert!(actual.exists(), "actual.exists() path: {:?}", actual);
     assert_fn_ok_eq!(
         ::std::fs::read_to_string,
         &actual,

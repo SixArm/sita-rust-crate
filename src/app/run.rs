@@ -98,7 +98,7 @@ fn do_path<T: Templater>(
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
     // Parse front matter that holds variables
-    let (content_as_markdown_text, matter) = crate::markdown::matter::util::extract(&content_as_markdown_text);
+    let (content_as_markdown_text, matter) = crate::matter::util::extract(&content_as_markdown_text);
     debug!("matter: {:?}", &matter);
 
     // Convert from Markdown text to HTML text

@@ -52,17 +52,18 @@ pub(crate) mod fun { // Functions
 
 pub(crate) mod markdown {
     pub(crate) mod markdown_parser;
-    pub(crate) mod matter {
-        pub(crate) mod state;
-        pub(crate) mod util;
-        pub(crate) mod kinds {
-            pub(crate) mod html;
-            pub(crate) mod json;
-            pub(crate) mod toml;
-            pub(crate) mod yaml;
-        }
-    }
 }
+
+pub(crate) mod matter {
+    pub(crate) mod state;
+    pub(crate) mod util;
+    pub(crate) mod matter_parser;
+    pub(crate) mod matter_parser_with_html;
+    pub(crate) mod matter_parser_with_json;
+    pub(crate) mod matter_parser_with_toml;
+    pub(crate) mod matter_parser_with_yaml;
+}
+
 pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tags;
