@@ -9,19 +9,19 @@ pub struct MatterParserWithTOML {
 
 impl MatterParser for MatterParserWithTOML {
     
-    /// Parse a block of text to a markdown content and matter text.
+    /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
-    fn parse(text: &str) -> Option<(&str, &str)> {
-        if let Some(captures) = REGEX.captures(text) {
+    fn parse_mix_text_to_content_text_and_matter_text(mix_text: &str) -> Option<(&str, &str)> {
+        if let Some(captures) = REGEX.captures(mix_text) {
             Some((
-                captures.name("markdown").unwrap().as_str(),
+                captures.name("content").unwrap().as_str(),
                 captures.name("matter").unwrap().as_str(),
             ))
         } else {
             None
         }
     }
-
+    
     /// Parse a block of text to a matter state struct TOML enum.
     ///
     /// Example:
@@ -37,8 +37,8 @@ impl MatterParser for MatterParserWithTOML {
     /// ```
     ///
     #[allow(dead_code)]
-    fn parse_to_matter_state<S: AsRef<str> + Sized>(text: S) -> crate::matter::state::State {
-        match parse_to_vars(text) {
+    fn parse_matter_text_to_matter_state<S: AsRef<str> + Sized>(matter_text: S) -> crate::matter::state::State {
+        match parse_matter_text_to_vars(matter_text) {
             Ok(x) => crate::matter::state::State::TOML(x),
             _ => crate::matter::state::State::None,
         }
@@ -52,27 +52,27 @@ impl MatterParser for MatterParserWithTOML {
 // }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A\+\+\+\n(?P<matter>.*?\n)\+\+\+\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A\+\+\+\n(?P<matter>.*?\n)\+\+\+\n(?P<content>.*)\z").unwrap()
 });
 
 
-/// Parse a block of text to a TOML value.
+/// Parse matter text to variables implemented as TOML.
 ///
 /// Example:
 ///
 /// ```
-/// let text = indoc!{r#"
+/// let matter_text = indoc!{r#"
 ///     alpha = "bravo"
 ///     charlie = "delta"
 /// "#};
-/// let x: ::toml::Value = parse(&text).unwrap();
-/// assert_eq!(x["alpha"], "bravo");
-/// assert_eq!(x["charlie"], "delta");
+/// let vars: ::toml::Value = parse_matter_text_to_vars(&matter_text).unwrap();
+/// assert_eq!(vars["alpha"], "bravo");
+/// assert_eq!(vars["charlie"], "delta");
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_to_vars<S: AsRef<str> + Sized>(text: S) -> Result<::toml::Value, ::toml::de::Error> {
-    text.as_ref().parse::<::toml::Value>()
+pub fn parse_matter_text_to_vars<S: AsRef<str> + Sized>(matter_text: S) -> Result<::toml::Value, ::toml::de::Error> {
+    matter_text.as_ref().parse::<::toml::Value>()
 }
 
 #[cfg(test)]
@@ -82,62 +82,75 @@ mod tests {
 
     type MatterParserX = MatterParserWithTOML;
 
-    #[test]
-    fn test_parse_x_present() {
-        let input_markdown = indoc!{r#"
-            +++
+    const MIX_TEXT: &str = indoc!{r#"
+        +++
+        alpha = "bravo"
+        charlie = "delta"
+        +++
+        echo
+        foxtrot
+    "#};
+
+    const CONTENT_TEXT: &str = indoc!{r#"
+        echo
+        foxtrot
+    "#};
+
+    const MATTER_TEXT: &str = indoc!{r#"
+        alpha = "bravo"
+        charlie = "delta"
+    "#};
+
+    fn expect_vars() -> toml::Value {
+        let s = indoc!{r#"
             alpha = "bravo"
             charlie = "delta"
-            +++
-            echo
-            foxtrot
         "#};
-        let expect_markdown = indoc!{r#"
-            echo
-            foxtrot
-        "#};
-        let expect_matter = indoc!{r#"
-            alpha = "bravo"
-            charlie = "delta"
-        "#};
-        let option = MatterParserX::parse(input_markdown);
-        assert!(option.is_some());
-        let (actual_markdown, actual_matter) = option.unwrap();
-        assert_eq!(actual_markdown, expect_markdown);
-        assert_eq!(actual_matter, expect_matter);
+        s.parse::<::toml::Value>().unwrap()
     }
 
     #[test]
-    fn test_parse_x_absent() {
-        let input_markdown = indoc!{r#"
-            echo
-            foxtrot
-        "#};
-        let option = MatterParserX::parse(input_markdown);
+    fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
+        assert!(option.is_some());
+        let (content_text, matter_text) = option.unwrap();
+        assert_eq!(content_text, CONTENT_TEXT);
+        assert_eq!(matter_text, MATTER_TEXT);
+    }
+
+    #[test]
+    fn test_parse_mix_text_to_content_text_and_matter_text_x_absent() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
         assert!(option.is_none());
     }
 
     #[test]
-    fn test_parse_to_vars() {
-        let text = indoc!{r#"
-            alpha = "bravo"
-            charlie = "delta"
-        "#};
-        let matter_result = parse_to_vars(&text);
-        assert!(matter_result.is_ok());
-        let matter = matter_result.unwrap();
-        assert_eq!(matter["alpha"].as_str().unwrap(), "bravo");
-        assert_eq!(matter["charlie"].as_str().unwrap(), "delta");
+    fn test_parse_matter_text_to_vars() {
+        let result = parse_matter_text_to_vars(MATTER_TEXT);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), expect_vars());
     }
 
     #[test]
-    fn test_parse_to_matter_state() {
-        let text = indoc!{r#"
-            alpha = "bravo"
-            charlie = "delta"
-        "#};
-        let _matter_state = MatterParserX::parse_to_matter_state(&text);
-        //TODO
+    fn test_parse_matter_text_to_matter_state() {
+        if let crate::matter::state::State::TOML(vars) = MatterParserX::parse_matter_text_to_matter_state(MATTER_TEXT) {
+            assert_eq!(vars, expect_vars());
+        } else {
+            panic!("State vars");
+        };
+    }
+
+    #[test]
+    fn test_parse_mix_text_to_content_text_and_matter_state() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_state(MIX_TEXT);
+        assert!(option.is_some());
+        let (content_text, matter_state) = option.unwrap();
+        assert_eq!(content_text, CONTENT_TEXT);
+        if let crate::matter::state::State::TOML(vars) = matter_state {
+            assert_eq!(vars, expect_vars());
+        } else {
+            panic!("State vars")
+        };
     }
 
 }

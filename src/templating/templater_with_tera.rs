@@ -126,7 +126,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::matter::state::State) -> Result<HtmlString> {
-        let context = crate::matter::util::from_state_to_tera_context(&vars)
+        let context = from_matter_state_to_tera_context(&vars)
         .chain_err(|| "create tera context")?;
         debug!("context: {:?}", &context);
         let html = self.tera.render(template_name.as_ref(), &context)
@@ -134,6 +134,31 @@ impl Templater for TemplaterWithTera {
         Ok(html)
     }
 
+}
+
+pub fn from_matter_state_to_tera_context(state: &crate::matter::state::State) -> Result<::tera::Context> {
+    let mut context = match state {
+        crate::matter::state::State::HTML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter HTML to Tera context")?
+        }
+        crate::matter::state::State::JSON(x) =>  {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter JSON to Tera context")?
+        }
+        crate::matter::state::State::TOML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter TOML to Tera context")?
+        }            
+        crate::matter::state::State::YAML(x) => {
+            ::tera::Context::from_serialize(&x)
+            .chain_err(|| "matter YAML to Tera context")?
+        }, 
+        crate::matter::state::State::None => {
+            ::tera::Context::new()
+        }
+    };
+    Ok(context)
 }
 
 #[cfg(test)]
@@ -220,7 +245,7 @@ mod tests {
             -->
         "#};
         let _name = templater.template_default_name();
-        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_to_matter_state(&matter);
+        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_matter_text_to_matter_state(&matter);
         // let result = templater.render_template_with_vars(&name, &vars);
         // assert!(result.is_ok());
         // let actual = result.unwrap();
@@ -238,7 +263,7 @@ mod tests {
             }
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -254,7 +279,7 @@ mod tests {
             content = "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -270,7 +295,7 @@ mod tests {
             content: "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();

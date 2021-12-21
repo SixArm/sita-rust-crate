@@ -2,54 +2,61 @@
 
 Matter is our generic term for web page file front matter.
 
-Various blog tools can use front matter with HTML, or JSON, or TOML, or YAML.
 
-Sita enables all of these.
+## Flavors
+
+Various blog tools can use front matter with various flavors, meaning various formats such as HTML, or JSON, or TOML, or YAML. 
+
+Sita can use any of these flavors.
 
 
-## HTML
+### HTML
 
 Example of front matter with HTML:
 
 ```
 <!--
     title: Hello World
+    contact: alice@example.com
 -->
 Content starts here.
 ```
 
 
-## JSON
+### JSON
 
 Example of front matter with JSON:
 
 ```
 {
-    "title": "Hello World"
+    "title": "Hello World",
+    "contact": "alice@example.com"
 }
 Content starts here.
 ```
 
 
-## TOML
+### TOML
 
 Example of front matter with TOML:
 
 ```
 +++
     title = "Hello World"
+    contact = "alice@example.com"
 +++
 Content starts here.
 ```
 
 
-## YAML
+### YAML
 
 Example of front matter with YAML:
 
 ```
 ---
     title: Hello World
+    contact: alice@example.com
 ---
 Content starts here.
 ```

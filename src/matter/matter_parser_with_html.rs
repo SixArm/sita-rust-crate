@@ -10,12 +10,12 @@ pub struct MatterParserWithHTML {
 
 impl MatterParser for MatterParserWithHTML {
 
-    /// Parse a block of text to a markdown content and matter text.
+    /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
-    fn parse(text: &str) -> Option<(&str, &str)> {
-        if let Some(captures) = REGEX.captures(text) {
+    fn parse_mix_text_to_content_text_and_matter_text(mix_text: &str) -> Option<(&str, &str)> {
+        if let Some(captures) = REGEX.captures(mix_text) {
             Some((
-                captures.name("markdown").unwrap().as_str(),
+                captures.name("content").unwrap().as_str(),
                 captures.name("matter").unwrap().as_str(),
             ))
         } else {
@@ -38,8 +38,8 @@ impl MatterParser for MatterParserWithHTML {
     /// ```
     ///
     #[allow(dead_code)]
-    fn parse_to_matter_state<S: AsRef<str> + Sized>(text: S) -> crate::matter::state::State {
-        let vars = parse_to_vars(text);
+    fn parse_matter_text_to_matter_state<S: AsRef<str> + Sized>(matter_text: S) -> crate::matter::state::State {
+        let vars = parse_matter_text_to_vars(matter_text);
         match vars.is_empty() {
             false => crate::matter::state::State::HTML(vars),
             _ => crate::matter::state::State::None,
@@ -49,31 +49,31 @@ impl MatterParser for MatterParserWithHTML {
 }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?\n)-->\n(?P<markdown>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?\n)-->\n(?P<content>.*)\z").unwrap()
 });
 
 pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"\A\s*(?P<key>\w+?):\s*(?P<value>.*?)\s*\z").unwrap()
 });
 
-/// Parse a block of text to variables as a map of string key to string value.
+/// Parse matter text to variables implemented as a Map.
 ///
 /// Example:
 ///
 /// ```
-/// let text = indoc!{r#"
+/// let matter_text = indoc!{r#"
 ///     alpha: bravo
 ///     charlie: delta
 /// "#};
-/// let x: Map<String, String> = parse_to_vars(&text);
-/// assert_eq!(x["alpha"], "bravo");
-/// assert_eq!(x["charlie"], "delta");
+/// let vars: Map<String, String> = parse_matter_text_to_vars(&matter_text);
+/// assert_eq!(vars["alpha"], "bravo");
+/// assert_eq!(vars["charlie"], "delta");
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_to_vars<S: AsRef<str> + Sized>(text: S) -> Map<String, String> {
+pub fn parse_matter_text_to_vars<S: AsRef<str> + Sized>(matter_text: S) -> Map<String, String> {
     let mut map: Map<String, String> = Map::new();
-    for line in text.as_ref().split("\n") {
+    for line in matter_text.as_ref().split("\n") {
         if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
             if let Some(key) = captures.name("key") {
                 if let Some(value) = captures.name("value") {
@@ -92,60 +92,73 @@ mod tests {
 
     type MatterParserX = MatterParserWithHTML;
 
-    #[test]
-    fn test_parse_x_present() {
-        let input_markdown = indoc!{r#"
-            <!--
-            alpha: bravo
-            charlie: delta
-            -->
-            echo
-            foxtrot
-        "#};
-        let expect_markdown = indoc!{r#"
-            echo
-            foxtrot
-        "#};
-        let expect_matter = indoc!{r#"
-            alpha: bravo
-            charlie: delta
-        "#};
-        let option = MatterParserX::parse(input_markdown);
-        assert!(option.is_some());        
-        let (actual_markdown, actual_matter) = option.unwrap();
-        assert_eq!(actual_markdown, expect_markdown);
-        assert_eq!(actual_matter, expect_matter);
+    const MIX_TEXT: &str = indoc!{r#"
+        <!--
+        alpha: bravo
+        charlie: delta
+        -->
+        echo
+        foxtrot
+    "#};
+
+    const CONTENT_TEXT: &str = indoc!{r#"
+        echo
+        foxtrot
+    "#};
+
+    const MATTER_TEXT: &str = indoc!{r#"
+        alpha: bravo
+        charlie: delta
+    "#};
+
+    fn expect_vars() -> Map<String, String> {
+        map!(
+            String::from("alpha") => String::from("bravo"), 
+            String::from("charlie") => String::from("delta")
+        )
     }
 
     #[test]
-    fn test_parse_x_absent() {
-        let input_markdown = indoc!{r#"
-            echo
-            foxtrot
-        "#};
-        let option = MatterParserX::parse(input_markdown);
+    fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
+        assert!(option.is_some());        
+        let (content_text, matter_text) = option.unwrap();
+        assert_eq!(content_text, CONTENT_TEXT);
+        assert_eq!(matter_text, MATTER_TEXT);
+    }
+
+    #[test]
+    fn test_parse_mix_text_to_content_text_and_matter_text_x_absent() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
         assert!(option.is_none());
     }
 
     #[test]
-    fn test_parse_to_vars() {
-        let text = indoc!{r#"
-            alpha: bravo
-            charlie: delta
-        "#};
-        let actual: Map<String, String> = parse_to_vars(&text);
-        assert_eq!(actual["alpha"], "bravo");
-        assert_eq!(actual["charlie"], "delta");
+    fn test_parse_matter_text_to_vars() {
+        let vars: Map<String, String> = parse_matter_text_to_vars(MATTER_TEXT);
+        assert_eq!(vars, expect_vars());
     }
 
     #[test]
-    fn test_parse_to_matter_state() {
-        let text = indoc!{r#"
-            alpha: bravo
-            charlie: delta
-        "#};
-        let _matter_state = MatterParserX::parse_to_matter_state(&text);
-        //TODO
+    fn test_parse_matter_text_to_matter_state() {
+        if let crate::matter::state::State::HTML(vars) = MatterParserX::parse_matter_text_to_matter_state(MATTER_TEXT) {
+            assert_eq!(vars, expect_vars());
+        } else {
+            panic!("State vars");
+        };
+    }
+
+    #[test]
+    fn test_parse_mix_text_to_content_text_and_matter_state() {
+        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_state(MIX_TEXT);
+        assert!(option.is_some());
+        let (content_text, matter_state) = option.unwrap();
+        assert_eq!(content_text, CONTENT_TEXT);
+        if let crate::matter::state::State::HTML(vars) = matter_state {
+            assert_eq!(vars, expect_vars());
+        } else {
+            panic!("State vars");
+        };
     }
 
 }

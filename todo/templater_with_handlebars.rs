@@ -219,7 +219,7 @@ mod tests {
             -->
         "#};
         let _name = templater.template_default_name();
-        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_to_matter_state(&matter);
+        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_matter_text_to_matter_state(&matter);
         // let result = templater.render_template_with_vars(&name, &vars);
         // assert!(result.is_ok());
         // let actual = result.unwrap();
@@ -237,7 +237,7 @@ mod tests {
             }
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -253,7 +253,7 @@ mod tests {
             content = "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
@@ -269,7 +269,7 @@ mod tests {
             content: "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_to_matter_state(&matter);
+        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_matter_text_to_matter_state(&matter);
         let result = templater.render_template_with_vars(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
