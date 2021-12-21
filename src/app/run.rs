@@ -98,23 +98,22 @@ fn do_path<T: Templater>(
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
     // Parse front matter that holds variables
-    let (content_as_markdown_text, matter) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_matter_state(&content_as_markdown_text);
-    debug!("matter: {:?}", &matter);
+    let (content_as_markdown_text, mut matter_state) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_matter_state(&content_as_markdown_text);
+    debug!("matter: {:?}", &matter_state);
 
     // Convert from Markdown text to HTML text
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
+    // Set the magic "content" key for the corresponding template tag "{{ content }}"
+    crate::matter::state::insert(&mut matter_state, String::from("content"), String::from(content_as_html_text));
+
     // Select relevant template name
     let template_name = select_template_name(&args, templater);
     debug!("template_name: {:?}", &template_name);
-
-    // Set the magic "content" key for the corresponding template tag "{{ content }}"
-    //tera_context.insert("content", &content_as_html_text);
-    //debug!("tera_context with content: {:?}", &tera_context);
-
+ 
     // Render template
-    let output_as_html_text = templater.render_template_with_vars(&template_name, &matter)
+    let output_as_html_text = templater.render_template_with_vars(&template_name, &matter_state)
     .chain_err(|| "render template with vars")?;
 
     // Write output

@@ -56,6 +56,10 @@ pub(crate) mod markdown {
 
 pub(crate) mod matter {
     pub(crate) mod state;
+    pub(crate) mod state_html;
+    pub(crate) mod state_json;
+    pub(crate) mod state_toml;
+    pub(crate) mod state_yaml;
     pub(crate) mod matter_parser;
     pub(crate) mod matter_parser_mutex;
     pub(crate) mod matter_parser_with_html;
