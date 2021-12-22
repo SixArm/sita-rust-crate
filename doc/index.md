@@ -3,6 +3,7 @@
 * [crates](crates)
 * [errors](errors)
 * [files](files)
+* [logs](logs)
 * [matter](matter)
 * [state](matter)
 * [testing](testing)
