@@ -21,7 +21,7 @@ use crate::state::state::State;
 /// echo
 /// foxtrot
 /// "#};
-/// let (content_text, dyn_state) = parse_mix_text_to_content_text_and_state(mix_text).unwrap();
+/// let (content_text, box_dyn_state) = parse_mix_text_to_content_text_and_state(mix_text).unwrap();
 /// ```
 ///
 #[allow(dead_code)]
