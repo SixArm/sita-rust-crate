@@ -1,21 +1,28 @@
 //! Markdown matter using TOML front matter.
 
+use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use crate::matter::matter_parser::MatterParser;
+use crate::state::state_with_toml::StateWithTOML;
 
 pub struct MatterParserWithTOML {
 }
 
-impl MatterParser for MatterParserWithTOML {
+impl MatterParser<StateWithTOML> for MatterParserWithTOML {
     
+    /// Reflection
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
-    fn parse_mix_text_to_content_text_and_matter_text(mix_text: &str) -> Option<(&str, &str)> {
-        if let Some(captures) = REGEX.captures(mix_text) {
+    fn parse_mix_text_to_content_text_and_matter_text<S: Into<String>>(&self, mix_text: S) -> Option<(String, String)> {
+        if let Some(captures) = REGEX.captures(mix_text.into().as_ref()) {
             Some((
-                captures.name("content").unwrap().as_str(),
-                captures.name("matter").unwrap().as_str(),
+                String::from(captures.name("content").unwrap().as_str()),
+                String::from(captures.name("matter").unwrap().as_str()),
             ))
         } else {
             None
@@ -27,20 +34,20 @@ impl MatterParser for MatterParserWithTOML {
     /// Example:
     ///
     /// ```
-    /// let text = indoc!{r#"
+    /// let matter_text = indoc!{r#"
     ///     alpha = "bravo"
     ///     charlie = "delta"
     /// "#};
-    /// let state: crate::matter::state::State = parse_to_state(&text);
-    /// assert_eq!(state["alpha"], "bravo");
-    /// assert_eq!(state["charlie"], "delta");
+    /// let state: StateWithTOML = parse_matter_text_to_state(&matter_text);
+    /// assert_eq!(state.data["alpha"], "bravo");
+    /// assert_eq!(state.data["charlie"], "delta");
     /// ```
     ///
     #[allow(dead_code)]
-    fn parse_matter_text_to_matter_state<S: AsRef<str> + Sized>(matter_text: S) -> crate::matter::state::State {
-        match parse_matter_text_to_vars(matter_text) {
-            Ok(x) => crate::matter::state::State::TOML(x),
-            _ => crate::matter::state::State::None,
+    fn parse_matter_text_to_state<S: Into<String>>(&self, matter_text: S) -> Option<StateWithTOML> {
+        match parse_matter_text_to_vars(matter_text.into()) {
+            Ok(x) => Some(x),
+            _ => None,
         }
     }
 
@@ -111,7 +118,7 @@ mod tests {
 
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
-        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
+        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
         assert!(option.is_some());
         let (content_text, matter_text) = option.unwrap();
         assert_eq!(content_text, CONTENT_TEXT);
@@ -120,7 +127,7 @@ mod tests {
 
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_absent() {
-        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
+        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
         assert!(option.is_none());
     }
 
@@ -132,25 +139,11 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_matter_text_to_matter_state() {
-        if let crate::matter::state::State::TOML(vars) = MatterParserX::parse_matter_text_to_matter_state(MATTER_TEXT) {
-            assert_eq!(vars, expect_vars());
-        } else {
-            panic!("State vars");
-        };
-    }
-
-    #[test]
-    fn test_parse_mix_text_to_content_text_and_matter_state() {
-        let option = MatterParserX::parse_mix_text_to_content_text_and_matter_state(MIX_TEXT);
+    fn test_parse_matter_text_to_state() {
+        let option = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
         assert!(option.is_some());
-        let (content_text, matter_state) = option.unwrap();
-        assert_eq!(content_text, CONTENT_TEXT);
-        if let crate::matter::state::State::TOML(vars) = matter_state {
-            assert_eq!(vars, expect_vars());
-        } else {
-            panic!("State vars")
-        };
+        let state = option.unwrap();
+        assert_eq!(state, expect_vars());
     }
 
 }

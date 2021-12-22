@@ -129,7 +129,7 @@ impl Templater for TemplaterWithHandlebars {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_vars_as_json<S: AsRef<str> + Sized>(&self, template_name: S, vars: &::serde_json::Value) -> Result<HtmlString> {
+    fn render_template_with_state_as_json<S: AsRef<str> + Sized>(&self, template_name: S, vars: &::serde_json::Value) -> Result<HtmlString> {
         Ok(String::from("TODO"))
     }
     
@@ -209,7 +209,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_template_with_vars_x_html() {
+    fn test_render_template_with_state_enum_x_html() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
         let matter = indoc!{r#"
@@ -219,15 +219,15 @@ mod tests {
             -->
         "#};
         let _name = templater.template_default_name();
-        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_matter_text_to_matter_state(&matter);
-        // let result = templater.render_template_with_vars(&name, &vars);
+        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_matter_text_to_state(&matter);
+        // let result = templater.render_template_with_state_enum(&name, &vars);
         // assert!(result.is_ok());
         // let actual = result.unwrap();
         // assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_json() {
+    fn test_render_template_with_state_enum_x_json() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
         let matter = indoc!{r#"
@@ -237,15 +237,15 @@ mod tests {
             }
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
+        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_matter_text_to_state(&matter);
+        let result = templater.render_template_with_state_enum(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_toml() {
+    fn test_render_template_with_state_enum_x_toml() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
         let matter = indoc!{r#"
@@ -253,15 +253,15 @@ mod tests {
             content = "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
+        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_matter_text_to_state(&matter);
+        let result = templater.render_template_with_state_enum(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_yaml() {
+    fn test_render_template_with_state_enum_x_yaml() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
         let matter = indoc!{r#"
@@ -269,8 +269,8 @@ mod tests {
             content: "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
+        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_matter_text_to_state(&matter);
+        let result = templater.render_template_with_state_enum(&name, &vars);
         assert!(result.is_ok());
         let actual = result.unwrap();
         assert_eq!(actual, FAB_OUTPUT_HTML);

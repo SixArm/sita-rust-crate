@@ -1,10 +1,13 @@
 //! Templater with Tera
 
 use std::path::PathBuf;
+use serde::Serialize;
 use crate::app::args::Args;
 use crate::errors::*;
 use crate::types::*;
 use crate::matter::matter_parser::MatterParser;
+use crate::state::state::State;
+use crate::state::state_enum::StateEnum;
 use crate::templating::templater::Templater;
 
 pub struct TemplaterWithTera {
@@ -125,40 +128,24 @@ impl Templater for TemplaterWithTera {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::matter::state::State) -> Result<HtmlString> {
-        let context = from_matter_state_to_tera_context(&vars)
+    fn render_template_with_state_enum<NAME: Into<String>>(&self, template_name: NAME, state_enum: &StateEnum) -> Result<HtmlString> {
+        let context = from_state_enum_to_tera_context(&state_enum)
         .chain_err(|| "create tera context")?;
         debug!("context: {:?}", &context);
-        let html = self.tera.render(template_name.as_ref(), &context)
+        let html = self.tera.render(template_name.into().as_ref(), &context)
         .chain_err(|| "render template with tera context")?;
         Ok(html)
     }
 
 }
 
-pub fn from_matter_state_to_tera_context(state: &crate::matter::state::State) -> Result<::tera::Context> {
-    let mut context = match state {
-        crate::matter::state::State::HTML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "matter HTML to Tera context")?
-        }
-        crate::matter::state::State::JSON(x) =>  {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "matter JSON to Tera context")?
-        }
-        crate::matter::state::State::TOML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "matter TOML to Tera context")?
-        }            
-        crate::matter::state::State::YAML(x) => {
-            ::tera::Context::from_serialize(&x)
-            .chain_err(|| "matter YAML to Tera context")?
-        }, 
-        crate::matter::state::State::None => {
-            ::tera::Context::new()
-        }
-    };
-    Ok(context)
+pub fn from_state_enum_to_tera_context(state_enum: &crate::state::state_enum::StateEnum) -> ::tera::Result<::tera::Context> {
+    match state_enum {
+        crate::state::state_enum::StateEnum::StateWithHTML(x) => ::tera::Context::from_serialize(x),
+        crate::state::state_enum::StateEnum::StateWithJSON(x) => ::tera::Context::from_serialize(x),
+        crate::state::state_enum::StateEnum::StateWithTOML(x) => ::tera::Context::from_serialize(x),
+        crate::state::state_enum::StateEnum::StateWithYAML(x) => ::tera::Context::from_serialize(x),
+    }
 }
 
 #[cfg(test)]
@@ -235,70 +222,66 @@ mod tests {
     }
 
     #[test]
-    fn test_render_template_with_vars_x_html() {
+    fn test_render_template_with_state_enum_x_html() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
-        let matter = indoc!{r#"
+        let matter_text = indoc!{r#"
             <!--
                 title: my title
                 content: my content
             -->
         "#};
-        let _name = templater.template_default_name();
-        let _vars =  crate::matter::matter_parser_with_html::MatterParserWithHTML::parse_matter_text_to_matter_state(&matter);
-        // let result = templater.render_template_with_vars(&name, &vars);
-        // assert!(result.is_ok());
-        // let actual = result.unwrap();
-        // assert_eq!(actual, FAB_OUTPUT_HTML);
+        let name = templater.template_default_name();
+        let state = crate::matter::matter_parser_with_html::MatterParserWithHTML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = state.to_state_enum();
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
+        assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_json() {
+    fn test_render_template_with_state_enum_x_json() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
-        let matter = indoc!{r#"
+        let matter_text = indoc!{r#"
             {
                 "title": "my title",
                 "content": "my content"
             }
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_json::MatterParserWithJSON::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
-        assert!(result.is_ok());
-        let actual = result.unwrap();
+        let state = crate::matter::matter_parser_with_json::MatterParserWithJSON{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = state.to_state_enum();
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_toml() {
+    fn test_render_template_with_state_enum_x_toml() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
-        let matter = indoc!{r#"
+        let matter_text = indoc!{r#"
             title = "my title"
             content = "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_toml::MatterParserWithTOML::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
-        assert!(result.is_ok());
-        let actual = result.unwrap();
+        let state = crate::matter::matter_parser_with_toml::MatterParserWithTOML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = state.to_state_enum();
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 
     #[test]
-    fn test_render_template_with_vars_x_yaml() {
+    fn test_render_template_with_state_enum_x_yaml() {
         let mut templater = TemplaterX::new();
         templater.add_template_default().expect("default");
-        let matter = indoc!{r#"
+        let matter_text = indoc!{r#"
             title: "my title"
             content: "my content"
         "#};
         let name = templater.template_default_name();
-        let vars = crate::matter::matter_parser_with_yaml::MatterParserWithYAML::parse_matter_text_to_matter_state(&matter);
-        let result = templater.render_template_with_vars(&name, &vars);
-        assert!(result.is_ok());
-        let actual = result.unwrap();
+        let state = crate::matter::matter_parser_with_yaml::MatterParserWithYAML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = state.to_state_enum();
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
 

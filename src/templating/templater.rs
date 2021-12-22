@@ -151,7 +151,7 @@ pub trait Templater {
         String::from(indoc!{r#"{{ content }}"#})
     }
 
-    // Render a template name with the given variables such as front matter.
+    // Render a template name with the state.
     //
     // ```
     // let templater: Templater = TemplaterWithTera::new();
@@ -162,7 +162,7 @@ pub trait Templater {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_vars<S: AsRef<str> + Sized>(&self, template_name: S, vars: &crate::matter::state::State) -> Result<HtmlString>;
+    fn render_template_with_state_enum<NAME: Into<String>>(&self, template_name: NAME, state_enum: &crate::state::state_enum::StateEnum) -> Result<HtmlString>;
 
 }
 

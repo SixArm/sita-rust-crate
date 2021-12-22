@@ -97,24 +97,26 @@ fn do_path<T: Templater>(
     let content_as_markdown_text = read_content_as_markdown_text(&input)?;
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
-    // Parse front matter that holds variables
-    let (content_as_markdown_text, mut matter_state) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_matter_state(&content_as_markdown_text);
-    debug!("matter: {:?}", &matter_state);
+    // Parse matter that holds variables
+    let (content_as_markdown_text, mut box_dyn_state) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_markdown_text)
+    .chain_err(|| "parse matter")?;
+    debug!("box_dyn_state: {:?}", &box_dyn_state);
 
     // Convert from Markdown text to HTML text
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
     // Set the magic "content" key for the corresponding template tag "{{ content }}"
-    crate::matter::state::insert(&mut matter_state, String::from("content"), String::from(content_as_html_text));
+    box_dyn_state.insert(String::from("content"), String::from(content_as_html_text));
+    let state_enum = box_dyn_state.to_state_enum();
 
     // Select relevant template name
     let template_name = select_template_name(&args, templater);
     debug!("template_name: {:?}", &template_name);
  
     // Render template
-    let output_as_html_text = templater.render_template_with_vars(&template_name, &matter_state)
-    .chain_err(|| "render template with vars")?;
+    let output_as_html_text = templater.render_template_with_state_enum(&template_name, &state_enum)
+    .chain_err(|| "render_template_with_state")?;
 
     // Write output
     debug!("write file");
