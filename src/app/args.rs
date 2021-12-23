@@ -28,6 +28,10 @@ pub struct Args {
     /// Example: "en" means English language encoding.
     pub(crate) language: Option<String>,
 
+    /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.
+    /// Example: 5 means print debug diagnostics.
+    pub(crate) log_level: Option<::log::Level>,
+
     /// Output pathable string list.
     /// Example directory: "results/"
     /// Example file: "article.html"
@@ -41,10 +45,6 @@ pub struct Args {
     /// Output file name extension.
     /// Example: "html" means a HTML file extension.
     pub(crate) output_file_name_extension: Option<String>,
-
-    /// Paths that this program will process.
-    /// Example: "example.md"
-    pub(crate) paths: Option<List<PathBuf>>,
 
     /// Script URL list.
     /// Example: "https://example.com/script.js" is a JavaScript URL.
@@ -68,10 +68,6 @@ pub struct Args {
     /// Each item points to a file, not a directory, glob, etc.
     pub(crate) template_list_path_buf: Option<List<PathBuf>>,
 
-    /// Template HTML set.
-    /// Example: "<div>{{ content }}</div>"
-    pub(crate) template_html_set: Option<Set<HtmlString>>,
-
     /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
     pub(crate) test: bool,
@@ -79,10 +75,6 @@ pub struct Args {
     /// Title of the page being rendered.
     /// Example: "My Page"
     pub(crate) title: Option<String>,
-
-    /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=trace, 5=debug.
-    /// Example: 5 means print debug diagnostics.
-    pub(crate) log_level: Option<::log::Level>,
 }
 
 impl ::std::default::Default for Args {
@@ -91,18 +83,16 @@ impl ::std::default::Default for Args {
         input_list_path_buf: None,
         input_file_name_extension: None,
         language: None,
+        log_level: None,
         output_list_pathable_string: None,
         output_list_path_buf: None,
         output_file_name_extension: None,
-        paths: None,
         settings: None,
         script_url_list: None,
         template_list_pathable_string: None,
         template_list_path_buf: None,
         template_name: None,
-        template_html_set: None,
         test: false,
         title: None,
-        log_level: None,
     } }
 }

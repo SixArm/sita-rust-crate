@@ -11,7 +11,7 @@ ammonia = "3.1.1" # HTML Sanitization
 assertables = "3.2.1" # Runtime reliability checking macros
 base64 = "*" # Encodes and decodes base64 as bytes or utf8
 bytes = "*" # Types and traits for working with bytes
-clap = { version = "3.0.0-beta.5", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
+clap = { version = "3.0.0-a", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
 confy = "0.4.0" # Boilerplate-free configuration management
 env_logger = "0.8.3" # A logger that can be configured via environment variables
 error-chain = "0.12.4" # Consistent error handling

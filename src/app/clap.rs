@@ -26,10 +26,11 @@ use crate::fun::from_list_str_into_map_string_string::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {
+    trace!("clap.rs app()");
     App::new("Sita")
     .version("1.0.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
-    .about("Sita static site generator")
+    .help("Sita static site generator")
     .arg(Arg::new("input")
         .short('i')
         .long("input")
@@ -38,17 +39,17 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("An input path string. Example file: --input \"input.html\" … Example directory: --input \"inputs/\" … Example glob: --input \"inputs/**/*\" …"))
+        .help("An input path string. Example file: --input \"input.html\" … Example directory: --input \"inputs/\" … Example glob: --input \"inputs/**/*\" …"))
     .arg(Arg::new("input_file_name_extension")
         .long("input-extension")
         .value_name("EXTENSION")
         .takes_value(true)
-        .about("The input file name extension. Default: \"md\". Example: --input-extension \"md\" …"))
+        .help("The input file name extension. Default: \"md\". Example: --input-extension \"md\" …"))
     .arg(Arg::new("language")
         .long("language")
         .value_name("LANGUAGE_ENCODING")
         .takes_value(true)
-        .about("The language encoding; Default: \"en\" for English. Example: --language \"en\""))
+        .help("The language encoding; Default: \"en\" for English. Example: --language \"en\""))
     .arg(Arg::new("output")
         .short('o')
         .long("output")
@@ -57,19 +58,19 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("An output path string. Example file: --output \"output.html\" … Example directory: --output \"outputs/\" … Example glob: --output \"outputs/**/*\" …"))
+        .help("An output path string. Example file: --output \"output.html\" … Example directory: --output \"outputs/\" … Example glob: --output \"outputs/**/*\" …"))
     .arg(Arg::new("output_file_name_extension")
         .long("output-extension")
         .value_name("EXTENSION")
         .takes_value(true)
-        .about("The output file name extension. Default: \"html\". Example: --output-extension \"html\" …"))
+        .help("The output file name extension. Default: \"html\". Example: --output-extension \"html\" …"))
     .arg(Arg::new("script")
         .long("script")
         .value_name("URL …")
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("A script URL to add to the HTML header. Example: --script \"script.js\" …"))
+        .help("A script URL to add to the HTML header. Example: --script \"script.js\" …"))
     .arg(Arg::new("template")
         .short('t')
         .long("template")
@@ -78,30 +79,23 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("A template path string. Example file: --template \"template.html\" … Example directory: --template \"templates/\" … Example glob: --template \"templates/**/*\" …"))
-    .arg(Arg::new("template_html_set")
-        .long("template-html")
-        .value_name("HTML …")
-        .takes_value(true)
-        .multiple_occurrences(true)
-        .multiple_values(true)
-        .about("A template HTML string. Example: --template-html \"<p>{{ content }}</p>\" …"))
+        .help("A template path string. Example file: --template \"template.html\" … Example directory: --template \"templates/\" … Example glob: --template \"templates/**/*\" …"))
     .arg(Arg::new("template_name")
         .long("template-name")
         .value_name("NAME")
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("The template name to use for this rendering. Example: \"--template-name foo\" …"))
+        .help("The template name to use for this rendering. Example: \"--template-name foo\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
-        .about("Print test output for debugging, verifying, tracing, and the like. Example: --test …"))
+        .help("Print test output for debugging, verifying, tracing, and the like. Example: --test …"))
     .arg(Arg::new("title")
         .long("title")
         .value_name("TEXT")
         .takes_value(true)
-        .about("The HTML title. Example: --title \"Welcome\" …"))
+        .help("The HTML title. Example: --title \"Welcome\" …"))
     .arg(Arg::new("set")
         .short('s')
         .long("set")
@@ -109,84 +103,105 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .about("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
+        .help("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
     .arg(Arg::new("verbose")
         .short('v')
         .long("verbose")
         .takes_value(false)
         .multiple_occurrences(true)
-        .about("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
+        .help("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
 }
 
 /// Create an Args struct initiatied with the clap App settings.
 pub fn args() -> Args {
+    trace!("clap.rs args()");
     let matches = app().get_matches();
-    let mut args = Args {
-        input_list_pathable_string: match matches.values_of("input") {
-            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
-            _ => None,
-        },
-        input_list_path_buf: None, // Set below
-        input_file_name_extension: match matches.value_of("input_file_name_extension") {
-            Some(x) => Some(String::from(x)),
-            _ => None,
-        },
-        language: match matches.value_of("language") {
-            Some(x) => Some(x.into()),
-            _ =>  None,
-        },
-        output_list_pathable_string: match matches.values_of("output") {
-            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
-            _ => None,
-        },
-        output_list_path_buf: None, // Set below
-        output_file_name_extension: match matches.value_of("output_file_name_extension") {
-            Some(x) => Some(String::from(x)),
-            _ => None,
-        },
-        paths: match matches.values_of_os("paths") {
-            Some(x) => Some(x.map(|x| PathBuf::from(x)).collect()),
-            _ => None,
-        },
-        script_url_list: match matches.values_of("script") {
-            Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
-            _ => None,
-        },
-        settings: match matches.values_of("set") {
-            Some(x) => {
-                let vec: Vec<&str> = x.collect();
-                Some(from_list_str_into_map_string_string(&vec))
-            },
-            _ => None,
-        },
-        template_list_pathable_string: match matches.values_of("template") {
-            Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
-            _ => None,
-        },
-        template_list_path_buf: None, // Set below
-        template_html_set: match matches.values_of("template_html_set") {
-            Some(x) => Some(x.map(|x| String::from(x)).collect::<Set<HtmlString>>()),
-            _ =>  None,
-        },
-        template_name: match matches.value_of("template_name") {
-            Some(x) => Some(x.into()),
-            _ =>  None,
-        },
-        test: matches.is_present("test"),
-        title: match matches.value_of("title") {
-            Some(x) => Some(x.into()),
-            _ =>  None,
-        },
-        log_level: match matches.occurrences_of("verbose") {
-            0 => None,
-            1 => Some(::log::Level::Error),
-            2 => Some(::log::Level::Warn),
-            3 => Some(::log::Level::Info),
-            4 => Some(::log::Level::Debug),
-            5 => Some(::log::Level::Trace),
-            _ => Some(::log::Level::Trace),
-        },
+    trace!("clap.rs args() matches: {:?}", matches);
+
+    let input_list_pathable_string = match matches.values_of("input") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
+        _ => None,
     };
+
+    let input_file_name_extension = match matches.value_of("input_file_name_extension") {
+        Some(x) => Some(String::from(x)),
+        _ => None,
+    };
+
+    let language = match matches.value_of("language") {
+        Some(x) => Some(x.into()),
+        _ =>  None,
+    };
+
+    let output_list_pathable_string = match matches.values_of("output") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
+        _ => None,
+    };
+
+    let output_file_name_extension = match matches.value_of("output_file_name_extension") {
+        Some(x) => Some(String::from(x)),
+        _ => None,
+    };
+
+    let script_url_list = match matches.values_of("script") {
+        Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
+        _ => None,
+    };
+
+    let settings = match matches.values_of("set") {
+        Some(x) => {
+            let vec: Vec<&str> = x.collect();
+            Some(from_list_str_into_map_string_string(&vec))
+        },
+        _ => None,
+    };
+
+    let log_level = match matches.occurrences_of("verbose") {
+        0 => None,
+        1 => Some(::log::Level::Error),
+        2 => Some(::log::Level::Warn),
+        3 => Some(::log::Level::Info),
+        4 => Some(::log::Level::Debug),
+        5 => Some(::log::Level::Trace),
+        _ => Some(::log::Level::Trace),
+    };
+
+    let template_list_pathable_string = match matches.values_of("template") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
+        _ => None,
+    };
+
+    let template_name = match matches.value_of("template_name") {
+        Some(x) => Some(x.into()),
+        _ =>  None,
+    };
+
+    let test = matches.is_present("test");
+
+    let title = match matches.value_of("title") {
+        Some(x) => Some(x.into()),
+        _ =>  None,
+    };
+
+    let mut args = Args {
+        input_list_pathable_string: input_list_pathable_string,
+        input_list_path_buf: None, // Set below
+        input_file_name_extension: input_file_name_extension,
+        language: language,
+        output_list_pathable_string: output_list_pathable_string,
+        output_list_path_buf: None, // Set below
+        output_file_name_extension: output_file_name_extension,
+        script_url_list: script_url_list,
+        settings: settings,
+        template_list_pathable_string: template_list_pathable_string,
+        template_list_path_buf: None, // Set below
+        template_name: template_name,
+        test: test,
+        title: title,
+        log_level: log_level,
+    };
+
+    trace!("clap.rs args() -> {:?}", args);
 
     if let Some(ref x) = args.input_list_pathable_string {
         args.input_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
@@ -200,6 +215,7 @@ pub fn args() -> Args {
         args.template_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
+    trace!("clap.rs args() -> {:?}", args);
     args    
 }
 

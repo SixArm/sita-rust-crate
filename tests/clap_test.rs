@@ -235,12 +235,3 @@ fn test_clap_template_name() {
 //         )
 //     );
 // }
-
-#[test]
-fn test_clap_template_html_set() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--template-html", "<p>alpha</p>", "<p>bravo</p>", "--template-html", "<p>charlie</p>", "<p>delta</p>"], 
-        r#" template_html_set: Some({"<p>alpha</p>", "<p>bravo</p>", "<p>charlie</p>", "<p>delta</p>"})"#
-    );
-}

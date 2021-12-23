@@ -20,6 +20,7 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
     /// Parse mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text<S: Into<String>>(&self, mix_text: S) -> Option<(String, String)> {
+        debug!("MatterParserWithHTML parse_mix_text_to_content_text_and_matter_text");
         if let Some(captures) = REGEX.captures(mix_text.into().as_ref()) {
             Some((
                 String::from(captures.name("content").unwrap().as_str()),
@@ -46,6 +47,7 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
     ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state<S: Into<String>>(&self, matter_text: S) -> Option<StateWithHTML> {
+        debug!("MatterParserWithHTML parse_matter_text_to_state");
         let vars = parse_matter_text_to_vars(matter_text.into());
         match vars.is_empty() {
             false => Some(vars),

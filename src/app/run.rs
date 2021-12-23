@@ -30,34 +30,34 @@ use crate::templating::templater_with_tera::TemplaterWithTera;
 pub(crate) fn run() -> Result<()> {
     trace!("run()");
 
-    // Initialize configuration
+    trace!("Initialize configuration.");
     let _config: Config = ::confy::load("sita")
     .chain_err(|| "error: confy load")?;
 
-    // Initialize arguments
+    trace!("Initialize arguments.");
     let args: Args = crate::app::clap::args();
     if args.test { println!("{:?}", args); }
 
-    // Initialize templating
+    trace!("Initialize templater.");
     let mut templater = TemplaterWithTera::new_with_args(&args);
 
-    // Add templates
+    trace!("Add templates.");
     templater.add_template_files_via_args(&args)
     .chain_err(|| "add_template_files_via_args")?;
 
-    // Add default template as needed
+    trace!("Add default template as needed.");
     if !templater.has_template() {
         templater.add_template_default()
         .chain_err(|| "add_template_default")?;
     }
 
-    // Prepare items in order to speed up processing
+    trace!("Prepare items in order to speed up processing.");
     let output_file_name_extension = match &args.output_file_name_extension {
         Some(x) => x,
         None => "html",
     };
 
-    // Process each page
+    trace!("Process each page.");
     if let Some(inputs) = &args.input_list_path_buf {
         for input in inputs {
             // Calculate output path
@@ -83,43 +83,43 @@ fn do_path<T: Templater>(
 ) -> Result<()> {
     trace!("do path(…) → input: {:?}", input);
 
-    // Vet input file path buf
+    trace!("Vet input file path buffer.");
     vet_input_file_path_buf_exists(&args, input)?;
     vet_input_file_path_buf_metadata(&args, input)?;
     vet_input_file_path_buf_extension(&args, input)?;
     debug!("input: {:?}", &input);
 
-    // Vet output file path buf
+    trace!("Vet output file path buffer.");
     //TODO implement
     debug!("output: {:?}", &output);
 
-    // Read content as Markdown text
+    trace!("Read content as Markdown text.");
     let content_as_markdown_text = read_content_as_markdown_text(&input)?;
     debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
 
-    // Parse matter that holds variables
+    trace!("Parse matter that holds variables.");
     let (content_as_markdown_text, mut box_dyn_state) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_markdown_text)
     .chain_err(|| "parse matter")?;
     debug!("box_dyn_state: {:?}", &box_dyn_state);
 
-    // Convert from Markdown text to HTML text
+    trace!("Convert from Markdown text to HTML text");
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    // Set the magic "content" key for the corresponding template tag "{{ content }}"
+    trace!("Set the content HTML for the content template tag.");
     box_dyn_state.insert(String::from("content"), String::from(content_as_html_text));
     let state_enum = box_dyn_state.to_state_enum();
 
-    // Select relevant template name
+    trace!("Select the template name.");
     let template_name = select_template_name(&args, templater);
     debug!("template_name: {:?}", &template_name);
  
-    // Render template
+    trace!("Render the template.");
     let output_as_html_text = templater.render_template_with_state_enum(&template_name, &state_enum)
     .chain_err(|| "render_template_with_state")?;
 
-    // Write output
-    debug!("write file");
+    trace!("Write output file.");
+    debug!("write file …");
     ::std::fs::write(&output, output_as_html_text)
     .chain_err(|| "write output")?;
     debug!("write file ok");
