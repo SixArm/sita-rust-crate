@@ -26,7 +26,7 @@ use crate::fun::from_list_str_into_map_string_string::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {
-    trace!("clap.rs app()");
+    trace!("clap::app");
     App::new("Sita")
     .version("1.0.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
@@ -114,9 +114,9 @@ pub fn app() -> App<'static> {
 
 /// Create an Args struct initiatied with the clap App settings.
 pub fn args() -> Args {
-    trace!("clap.rs args()");
+    trace!("clap::args");
     let matches = app().get_matches();
-    trace!("clap.rs args() matches: {:?}", matches);
+    trace!("clap::args matches={:?}", matches);
 
     let input_list_pathable_string = match matches.values_of("input") {
         Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
@@ -201,7 +201,7 @@ pub fn args() -> Args {
         log_level: log_level,
     };
 
-    trace!("clap.rs args() -> {:?}", args);
+    trace!("clap::args -> {:?}", args);
 
     if let Some(ref x) = args.input_list_pathable_string {
         args.input_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
@@ -215,7 +215,7 @@ pub fn args() -> Args {
         args.template_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
     }
 
-    trace!("clap.rs args() -> {:?}", args);
+    trace!("clap::args -> {:?}", args);
     args    
 }
 

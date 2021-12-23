@@ -14,13 +14,13 @@
 
 Implementation broadly has these steps:
 
-* The app launches and reads its configuration file by using the `confy` crate.
+* The app launches and reads its configuration file; the implementation uses the `confy` crate.
 
-* The app parses its command line options by using the `clap` crate.
+* The app parses its command line options; the implementation uses the `clap` crate.
 
 * The app creates a `config` struct that is used for all the rest of the work.
 
-* The app iterates on any input files.
+* The app iterates on any input files; the implementation is a typical run loop.
 
 For each file:
 

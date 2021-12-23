@@ -4,6 +4,7 @@ use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde_yaml;
+use crate::errors::*;
 use crate::matter::matter_parser::MatterParser;
 use crate::state::state_with_yaml::StateWithYAML;
 
@@ -19,16 +20,14 @@ impl MatterParser<StateWithYAML> for MatterParserWithYAML {
 
     /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
-    fn parse_mix_text_to_content_text_and_matter_text<S: Into<String>>(&self, mix_text: S) -> Option<(String, String)> {
+    fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
         debug!("MatterParserWithYAML parse_mix_text_to_content_text_and_matter_text");
-        if let Some(captures) = REGEX.captures(mix_text.into().as_ref()) {
-            Some((
-                String::from(captures.name("content").unwrap().as_str()),
-                String::from(captures.name("matter").unwrap().as_str()),
-            ))
-        } else {
-            None
-        }
+        let captures = REGEX.captures(mix_text)
+        .chain_err(|| "captures")?;
+        Ok((
+            String::from(captures.name("content").unwrap().as_str()),
+            String::from(captures.name("matter").unwrap().as_str()),
+        ))
     }
 
     /// Parse a block of matter text to matter variables as a matter state struct YAML enum.
@@ -46,12 +45,9 @@ impl MatterParser<StateWithYAML> for MatterParserWithYAML {
     /// ```
     ///
     #[allow(dead_code)]
-    fn parse_matter_text_to_state<S: Into<String>>(&self, matter_text: S) -> Option<StateWithYAML> {
+    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithYAML> {
         debug!("MatterParserWithYAML parse_matter_text_to_state");
-        match parse_matter_text_to_vars(matter_text.into()) {
-            Ok(x) => Some(x),
-            _ => None,
-        }
+        parse_matter_text_to_vars(&matter_text)
     }
 
 }
@@ -88,8 +84,9 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars<S: AsRef<str> + Sized>(matter_text: S) -> Result<::serde_yaml::Value, ::serde_yaml::Error> {
-    serde_yaml::from_str(matter_text.as_ref())
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<::serde_yaml::Value> {
+    serde_yaml::from_str(matter_text)
+    .chain_err(|| "::serde_yaml::Value")
 }
 
 #[cfg(test)]
@@ -127,17 +124,17 @@ mod tests {
     
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
-        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
-        assert!(option.is_some());
-        let (content_text, matter_text) = option.unwrap();
+        let result = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
+        assert!(result.is_ok());
+        let (content_text, matter_text) = result.unwrap();
         assert_eq!(content_text, CONTENT_TEXT);
         assert_eq!(matter_text, MATTER_TEXT);
     }
 
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_absent() {
-        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
-        assert!(option.is_none());
+        let result = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
+        assert!(result.is_err());
     }
 
     #[test]
@@ -149,9 +146,9 @@ mod tests {
 
     #[test]
     fn test_parse_matter_text_to_state() {
-        let option = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
-        assert!(option.is_some());
-        let state = option.unwrap();
+        let result = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
+        assert!(result.is_ok());
+        let state = result.unwrap();
         assert_eq!(state, expect_vars());
     }
 

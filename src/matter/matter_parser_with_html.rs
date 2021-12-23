@@ -3,6 +3,7 @@
 use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use crate::errors::*;
 use crate::types::*;
 use crate::matter::matter_parser::MatterParser;
 use crate::state::state_with_html::StateWithHTML;
@@ -19,16 +20,14 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
 
     /// Parse mix text to content text and matter text.
     #[allow(dead_code)]
-    fn parse_mix_text_to_content_text_and_matter_text<S: Into<String>>(&self, mix_text: S) -> Option<(String, String)> {
+    fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
         debug!("MatterParserWithHTML parse_mix_text_to_content_text_and_matter_text");
-        if let Some(captures) = REGEX.captures(mix_text.into().as_ref()) {
-            Some((
-                String::from(captures.name("content").unwrap().as_str()),
-                String::from(captures.name("matter").unwrap().as_str()),
-            ))
-        } else {
-            None
-        }
+        let captures = REGEX.captures(mix_text)
+        .chain_err(|| "captures")?;
+        Ok((
+            String::from(captures.name("content").unwrap().as_str()),
+            String::from(captures.name("matter").unwrap().as_str()),
+        ))
     }
 
     /// Parse a block of text to variables as a matter state struct HTML enum.
@@ -46,12 +45,12 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
     /// ```
     ///
     #[allow(dead_code)]
-    fn parse_matter_text_to_state<S: Into<String>>(&self, matter_text: S) -> Option<StateWithHTML> {
+    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithHTML> {
         debug!("MatterParserWithHTML parse_matter_text_to_state");
-        let vars = parse_matter_text_to_vars(matter_text.into());
+        let vars = parse_matter_text_to_vars(&matter_text);
         match vars.is_empty() {
-            false => Some(vars),
-            _ => None,
+            false => Ok(vars),
+            _ => Err(Error::from("vars.is_empty()")),
         }
     }
 
@@ -80,9 +79,9 @@ pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars<S: AsRef<str> + Sized>(matter_text: S) -> Map<String, String> {
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Map<String, String> {
     let mut map: Map<String, String> = Map::new();
-    for line in matter_text.as_ref().split("\n") {
+    for line in matter_text.split("\n") {
         if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
             if let Some(key) = captures.name("key") {
                 if let Some(value) = captures.name("value") {
@@ -129,17 +128,17 @@ mod tests {
 
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
-        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
-        assert!(option.is_some());        
-        let (content_text, matter_text) = option.unwrap();
+        let result = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
+        assert!(result.is_ok());        
+        let (content_text, matter_text) = result.unwrap();
         assert_eq!(content_text, CONTENT_TEXT);
         assert_eq!(matter_text, MATTER_TEXT);
     }
 
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_absent() {
-        let option = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
-        assert!(option.is_none());
+        let result = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(CONTENT_TEXT);
+        assert!(result.is_err());
     }
 
     #[test]
@@ -150,9 +149,9 @@ mod tests {
 
     #[test]
     fn test_parse_matter_text_to_state() {
-        let option = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
-        assert!(option.is_some());
-        let state = option.unwrap();
+        let result = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
+        assert!(result.is_ok());
+        let state = result.unwrap();
         assert_eq!(state, expect_vars());
     }
 

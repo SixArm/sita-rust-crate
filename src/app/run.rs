@@ -5,6 +5,9 @@ use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
 use crate::fun::path_buf_to_sibling::*;
+use crate::state::state::State;
+use crate::state::state_enum::StateEnum;
+use crate::state::state_with_html::StateWithHTML;
 use crate::templating::templater::Templater;
 use crate::templating::templater_with_tera::TemplaterWithTera;
 
@@ -93,13 +96,21 @@ fn do_path<T: Templater>(
     //TODO implement
     debug!("output: {:?}", &output);
 
-    trace!("Read content as Markdown text.");
-    let content_as_markdown_text = read_content_as_markdown_text(&input)?;
-    debug!("content_as_markdown_text: {:?}", content_as_markdown_text);
+    trace!("Read content as mix text.");
+    let content_as_mix_text = read_content_as_mix_text(&input)?;
+    debug!("content_as_mix_text={:?}", content_as_mix_text);
 
     trace!("Parse matter that holds variables.");
-    let (content_as_markdown_text, mut box_dyn_state) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_markdown_text)
-    .chain_err(|| "parse matter")?;
+    // TODO refactor this section to use let(…), when it is stable.
+    let content_as_markdown_text: String;
+    let mut box_dyn_state: Box<dyn State>;
+    if let Ok(parsed) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_mix_text) {
+        content_as_markdown_text = parsed.0;
+        box_dyn_state = parsed.1;
+    } else {
+        content_as_markdown_text = content_as_mix_text.into();
+        box_dyn_state = Box::new(StateWithHTML::new());
+    }
     debug!("box_dyn_state: {:?}", &box_dyn_state);
 
     trace!("Convert from Markdown text to HTML text");
@@ -183,7 +194,7 @@ fn vet_input_file_path_buf_extension(args: &Args, input: &PathBuf) -> Result<()>
     Ok(())
 }
 
-/// Read content as Markdown text.
+/// Read content as mix text i.e. text that contains both Markdown and variables.
 ///
 /// Example:
 ///
@@ -192,7 +203,7 @@ fn vet_input_file_path_buf_extension(args: &Args, input: &PathBuf) -> Result<()>
 /// let content_as_markdown: String = read_content_as_markdown(&input_file_path_buf);
 /// ```
 ///
-fn read_content_as_markdown_text(input_file_path_buf: &PathBuf) -> Result<String> {
+fn read_content_as_mix_text(input_file_path_buf: &PathBuf) -> Result<String> {
     ::std::fs::read_to_string(input_file_path_buf)
     .map(|s| s.trim_end().to_string())
     .map_err(|e| Error::with_chain(e, "something went wrong"))
@@ -323,10 +334,10 @@ mod tests {
     }
 
     #[test]
-    fn test_read_content_as_markdown_text() {
-        let input_file_path_buf: PathBuf = TESTS_DIR.join("function").join("read_content_as_markdown_text").join("example.md");
-        let content_as_markdown: String = read_content_as_markdown_text(&input_file_path_buf).unwrap();
-        assert_eq!(content_as_markdown, "# alpha\nbravo");
+    fn test_read_content_as_mix_text() {
+        let input_file_path_buf: PathBuf = TESTS_DIR.join("function").join("read_content_as_mix_text").join("example.md");
+        let content_as_mix_text: String = read_content_as_mix_text(&input_file_path_buf).unwrap();
+        assert_eq!(content_as_mix_text, "# alpha\nbravo");
     }
 
     #[test]
