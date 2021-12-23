@@ -25,6 +25,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn new() -> Self {
+        trace!("templater_with_tera::new");
         let my_tera = ::tera::Tera::default();
         TemplaterWithTera {
             tera: my_tera,
@@ -41,6 +42,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn new_with_args(_args: &Args) -> Self {
+        trace!("templater_with_tera::new_with_args");
         let mut my_tera = ::tera::Tera::default();
         my_tera.autoescape_on(vec![]); // disable autoescaping completely
         TemplaterWithTera {
@@ -60,6 +62,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn add_template_via_name_and_text(&mut self, name: &str, text: &str) -> Result<()> {
+        trace!("templater_with_tera::add_template_via_name_and_file: name={} text=…", &name);
         self.tera.add_raw_template(&name, &text)
         .chain_err(|| "add_template_via_name_and_text")
     }
@@ -76,6 +79,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn add_template_via_name_and_file(&mut self, name: &str, file: &PathBuf) -> Result<()> {
+        trace!("templater_with_tera::add_template_via_name_and_file: name={} file={:?}", &name, &file);
         self.tera.add_template_file(&file, Some(&name))
         .chain_err(|| "add_template_via_name_and_file")
     }
@@ -98,6 +102,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn has_template(&self) -> bool {
+        trace!("templater_with_tera::has_template");
         self.tera.get_template_names().nth(0).is_some()
     }
 
@@ -114,6 +119,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn template_names_as_set_str(&self) -> Set<&str> {
+        trace!("templater_with_tera::template_names_as_set_str");
         self.tera.get_template_names().collect::<_>()
     }
 
@@ -128,11 +134,12 @@ impl Templater for TemplaterWithTera {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_state_enum<NAME: Into<String>>(&self, template_name: NAME, state_enum: &StateEnum) -> Result<HtmlString> {
+    fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
+        trace!("templater_with_tera::render_template_with_state_enum");
         let context = from_state_enum_to_tera_context(&state_enum)
         .chain_err(|| "create tera context")?;
         debug!("context: {:?}", &context);
-        let html = self.tera.render(template_name.into().as_ref(), &context)
+        let html = self.tera.render(&template_name, &context)
         .chain_err(|| "render template with tera context")?;
         Ok(html)
     }
@@ -224,7 +231,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_html() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             <!--
                 title: my title
@@ -241,7 +248,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_json() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             {
                 "title": "my title",
@@ -258,7 +265,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_toml() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             title = "my title"
             content = "my content"
@@ -273,7 +280,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_yaml() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             title: "my title"
             content: "my content"

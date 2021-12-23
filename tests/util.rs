@@ -64,16 +64,16 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     let template = base_path.join("template.html");
     let actual = base_path.join("example.html");
     let expect = base_path.join("example.html=expect.html");
-    remove_file_if_exists(&actual).expect("remove");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(template.exists(), "template path: {:?}", template);
+    assert!(!actual.exists(), "!actual path: {:?}", actual);
     assert!(expect.exists(), "expect path: {:?}", expect);
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
         .arg("--input")
         .arg(input.as_os_str())
-        .arg("--template-glob")
+        .arg("--template")
         .arg(&template)
         .output()
         .expect("failure");

@@ -21,7 +21,7 @@ use clap::{Arg, App};
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
-use crate::fun::from_list_pathable_string_into_list_path_buf::*;
+use crate::fun::from_pathable_string_into_list_path_buf::*;
 use crate::fun::from_list_str_into_map_string_string::*;
 
 /// Create a clap app.
@@ -80,13 +80,6 @@ pub fn app() -> App<'static> {
         .multiple_occurrences(true)
         .multiple_values(true)
         .help("A template path string. Example file: --template \"template.html\" … Example directory: --template \"templates/\" … Example glob: --template \"templates/**/*\" …"))
-    .arg(Arg::new("template_name")
-        .long("template-name")
-        .value_name("NAME")
-        .takes_value(true)
-        .multiple_occurrences(true)
-        .multiple_values(true)
-        .help("The template name to use for this rendering. Example: \"--template-name foo\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
@@ -171,11 +164,6 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    let template_name = match matches.value_of("template_name") {
-        Some(x) => Some(x.into()),
-        _ =>  None,
-    };
-
     let test = matches.is_present("test");
 
     let title = match matches.value_of("title") {
@@ -185,35 +173,17 @@ pub fn args() -> Args {
 
     let mut args = Args {
         input_list_pathable_string: input_list_pathable_string,
-        input_list_path_buf: None, // Set below
         input_file_name_extension: input_file_name_extension,
         language: language,
         output_list_pathable_string: output_list_pathable_string,
-        output_list_path_buf: None, // Set below
         output_file_name_extension: output_file_name_extension,
         script_url_list: script_url_list,
         settings: settings,
         template_list_pathable_string: template_list_pathable_string,
-        template_list_path_buf: None, // Set below
-        template_name: template_name,
         test: test,
         title: title,
         log_level: log_level,
     };
-
-    trace!("clap::args -> {:?}", args);
-
-    if let Some(ref x) = args.input_list_pathable_string {
-        args.input_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
-    }
-
-    if let Some(ref x) = args.output_list_pathable_string {
-        args.output_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
-    }
-
-    if let Some(ref x) = args.template_list_pathable_string {
-        args.template_list_path_buf = Some(from_list_pathable_string_into_list_path_buf(x));
-    }
 
     trace!("clap::args -> {:?}", args);
     args    

@@ -10,6 +10,7 @@ use crate::state::state_enum::StateEnum;
 use crate::state::state_with_html::StateWithHTML;
 use crate::templating::templater::Templater;
 use crate::templating::templater_with_tera::TemplaterWithTera;
+use crate::fun::from_pathable_string_into_list_path_buf::*;
 
 /// Run everything.
 ///
@@ -45,13 +46,21 @@ pub(crate) fn run() -> Result<()> {
     let mut templater = TemplaterWithTera::new_with_args(&args);
 
     trace!("Add templates.");
-    templater.add_template_files_via_args(&args)
-    .chain_err(|| "add_template_files_via_args")?;
-
-    trace!("Add default template as needed.");
+    if let Some(template_list_pathable_string) = &args.template_list_pathable_string {
+        for template_pathable_string in template_list_pathable_string {
+            trace!("Add templates: template_list_pathable_string={}", &template_pathable_string);
+            for template_path_buf in from_list_pathable_string_into_list_path_buf(&template_list_pathable_string) {
+                trace!("Add templates: template_path_buf={:?}", &template_path_buf);
+                let name_as_os_str = template_path_buf.file_name()
+                .chain_err(|| "template_path_buf.file_name cannot convert to OsStr")?;
+                let name = name_as_os_str.to_string_lossy();
+                templater.add_template_via_name_and_file(&name, &template_path_buf)
+                .chain_err(|| "add_template_via_name_and_file")?;
+            }
+        }
+    }
     if !templater.has_template() {
-        templater.add_template_default()
-        .chain_err(|| "add_template_default")?;
+        templater.add_template_via_default();
     }
 
     trace!("Prepare items in order to speed up processing.");
@@ -60,21 +69,24 @@ pub(crate) fn run() -> Result<()> {
         None => "html",
     };
 
-    trace!("Process each page.");
-    if let Some(inputs) = &args.input_list_path_buf {
-        for input in inputs {
-            // Calculate output path
-            // TODO Shift the queue of output path list
-            let output = path_buf_to_sibling(&input, &output_file_name_extension);
-            debug!("output: {:?}", &output);
-            do_path(
-                &args,
-                &templater,
-                &input,
-                &output,
-            )?;
+    trace!("Process inputs.");
+    if let Some(input_list_pathable_string) = &args.input_list_pathable_string {
+        for input_pathable_string in input_list_pathable_string {
+            trace!("Process inputs: input_pathable_string={}", input_pathable_string);
+            for input_path_buf in from_pathable_string_into_list_path_buf(&input_pathable_string) {
+                trace!("Process inputs: input_path_buf={:?}", input_path_buf);
+                let output_path_buf = path_buf_to_sibling(&input_path_buf, &output_file_name_extension);
+                trace!("Process inputs: output_path_buf={:?}", output_path_buf);
+                do_path(
+                    &args,
+                    &templater,
+                    &input_path_buf,
+                    &output_path_buf,
+                )?;
+            }
         }
-    };
+    }    
+    
     Ok(())
 }
 
@@ -121,8 +133,8 @@ fn do_path<T: Templater>(
     box_dyn_state.insert(String::from("content"), String::from(content_as_html_text));
     let state_enum = box_dyn_state.to_state_enum();
 
-    trace!("Select the template name.");
-    let template_name = select_template_name(&args, templater);
+    trace!("Select the template name."); //TODO make dynamic
+    let template_name = *templater.template_names_as_set_str().iter().next().expect("template_name");
     debug!("template_name: {:?}", &template_name);
  
     trace!("Render the template.");
@@ -226,25 +238,6 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
     html_text
 }
 
-/// Select the revelant template name.
-///
-/// Example:
-///
-/// ```
-/// let mut templater = TemplaterWithTera::new();
-/// let template_name = select_template_name(&args, &templater);
-/// assert_eq!(template_name, "default");
-/// ```
-///
-fn select_template_name<T: Templater>(args: &Args, templater: &T) -> String {
-    trace!("select_template_name(…)");
-    if let Some(s) = &args.template_name {
-        s.clone()
-    } else {
-        templater.template_default_name()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -345,19 +338,6 @@ mod tests {
         let markdown_text: &str = "# alpha\nbravo\n";
         let html_text = convert_from_markdown_text_to_html_text(markdown_text);
         assert_eq!(html_text, "<h1>alpha</h1>\n<p>bravo</p>\n");
-    }
-
-    #[test]
-    fn test_select_template_name_x_default() {
-        let args = Args::default();
-        let mut templater = TemplaterWithTera::new();
-        let template_name = select_template_name(&args, &templater);
-        assert_eq!(template_name, "default");
-    }
-
-    #[test]
-    fn test_select_template_name_x_custom() {
-        // TODO
     }
 
 }

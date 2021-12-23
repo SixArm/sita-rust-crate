@@ -187,15 +187,6 @@ fn test_clap_template() {
     );
 }
 
-#[test]
-fn test_clap_template_name() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--template-name", "alpha"], 
-        r#" template_name: Some("alpha")"#
-    );
-}
-
 // #[test]
 // fn test_clap_template_glob_to_template_path_set() {
 //     let dir = "from_set_pathable_string_into_set_path_buf/";
@@ -203,10 +194,10 @@ fn test_clap_template_name() {
 //         COMMAND, 
 //         &[
 //             "--test", 
-//             "--template-glob", 
+//             "--template", 
 //             &format!("{}{}", &dir, "a/**/*"), 
 //             &format!("{}{}", &dir, "b/**/*"), 
-//             "--template-glob", 
+//             "--template", 
 //             &format!("{}{}", &dir, "c/**/*"), 
 //             &format!("{}{}", &dir, "d/**/*"), 
 //         ], 

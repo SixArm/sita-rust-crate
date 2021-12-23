@@ -53,44 +53,17 @@ pub trait Templater {
     //
     fn add_template_via_name_and_file(&mut self, name: &str, file: &PathBuf) -> Result<()>;
 
-    // Add tempate files via args, such as template file name.
-    //
-    // Example:
-    //
-    // ```rust
-    // let paths: List<PathBuf> = vec![
-    //     PathBuf::from("alpha.html"),
-    //     PathBuf::from("bravo.html"),
-    // ];
-    // let mut args = Args::default();
-    // args.template_list_path_buf = Some(paths);
-    // let templater: Templater = TemplaterWithTera::new();
-    // add_template_files_via_args(templater, args);
-    // ```
-    //
-    fn add_template_files_via_args(&mut self, args: &Args) -> Result<()> {
-        if let Some(ref path_buf_list) = args.template_list_path_buf {
-            for path_buf in path_buf_list {
-                trace!("add_template_files_via_args path_buf: {:?}", &path_buf);
-                let name = path_buf.file_name().unwrap().to_string_lossy(); //TODO err
-                self.add_template_via_name_and_file(&name, path_buf)
-                .chain_err(|| "add_template_via_name_and_file")?;
-            }
-        }
-        Ok(())
-    }
-
     // Add a default template.
     //
     // Example:
     //
     // ```
     // let templater: Templater = TemplaterWithTera::new();
-    // add_template_default(templater);
+    // add_template_via_default(templater);
     // //-> Tera now has a template name "default" with content "{{ content }}"
     // ```
     //
-    fn add_template_default(&mut self) -> Result<()> where Self: Sized {
+    fn add_template_via_default(&mut self) -> Result<()> where Self: Sized {
         let name = &self.template_default_name();
         let content = &self.template_default_content();
         self.add_template_via_name_and_text(&name, &content)
@@ -162,7 +135,7 @@ pub trait Templater {
     // assert_eq!(html, "alpha");
     // ```
     //
-    fn render_template_with_state_enum<NAME: Into<String>>(&self, template_name: NAME, state_enum: &crate::state::state_enum::StateEnum) -> Result<HtmlString>;
+    fn render_template_with_state_enum(&self, template_name: &str, state_enum: &crate::state::state_enum::StateEnum) -> Result<HtmlString>;
 
 }
 

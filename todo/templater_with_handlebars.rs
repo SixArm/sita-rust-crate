@@ -211,7 +211,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_html() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter = indoc!{r#"
             <!--
                 title: my title
@@ -229,7 +229,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_json() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter = indoc!{r#"
             {
                 "title": "my title",
@@ -247,7 +247,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_toml() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter = indoc!{r#"
             title = "my title"
             content = "my content"
@@ -263,7 +263,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_yaml() {
         let mut templater = TemplaterX::new();
-        templater.add_template_default().expect("default");
+        templater.add_template_via_default().expect("default");
         let matter = indoc!{r#"
             title: "my title"
             content: "my content"

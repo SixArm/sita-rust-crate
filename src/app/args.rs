@@ -15,11 +15,6 @@ pub struct Args {
     /// Example file: "article.md"
     pub(crate) input_list_pathable_string: Option<List<PathableString>>,
 
-    /// Input file path list.
-    /// This is typically calculated from `input_list_pathable_string`.
-    /// Each item points to a file, not a directory, glob, etc.
-    pub(crate) input_list_path_buf: Option<List<PathBuf>>,
-
     /// Input file name extension.
     /// Example: "md" means a Markdown file extension.
     pub(crate) input_file_name_extension: Option<String>,
@@ -37,11 +32,6 @@ pub struct Args {
     /// Example file: "article.html"
     pub(crate) output_list_pathable_string: Option<List<PathableString>>,
 
-    /// Output path list.
-    /// This is typically calculated from `output_list_pathable_string`.
-    /// Each item points to a file, not a directory, glob, etc.
-    pub(crate) output_list_path_buf: Option<List<PathBuf>>,
-
     /// Output file name extension.
     /// Example: "html" means a HTML file extension.
     pub(crate) output_file_name_extension: Option<String>,
@@ -54,19 +44,10 @@ pub struct Args {
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
     pub(crate) settings: Option<Map<String, String>>,
 
-    /// Template name that will be used for rendering.
-    /// Example: "default" means use the default template.
-    pub(crate) template_name: Option<String>,
-
     /// Template pathable string list.
     /// Example glob: "templates/**/*"
     /// Example file: "template.html"
     pub(crate) template_list_pathable_string: Option<List<PathableString>>,
-
-    /// Template file path buf list.
-    /// This is typically calculated from `template_list_pathable_string`.
-    /// Each item points to a file, not a directory, glob, etc.
-    pub(crate) template_list_path_buf: Option<List<PathBuf>>,
 
     /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
@@ -80,18 +61,14 @@ pub struct Args {
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
         input_list_pathable_string: None,
-        input_list_path_buf: None,
         input_file_name_extension: None,
         language: None,
         log_level: None,
         output_list_pathable_string: None,
-        output_list_path_buf: None,
         output_file_name_extension: None,
         settings: None,
         script_url_list: None,
         template_list_pathable_string: None,
-        template_list_path_buf: None,
-        template_name: None,
         test: false,
         title: None,
     } }

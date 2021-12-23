@@ -4,7 +4,7 @@ Sita is a static site generator.
 
 Sita aims to be simple for simple needs, and flexible for complex needs.
 
-Sita is similar in ways to other static site generators, such as Jekyll, Hugo, Zola, etc.
+Sita is simpler than other static site generators, such as Jekyll, Hugo, Zola, etc.
 
 Contents:
 
@@ -48,10 +48,11 @@ $ sita --version
 $ sita --usage
 ```
 
-### --input or -i
+
+### --input / -i
 
 
-Create an example file `hello.md` with this text:
+Create a file `example.md` with this text:
 
 ```md
 hello world
@@ -60,56 +61,19 @@ hello world
 Run Sita with an input file name:
 
 ```sh
-sita --input hello.md
+sita --input example.md
 ```
 
-The outcome is the file `hello.html` with this text:
+The outcome is the file `example.html` with this text:
 
 ```html
 <p>hello world</p>
 ```
 
-Sita can process multiple items such as:
-
-```sh
-sita --input a.md b.md c.md
-```
-
-Sita can process a directory recursively such as:
-
-```sh
-sita --input my-markdown-directory
-```
+The `--input` option can handle multiple files, or directories, or globs.
 
 
-### --output or -o
-
-Run Sita with an output file name:
-
-```sh
-sita --input hello.md --output world.html
-```
-
-The result is the file `world.html` with this text:
-
-```html
-<p>hello world</p>
-```
-
-Sita can process multiple items such as:
-
-```sh
-sita --input a.md b.md c.md --output a.html b.html c.html
-```
-
-Sita can process a directory recursively such as:
-
-```sh
-sita --input my-markdown-directory --output my-html-directory
-```
-
-
-### --template or -t
+### --template / -t
 
 Create a file `template.html` with this text:
 
@@ -124,10 +88,10 @@ Create a file `template.html` with this text:
 Run Sita with a template file name:
 
 ```sh
-sita --input hello.md --template template.html
+sita --input example.md --template template.html
 ```
 
-The result is the file `hello.html` with this text:
+The result is the file `example.html` with this text:
 
 ```html
 <html>
@@ -137,17 +101,7 @@ The result is the file `hello.html` with this text:
 </html>
 ```
 
-Sita can process multiple items such as:
-
-```sh
-sita --input hello.md --template x.html y.html z.html
-```
-
-Sita can process a directory recursively such as:
-
-```sh
-sita --input hello.md --template my-template-directory
-```
+The `--template` option can handle multiple files, or directories, or globs.
 
 
 ## Template engines
