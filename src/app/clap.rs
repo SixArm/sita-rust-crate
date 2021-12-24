@@ -161,7 +161,7 @@ pub fn args() -> Args {
 
     let test = matches.is_present("test");
 
-    let mut args = Args {
+    let args = Args {
         input_list_pathable_string: input_list_pathable_string,
         input_file_name_extension: input_file_name_extension,
         language: language,
