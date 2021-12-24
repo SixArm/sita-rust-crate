@@ -7,11 +7,11 @@ use std::ffi::OsStr;
 ///
 /// ```
 /// let input: PathBuf = PathBuf::from("x.alpha");
-/// let output: path_buf_to_sibling(&input, "bravo").unwrap();
+/// let output: from_path_buf_into_sibling(&input, "bravo").unwrap();
 /// assert_eq!(output, PathBuf::from("x.bravo"));
 /// ```
 ///
-pub fn path_buf_to_sibling<P: Into<PathBuf>, E: AsRef<OsStr> + Sized>(path_buf: P, extension: E) -> PathBuf {
+pub fn from_path_buf_into_sibling<P: Into<PathBuf>, E: AsRef<OsStr> + Sized>(path_buf: P, extension: E) -> PathBuf {
     let mut sibling = PathBuf::from(path_buf.into());
     sibling.set_extension(extension);
     sibling
@@ -22,10 +22,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_path_buf_to_sibling() {
+    fn test_from_path_buf_into_sibling() {
         let input = PathBuf::from("example.alpha");
         let extension = "bravo";
-        let output = path_buf_to_sibling(&input, &extension);
+        let output = from_path_buf_into_sibling(&input, &extension);
         assert_eq!(output, PathBuf::from("example.bravo"));
     }
 

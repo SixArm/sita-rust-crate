@@ -20,7 +20,7 @@ impl MatterParser<StateWithTOML> for MatterParserWithTOML {
     /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        debug!("MatterParserWithTOML parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithTOML::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -45,7 +45,7 @@ impl MatterParser<StateWithTOML> for MatterParserWithTOML {
     ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithTOML> {
-        debug!("MatterParserWithTOML parse_matter_text_to_state");
+        trace!("MatterParserWithTOML::parse_matter_text_to_state");
         parse_matter_text_to_vars(&matter_text)
     }
 
@@ -76,9 +76,13 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<::toml::Value> {
-    matter_text.parse::<::toml::Value>()
-    .chain_err(|| "::toml::Value")
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<StateWithTOML> {
+    let toml = matter_text.parse::<::toml::Value>()
+    .chain_err(|| "matter_text.parse::<::toml::Value>()")?;
+    match toml {
+        ::toml::Value::Table(table) => Ok(table),
+        _ => bail!("TOML isn't a map"),
+    }
 }
 
 #[cfg(test)]
@@ -107,12 +111,11 @@ mod tests {
         charlie = "delta"
     "#};
 
-    fn expect_vars() -> toml::Value {
-        let s = indoc!{r#"
+    fn expect_vars() -> StateWithTOML {
+        toml::from_str(indoc!{r#"
             alpha = "bravo"
             charlie = "delta"
-        "#};
-        s.parse::<::toml::Value>().unwrap()
+        "#}).unwrap()
     }
 
     #[test]

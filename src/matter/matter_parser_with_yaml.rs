@@ -21,7 +21,7 @@ impl MatterParser<StateWithYAML> for MatterParserWithYAML {
     /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        debug!("MatterParserWithYAML parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithYAML::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -46,7 +46,7 @@ impl MatterParser<StateWithYAML> for MatterParserWithYAML {
     ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithYAML> {
-        debug!("MatterParserWithYAML parse_matter_text_to_state");
+        trace!("MatterParserWithYAML::parse_matter_text_to_state");
         parse_matter_text_to_vars(&matter_text)
     }
 
@@ -84,9 +84,9 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<::serde_yaml::Value> {
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<StateWithYAML> {
     serde_yaml::from_str(matter_text)
-    .chain_err(|| "::serde_yaml::Value")
+    .chain_err(|| "::serde_yaml::from_str")
 }
 
 #[cfg(test)]
@@ -115,7 +115,7 @@ mod tests {
         charlie: delta
     "#};
 
-    fn expect_vars() -> serde_yaml::Value {
+    fn expect_vars() -> StateWithYAML {
         serde_yaml::from_str(indoc!{r#"
             alpha: bravo
             charlie: delta

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
-use crate::fun::path_buf_to_sibling::*;
+use crate::fun::from_path_buf_into_sibling::*;
 use crate::state::state::State;
 use crate::state::state_enum::StateEnum;
 use crate::state::state_with_html::StateWithHTML;
@@ -75,7 +75,7 @@ pub(crate) fn run() -> Result<()> {
             trace!("Process inputs: input_pathable_string={}", input_pathable_string);
             for input_path_buf in from_pathable_string_into_list_path_buf(&input_pathable_string) {
                 trace!("Process inputs: input_path_buf={:?}", input_path_buf);
-                let output_path_buf = path_buf_to_sibling(&input_path_buf, &output_file_name_extension);
+                let output_path_buf = from_path_buf_into_sibling(&input_path_buf, &output_file_name_extension);
                 trace!("Process inputs: output_path_buf={:?}", output_path_buf);
                 do_path(
                     &args,

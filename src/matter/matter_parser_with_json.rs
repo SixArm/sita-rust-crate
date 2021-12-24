@@ -19,7 +19,7 @@ impl MatterParser<StateWithJSON> for MatterParserWithJSON {
     /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        debug!("MatterParserWithJSON parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithJSON::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -46,7 +46,7 @@ impl MatterParser<StateWithJSON> for MatterParserWithJSON {
     ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithJSON> {
-        debug!("MatterParserWithJSON parse_matter_text_to_state");
+        trace!("MatterParserWithJSON::parse_matter_text_to_state");
         parse_matter_text_to_vars(&matter_text)
     }
 
@@ -79,9 +79,9 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<::serde_json::Value> {
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<StateWithJSON> {
     ::serde_json::from_str(matter_text)
-    .chain_err(|| "::serde_json::Value")
+    .chain_err(|| "::serde_json::from_str")
 }
 
 
@@ -113,7 +113,7 @@ mod tests {
         }
     "#};
 
-    fn expect_vars() -> ::serde_json::Value {
+    fn expect_vars() -> StateWithJSON {
         serde_json::from_str(indoc!{r#"
             {
                 "alpha": "bravo",

@@ -7,19 +7,20 @@ pub type StateWithHTML = Map<String, String>;
 
 impl State for StateWithHTML {
 
-    /// Reflection.
     fn as_any(&self) -> &dyn Any {
         self
     }
 
-    // Convert from this specific state to a state enum.
     fn to_state_enum(&self) -> StateEnum {
         StateEnum::StateWithHTML(self.clone())
     }
 
-    /// Insert.
+    fn has_key(&self, key: &str) -> bool {
+        self.contains_key(key)
+    }
+
     fn insert(&mut self, key: String, value: String) -> () {
         self.insert(key, value);
     }
-
+    
 }

@@ -21,7 +21,7 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
     /// Parse mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        debug!("MatterParserWithHTML parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithHTML::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -46,12 +46,8 @@ impl MatterParser<StateWithHTML> for MatterParserWithHTML {
     ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithHTML> {
-        debug!("MatterParserWithHTML parse_matter_text_to_state");
-        let vars = parse_matter_text_to_vars(&matter_text);
-        match vars.is_empty() {
-            false => Ok(vars),
-            _ => Err(Error::from("vars.is_empty()")),
-        }
+        trace!("MatterParserWithHTML::parse_matter_text_to_state");
+        parse_matter_text_to_vars(&matter_text)
     }
 
 }
@@ -79,18 +75,18 @@ pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
 /// ```
 ///
 #[allow(dead_code)]
-pub fn parse_matter_text_to_vars(matter_text: &str) -> Map<String, String> {
-    let mut map: Map<String, String> = Map::new();
+pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<StateWithHTML> {
+    let mut state: StateWithHTML = Map::new();
     for line in matter_text.split("\n") {
         if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
             if let Some(key) = captures.name("key") {
                 if let Some(value) = captures.name("value") {
-                    map.insert(String::from(key.as_str()), String::from(value.as_str()));
+                    state.insert(String::from(key.as_str()), String::from(value.as_str()));
                 }
             }
         }
     }
-    map
+    Ok(state)
 }
 
 #[cfg(test)]
@@ -119,7 +115,7 @@ mod tests {
         charlie: delta
     "#};
 
-    fn expect_vars() -> Map<String, String> {
+    fn expect_vars() -> StateWithHTML {
         map!(
             String::from("alpha") => String::from("bravo"), 
             String::from("charlie") => String::from("delta")
@@ -143,8 +139,9 @@ mod tests {
 
     #[test]
     fn test_parse_matter_text_to_vars() {
-        let vars: Map<String, String> = parse_matter_text_to_vars(MATTER_TEXT);
-        assert_eq!(vars, expect_vars());
+        let result = parse_matter_text_to_vars(MATTER_TEXT);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), expect_vars());
     }
 
     #[test]
