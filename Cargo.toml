@@ -39,7 +39,7 @@ serde_json = "1.0.64" # JSON serialize/deserialize
 serde_yaml = "0.8.17" # YAML serialize/deserialize
 strsim = "*" # String similarity metrics
 tera = "1.10.0" # Template engine based on Jinja2/Django templates
-toml = "0.5.8" # TOML encoder/decoder
+toml = { version = "0.5.8", features = ["preserve_order"] } # TOML encoder/decoder
 unicode-segmentation = "1.7.1" #  Iterators which split strings on graphemes, words, etc.
 url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
 version_check = "*" # Check the version of the installed/running rustc
