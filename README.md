@@ -211,21 +211,6 @@ TODO list in priority order:
 ## DEFERRED
 
 
-### Title option
-
-To set the title, use the command line option `--title` such as:
-
-```sh
-$ sita example.md --title Welcome
-```
-
-The output file adds this HTML:
-
-```html
-<title>Welcome</title>
-```
-
-
 ### Language option
 
 To set the language, use the command line option `--lang` such as:

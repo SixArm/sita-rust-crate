@@ -52,10 +52,6 @@ pub struct Args {
     /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
     pub(crate) test: bool,
-
-    /// Title of the page being rendered.
-    /// Example: "My Page"
-    pub(crate) title: Option<String>,
 }
 
 impl ::std::default::Default for Args {
@@ -70,6 +66,5 @@ impl ::std::default::Default for Args {
         script_url_list: None,
         template_list_pathable_string: None,
         test: false,
-        title: None,
     } }
 }

@@ -83,12 +83,7 @@ pub fn app() -> App<'static> {
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
-        .help("Print test output for debugging, verifying, tracing, and the like. Example: --test …"))
-    .arg(Arg::new("title")
-        .long("title")
-        .value_name("TEXT")
-        .takes_value(true)
-        .help("The HTML title. Example: --title \"Welcome\" …"))
+        .help("Print test output for debugging, verifying, tracing, and the like. Example: --test"))
     .arg(Arg::new("set")
         .short('s')
         .long("set")
@@ -166,11 +161,6 @@ pub fn args() -> Args {
 
     let test = matches.is_present("test");
 
-    let title = match matches.value_of("title") {
-        Some(x) => Some(x.into()),
-        _ =>  None,
-    };
-
     let mut args = Args {
         input_list_pathable_string: input_list_pathable_string,
         input_file_name_extension: input_file_name_extension,
@@ -181,7 +171,6 @@ pub fn args() -> Args {
         settings: settings,
         template_list_pathable_string: template_list_pathable_string,
         test: test,
-        title: title,
         log_level: log_level,
     };
 
