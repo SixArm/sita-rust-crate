@@ -18,7 +18,7 @@ Sita aims to be simple for simple needs:
 
 * Sita uses simple default settings to get you up and running.
 
-* For example Sita can process one text file from Markdown to HTML,
+* For example Sita can process one file from Markdown into HTML,
   without needing any special setup or configuration.
 
 Sita aims to be flexible for complex needs:
@@ -35,17 +35,24 @@ Sita is currently being developed:
 * You can open a GitHub issue or contact us at sita@sixarm.com.
 
 
-## Examples
+## Getting started
 
 
-### Beginner commands
+### --help 
 
-To get help, or version, or usage:
+Get the Sita help introduction:
 
 ```
-$ sita --help
-$ sita --version
-$ sita --usage
+sita --help
+```
+
+
+### --version
+
+Get the Sita version number:
+
+```
+sita --version
 ```
 
 
@@ -102,6 +109,33 @@ The result is the file `example.html` with this text:
 ```
 
 The `--template` option can handle multiple files, or directories, or globs.
+
+
+## Features
+
+Features:
+
+* Compile from a typical Markdown file into a typical HTML web page.
+
+* Front matter can be written in HTML, or JSON, or TOML, or YAML. 
+
+Features that we may add in the future if people want to fund them:
+
+* Sections
+
+* Pagination
+
+* Taxonomies
+
+* Feeds
+
+* Sitemap
+
+* Robots.txt
+
+* 404 error page
+
+* Archive
 
 
 ## Template engines

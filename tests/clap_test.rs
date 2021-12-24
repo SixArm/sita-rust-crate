@@ -46,20 +46,20 @@ fn test_clap_test() {
 // show diagnostics, because the `--verbose` argument turns on logging output,
 // which can include debugging messages, warnings, errors, and so on.
 //
-#[test]
-fn test_clap_verbose() {
-    assert_command_stdout_contains(COMMAND, &["--test"], r#" log_level: None"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
-    assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
-}
+// #[test]
+// fn test_clap_verbose() {
+//     assert_command_stdout_contains(COMMAND, &["--test"], r#" log_level: None"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
+//     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
+// }
 
 /// Normal-priority CLAP command args tests
 
@@ -99,14 +99,14 @@ fn test_clap_input_file_name_extension() {
     );
 }
 
-#[test]
-fn test_clap_language() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--language", "alpha"], 
-        r#" language: Some("alpha")"#
-    );
-}
+// #[test]
+// fn test_clap_language() {
+//     assert_command_stdout_contains(
+//         COMMAND, 
+//         &["--test", "--language", "alpha"], 
+//         r#" language: Some("alpha")"#
+//     );
+// }
 
 #[test]
 fn test_clap_output() {
@@ -144,23 +144,23 @@ fn test_clap_output_file_name_extension() {
     );
 }
 
-#[test]
-fn test_clap_script() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--script", "alpha", "bravo", "--script", "charlie", "delta"], 
-        r#" script_url_list: Some(["alpha", "bravo", "charlie", "delta"])"#
-    );
-}
+// #[test]
+// fn test_clap_script() {
+//     assert_command_stdout_contains(
+//         COMMAND, 
+//         &["--test", "--script", "alpha", "bravo", "--script", "charlie", "delta"], 
+//         r#" script_url_list: Some(["alpha", "bravo", "charlie", "delta"])"#
+//     );
+// }
 
-#[test]
-fn test_clap_set() {
-    assert_command_stdout_contains(
-        COMMAND, 
-        &["--test", "--set", "alpha", "bravo", "--set", "charlie", "delta"], 
-        r#" settings: Some({"alpha": "bravo", "charlie": "delta"})"#
-    );
-}
+// #[test]
+// fn test_clap_set() {
+//     assert_command_stdout_contains(
+//         COMMAND, 
+//         &["--test", "--set", "alpha", "bravo", "--set", "charlie", "delta"], 
+//         r#" settings: Some({"alpha": "bravo", "charlie": "delta"})"#
+//     );
+// }
 
 #[test]
 fn test_clap_template() {

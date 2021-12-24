@@ -79,7 +79,7 @@ impl Templater for TemplaterWithTera {
     // ```
     //
     fn add_template_via_name_and_file(&mut self, name: &str, file: &PathBuf) -> Result<()> {
-        trace!("templater_with_tera::add_template_via_name_and_file: name={} file={:?}", &name, &file);
+        trace!("templater_with_tera::add_template_via_name_and_file: name={} file: {:?}", &name, &file);
         self.tera.add_template_file(&file, Some(&name))
         .chain_err(|| "add_template_via_name_and_file")
     }

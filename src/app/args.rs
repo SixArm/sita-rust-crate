@@ -4,8 +4,10 @@
 //! We have these args in their own file in order to be flexible,
 //! such as being able to start our app with other arg parsers.
 
-use std::path::PathBuf;
 use crate::types::*;
+
+pub const INPUT_FILE_NAME_EXTENSION_AS_STR: &str = "md";
+pub const OUTPUT_FILE_NAME_EXTENSION_AS_STR: &str = "html";
 
 #[derive(Debug)]
 pub struct Args {
@@ -21,11 +23,11 @@ pub struct Args {
 
     /// Language encoding.
     /// Example: "en" means English language encoding.
-    pub(crate) language: Option<String>,
+    // pub(crate) language: Option<String>,
 
     /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.
     /// Example: 5 means print debug diagnostics.
-    pub(crate) log_level: Option<::log::Level>,
+    // pub(crate) log_level: Option<::log::Level>,
 
     /// Output pathable string list.
     /// Example directory: "results/"
@@ -38,11 +40,11 @@ pub struct Args {
 
     /// Script URL list.
     /// Example: "https://example.com/script.js" is a JavaScript URL.
-    pub(crate) script_url_list: Option<List<UrlString>>,
+    // pub(crate) script_url_list: Option<List<UrlString>>,
 
     /// Settings for the program.
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
-    pub(crate) settings: Option<Map<String, String>>,
+    // pub(crate) settings: Option<Map<String, String>>,
 
     /// Template pathable string list.
     /// Example glob: "templates/**/*"
@@ -58,12 +60,12 @@ impl ::std::default::Default for Args {
     fn default() -> Self { Self {
         input_list_pathable_string: None,
         input_file_name_extension: None,
-        language: None,
-        log_level: None,
+        // language: None,
+        // log_level: None,
         output_list_pathable_string: None,
         output_file_name_extension: None,
-        settings: None,
-        script_url_list: None,
+        // settings: None,
+        // script_url_list: None,
         template_list_pathable_string: None,
         test: false,
     } }
