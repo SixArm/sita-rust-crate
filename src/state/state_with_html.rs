@@ -15,7 +15,7 @@ impl State for StateWithHTML {
         StateEnum::StateWithHTML(self.clone())
     }
 
-    fn has_key(&self, key: &str) -> bool {
+    fn contains_key(&self, key: &str) -> bool {
         self.contains_key(key)
     }
 

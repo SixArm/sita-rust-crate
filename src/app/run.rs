@@ -10,6 +10,7 @@ use crate::state::state_enum::StateEnum;
 use crate::state::state_with_html::StateWithHTML;
 use crate::templating::templater::Templater;
 use crate::templating::templater_with_tera::TemplaterWithTera;
+use crate::fun::from_html_str_into_headline_str::*;
 use crate::fun::from_pathable_string_into_list_path_buf::*;
 
 /// Run everything.
@@ -130,7 +131,17 @@ fn do_path<T: Templater>(
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
     trace!("Set the content HTML for the content template tag.");
-    box_dyn_state.insert(String::from("content"), String::from(content_as_html_text));
+    box_dyn_state.insert(String::from("content"), content_as_html_text.clone());
+
+    trace!("Set the state with special keys.");
+    if !box_dyn_state.contains_key("title") {
+        if let Some(title) = from_html_str_into_headline_str(&content_as_html_text) {
+            box_dyn_state.contains_key_or_insert(String::from("title"), String::from(title));
+        }
+    }
+    debug!("box_dyn_state={:?}" , &box_dyn_state);
+
+    trace!("Convert the state to a final state enum.");
     let state_enum = box_dyn_state.to_state_enum();
 
     trace!("Select the template name."); //TODO make dynamic

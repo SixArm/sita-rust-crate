@@ -14,8 +14,8 @@ impl State for StateWithTOML {
         StateEnum::StateWithTOML(self.clone())
     }
 
-    fn has_key(&self, key: &str) -> bool {
-        self.has_key(key)
+    fn contains_key(&self, key: &str) -> bool {
+        ::toml::value::Table::contains_key(self, key)
     }
  
     fn insert(&mut self, key: String, value: String) -> () {

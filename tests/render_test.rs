@@ -37,3 +37,9 @@ fn test_matter_x_yaml() {
     );
 }
 
+#[test]
+fn test_title() {
+    test_with_base_path_and_default_input_template_actual_expect(
+        TESTS_DIR.join("render").join("title")
+    );
+}

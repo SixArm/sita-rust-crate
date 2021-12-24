@@ -14,14 +14,14 @@ pub trait State: std::fmt::Debug {
     fn to_state_enum(&self) -> StateEnum;
 
     // Does the state contain the key?
-    fn has_key(&self, key: &str) -> bool;
+    fn contains_key(&self, key: &str) -> bool;
 
     // Insert the key and value.
     fn insert(&mut self, key: String, value: String) -> ();
 
     /// If the key doesn't exist then insert the key and value.
-    fn key_or_insert(&mut self, key: String, value: String) -> () {
-        if !self.has_key(&key) { 
+    fn contains_key_or_insert(&mut self, key: String, value: String) -> () {
+        if !self.contains_key(&key) { 
             self.insert(key, value); 
         }
     }

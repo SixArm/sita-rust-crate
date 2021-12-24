@@ -117,9 +117,9 @@ The roadmap is:
 * Tera - because of advanced capabilties and pure Rust.
 
 
-## Front matter variables
+## State variables
 
-Front matter variables can be set by using HTML, JSON, TOML, YAML, or command line options.
+State variables can be set by using front matter as HTML, JSON, TOML, YAML, or command line options.
 
 
 ### HTML

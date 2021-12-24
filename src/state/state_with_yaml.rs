@@ -14,7 +14,7 @@ impl State for StateWithYAML {
         StateEnum::StateWithYAML(self.clone())
     }
 
-    fn has_key(&self, key: &str) -> bool {
+    fn contains_key(&self, key: &str) -> bool {
         self.contains_key(&::serde_yaml::Value::String(String::from(key)))
     }
          
