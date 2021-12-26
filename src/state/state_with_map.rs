@@ -1,18 +1,18 @@
 use std::any::Any;
 use crate::types::*;
-use crate::state::state::State;
+use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
 
-pub type StateWithHTML = Map<String, String>;
+pub type StateWithMap = Map<String, String>;
 
-impl State for StateWithHTML {
+impl StateTrait for StateWithMap {
 
     fn as_any(&self) -> &dyn Any {
         self
     }
 
     fn to_state_enum(&self) -> StateEnum {
-        StateEnum::StateWithHTML(self.clone())
+        StateEnum::StateWithMap(self.clone())
     }
 
     fn contains_key(&self, key: &str) -> bool {

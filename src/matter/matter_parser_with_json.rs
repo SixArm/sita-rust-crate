@@ -4,19 +4,19 @@ use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use crate::errors::*;
-use crate::matter::matter_parser::MatterParser;
+use crate::matter::matter_parser_trait::MatterParserTrait;
 use crate::state::state_with_json::StateWithJSON;
+
+#[derive(Debug)]
 pub struct MatterParserWithJSON {
 }
 
-impl MatterParser<StateWithJSON> for MatterParserWithJSON {
+impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
 
-    /// Reflection.
     fn as_any(&self) -> &dyn Any {
         self
     }
     
-    /// Parse a block of mix text to content text and matter text.
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
         trace!("MatterParserWithJSON::parse_mix_text_to_content_text_and_matter_text");
@@ -28,62 +28,18 @@ impl MatterParser<StateWithJSON> for MatterParserWithJSON {
         ))
     }
 
-    /// Parse a block of text to a matter state struct JSON enum.
-    ///
-    /// Example:
-    ///
-    /// ```
-    /// let matter_text = indoc!{r#"
-    ///     {
-    ///         "alpha": "bravo",
-    ///         "charlie": "delta"
-    ///     }
-    /// "#};
-    /// let state: StateWithJSON = parse_matter_text_to_state(&matter_text);
-    /// assert_eq!(state.data["alpha"], "bravo");
-    /// assert_eq!(state.data["charlie"], "delta");
-    /// ```
-    ///
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithJSON> {
         trace!("MatterParserWithJSON::parse_matter_text_to_state");
-        parse_matter_text_to_vars(&matter_text)
+        ::serde_json::from_str(matter_text)
+        .chain_err(|| "::serde_json::from_str")
     }
 
 }
 
-// #[allow(dead_code)]
-// pub fn blank() -> ::serde_json::Value {
-//     ::serde_json::from_str("").unwrap()
-// }
-
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"(?m)(?s)\A(?P<matter>\{.*?\n\}\n)(?P<content>.*)\z").unwrap()
 });
-
-
-/// Parse matter text to variables implemented as JSON.
-///
-/// Example:
-///
-/// ```
-/// let matter_text = indoc!{r#"
-///     {
-///         "alpha": "bravo",
-///         "charlie": "delta"
-///     }
-/// "#};
-/// let vars: ::serde_json::Value = parse_matter_text_to_vars(&matter_text).unwrap();
-/// assert_eq!(vars["alpha"], "bravo");
-/// assert_eq!(vars["charlie"], "delta");
-/// ```
-///
-#[allow(dead_code)]
-pub fn parse_matter_text_to_vars(matter_text: &str) -> Result<StateWithJSON> {
-    ::serde_json::from_str(matter_text)
-    .chain_err(|| "::serde_json::from_str")
-}
-
 
 #[cfg(test)]
 mod tests {
@@ -113,7 +69,7 @@ mod tests {
         }
     "#};
 
-    fn expect_vars() -> StateWithJSON {
+    fn expect_state() -> StateWithJSON {
         serde_json::from_str(indoc!{r#"
             {
                 "alpha": "bravo",
@@ -138,18 +94,11 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_matter_text_to_vars() {
-        let result = parse_matter_text_to_vars(MATTER_TEXT);
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap(), expect_vars());
-    }
-
-    #[test]
     fn test_parse_matter_text_to_state() {
         let result = MatterParserX{}.parse_matter_text_to_state(MATTER_TEXT);
         assert!(result.is_ok());
         let state = result.unwrap();
-        assert_eq!(state, expect_vars());
+        assert_eq!(state, expect_state());
     }
 
 }

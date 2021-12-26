@@ -1,10 +1,10 @@
 use std::any::Any;
-use crate::state::state::State;
+use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
 
 pub type StateWithJSON = ::serde_json::Map<String, ::serde_json::Value>;
 
-impl State for StateWithJSON {
+impl StateTrait for StateWithJSON {
 
     fn as_any(&self) -> &dyn Any {
         self

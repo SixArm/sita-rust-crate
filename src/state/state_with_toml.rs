@@ -1,10 +1,10 @@
 use std::any::Any;
-use crate::state::state::State;
+use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
 
 pub type StateWithTOML = ::toml::value::Table;
 
-impl State for StateWithTOML {
+impl StateTrait for StateWithTOML {
     
     fn as_any(&self) -> &dyn Any {
         self

@@ -5,7 +5,7 @@
 use std::any::Any;
 use crate::state::state_enum::StateEnum;
 
-pub trait State: std::fmt::Debug {
+pub trait StateTrait: std::fmt::Debug {
 
     // Convert from this specific state to any type.
     fn as_any(&self) -> &dyn Any;

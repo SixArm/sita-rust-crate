@@ -3,7 +3,7 @@
 use std::any::Any;
 use crate::errors::*;
 
-pub trait MatterParser<STATE> {
+pub trait MatterParserTrait<STATE> {
     fn as_any(&self) -> &dyn Any;
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)>;
     fn parse_mix_text_to_content_text_and_state(&self, mix_text: &str) -> Result<(String, STATE)> {

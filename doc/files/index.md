@@ -14,14 +14,14 @@
     * `matter/` - Markdown front matter and back matter files.
         * `matter_parser.rs` - Matter parser trait, implemented by `matter_parser_with_*`.
         * `matter_parser_mutex.rs` - Matter parser mutex, choosing among HTML, JSON, TOML, YAML.
-        * `matter_parser_with_html.rs` - Matter parser for HTML (Hyper Text Markup Language).
+        * `matter_parser_with_map.rs` - Matter parser for HTML (Hyper Text Markup Language).
         * `matter_parser_with_json.rs` - Matter parser for JSON (JavaScript Object Notation).
         * `matter_parser_with_toml.rs` - Matter parser for TOML (Tom's Obvious Minimal Language).
         * `matter_parser_with_yaml.rs` - Matter parser for YAML (Yet Another Markup Language).
     * `state/` - State that holds variables, such as front matter.
         * `state.rs` - State trait, implemented by `state_with_*.rs`.
         * `state_enum.rs` - State enum, implemented with HTML, JSON, TOML, YAML.
-        * `state_with_html.rs` - State implementation with HTML (Hyper Text Markup Language).
+        * `state_with_map.rs` - State implementation with HTML (Hyper Text Markup Language).
         * `state_with_json.rs` - State implementation with JSON (JavaScript Object Notation).
         * `state_with_toml.rs` - State implementation with TOML (Tom's Obvious Minimal Language).
         * `state_with_yaml.rs` - State implemented with YAML (Yet Another Markup Language).

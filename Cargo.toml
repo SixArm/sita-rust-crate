@@ -16,7 +16,7 @@ confy = "0.4.0" # Boilerplate-free configuration management
 env_logger = "0.8.3" # A logger that can be configured via environment variables
 error-chain = "0.12.4" # Consistent error handling
 glob = "0.3.0" # Support for matching file paths against Unix shell style patterns
-handlebars = { version = "4.0.1", features = ["script_helper"] } # Template engine based on JavaScript Handlebars templates
+handlebars = { version = "4.1.6", features = ["script_helper"] } # Template engine based on JavaScript Handlebars templates
 httpdate = "*" # HTTP date parsing and formatting
 indoc = "1.0.3" # Indented document literals
 ipnet = "*" # Types and methods for working with IPv4 and IPv6 network addresses

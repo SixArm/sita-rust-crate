@@ -56,18 +56,18 @@ pub(crate) mod markdown {
 }
 
 pub(crate) mod matter {
-    pub(crate) mod matter_parser;
     pub(crate) mod matter_parser_mutex;
-    pub(crate) mod matter_parser_with_html;
+    pub(crate) mod matter_parser_trait;
+    pub(crate) mod matter_parser_with_map;
     pub(crate) mod matter_parser_with_json;
     pub(crate) mod matter_parser_with_toml;
     pub(crate) mod matter_parser_with_yaml;
 }
 
 pub(crate) mod state {
-    pub(crate) mod state;
     pub(crate) mod state_enum;
-    pub(crate) mod state_with_html;
+    pub(crate) mod state_trait;
+    pub(crate) mod state_with_map;
     pub(crate) mod state_with_json;
     pub(crate) mod state_with_toml;
     pub(crate) mod state_with_yaml;
@@ -76,12 +76,17 @@ pub(crate) mod state {
 pub(crate) mod templating {
     pub(crate) mod serde;
     pub(crate) mod tags;
-    pub(crate) mod templater;
+}
+
+pub(crate) mod templater {
+    pub(crate) mod templater_enum;
+    pub(crate) mod templater_trait;
+    pub(crate) mod templater_with_handlebars;
+    //pub(crate) mod templater_with_liquid;
     pub(crate) mod templater_with_tera;
 }
 
 //// Main error-chain
-
 fn main() {
     env_logger::init();
     if let Err(ref e) = crate::app::run::run() {

@@ -18,11 +18,8 @@
 
 
 use clap::{Arg, App};
-use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::types::*;
-use crate::fun::from_pathable_string_into_list_path_buf::*;
-use crate::fun::from_list_str_into_map_string_string::*;
 
 /// Create a clap app.
 pub fn app() -> App<'static> {

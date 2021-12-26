@@ -6,10 +6,12 @@ use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
 use crate::fun::from_path_buf_into_sibling::*;
-use crate::state::state::State;
-use crate::state::state_with_html::StateWithHTML;
-use crate::templating::templater::Templater;
-use crate::templating::templater_with_tera::TemplaterWithTera;
+use crate::state::state_trait::StateTrait;
+use crate::state::state_with_map::StateWithMap;
+use crate::templater::templater_trait::TemplaterTrait;
+use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
+//use crate::templater::templater_with_liquid::TemplaterWithLiquid;
+use crate::templater::templater_with_tera::TemplaterWithTera;
 use crate::fun::from_html_str_into_headline_str::*;
 use crate::fun::from_pathable_string_into_list_path_buf::*;
 
@@ -55,14 +57,14 @@ pub(crate) fn run() -> Result<()> {
                 let name_as_os_str = template_path_buf.file_name()
                 .chain_err(|| "template_path_buf.file_name cannot convert to OsStr")?;
                 let name = name_as_os_str.to_string_lossy();
-                templater.add_template_via_name_and_file(&name, &template_path_buf)
-                .chain_err(|| "add_template_via_name_and_file")?;
+                templater.add_template_via_name_and_content_file(&name, &template_path_buf)
+                .chain_err(|| "add_template_via_name_and_content_file")?;
             }
         }
     }
 
     trace!("Add default template as needed.");
-    if !templater.has_template() {
+    if !templater.contains_any_template() {
         templater.add_template_via_default();
     }
 
@@ -93,7 +95,7 @@ pub(crate) fn run() -> Result<()> {
     Ok(())
 }
 
-fn do_path<T: Templater>(
+fn do_path<T: TemplaterTrait>(
     args: &Args, 
     templater: &T, 
     input: &PathBuf, 
@@ -118,34 +120,34 @@ fn do_path<T: Templater>(
     trace!("Parse matter that holds variables.");
     // TODO refactor this section to use let(…), when it is stable.
     let content_as_markdown_text: String;
-    let mut box_dyn_state: Box<dyn State>;
+    let mut box_dyn_state_trait: Box<dyn StateTrait>;
     if let Ok(parsed) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_mix_text) {
         content_as_markdown_text = parsed.0;
-        box_dyn_state = parsed.1;
+        box_dyn_state_trait = parsed.1;
     } else {
         content_as_markdown_text = content_as_mix_text.into();
-        box_dyn_state = Box::new(StateWithHTML::new());
+        box_dyn_state_trait = Box::new(StateWithMap::new());
     }
-    debug!("box_dyn_state: {:?}", &box_dyn_state);
+    debug!("box_dyn_state_trait: {:?}", &box_dyn_state_trait);
 
     trace!("Convert from Markdown text to HTML text");
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
     trace!("Set the content HTML for the content template tag.");
-    box_dyn_state.insert(String::from("content"), content_as_html_text.clone());
-    debug!("box_dyn_state: {:?}", &box_dyn_state);
+    box_dyn_state_trait.insert(String::from("content"), content_as_html_text.clone());
+    debug!("box_dyn_state_trait: {:?}", &box_dyn_state_trait);
 
     trace!("Set the state with special keys.");
-    if !box_dyn_state.contains_key("title") {
+    if !box_dyn_state_trait.contains_key("title") {
         if let Some(title) = from_html_str_into_headline_str(&content_as_html_text) {
-            box_dyn_state.contains_key_or_insert(String::from("title"), String::from(title));
+            box_dyn_state_trait.contains_key_or_insert(String::from("title"), String::from(title));
         }
     }
-    debug!("box_dyn_state: {:?}" , &box_dyn_state);
+    debug!("box_dyn_state_trait: {:?}" , &box_dyn_state_trait);
 
     trace!("Convert the state to a final state enum.");
-    let state_enum = box_dyn_state.to_state_enum();
+    let state_enum = box_dyn_state_trait.to_state_enum();
     debug!("state_enum: {:?}" , &state_enum);
 
     trace!("Select the template name."); //TODO make dynamic

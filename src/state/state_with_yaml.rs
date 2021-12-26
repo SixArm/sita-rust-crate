@@ -1,10 +1,10 @@
 use std::any::Any;
-use crate::state::state::State;
+use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
 
 pub type StateWithYAML = ::serde_yaml::Mapping;
 
-impl State for StateWithYAML {
+impl StateTrait for StateWithYAML {
 
     fn as_any(&self) -> &dyn Any {
         self
