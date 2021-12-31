@@ -34,6 +34,7 @@ extern crate env_logger;
 //// Modules
 
 #[macro_use] pub(crate) mod types; // Type aliases
+pub(crate) mod util; // Utilties
 
 pub(crate) mod app { // Application
     pub(crate) mod args; // Arguments struct, such as set via `clap`.
@@ -45,10 +46,13 @@ pub(crate) mod app { // Application
 
 pub(crate) mod fun { // Functions 
     pub(crate) mod from_html_str_into_headline_str; // from HtmlStr into headline str
-    pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
+    pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
+    pub(crate) mod from_path_buf_into_sibling; // from PathBuf into sibling PathBuf
+    pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
-    pub(crate) mod from_path_buf_into_sibling;
+    pub(crate) mod walkdir_dir_entry_is_hidden;
+    pub(crate) mod walkdir_dir_entry_is_visible;
 }
 
 pub(crate) mod markdown {
@@ -58,7 +62,7 @@ pub(crate) mod markdown {
 pub(crate) mod matter {
     pub(crate) mod matter_parser_mutex;
     pub(crate) mod matter_parser_trait;
-    pub(crate) mod matter_parser_with_map;
+    pub(crate) mod matter_parser_with_btms;
     pub(crate) mod matter_parser_with_json;
     pub(crate) mod matter_parser_with_toml;
     pub(crate) mod matter_parser_with_yaml;
@@ -67,7 +71,7 @@ pub(crate) mod matter {
 pub(crate) mod state {
     pub(crate) mod state_enum;
     pub(crate) mod state_trait;
-    pub(crate) mod state_with_map;
+    pub(crate) mod state_with_btms;
     pub(crate) mod state_with_json;
     pub(crate) mod state_with_toml;
     pub(crate) mod state_with_yaml;

@@ -6,7 +6,7 @@
 
 use crate::types::*;
 
-pub const INPUT_FILE_NAME_EXTENSION_AS_STR: &str = "md";
+//pub const INPUT_FILE_NAME_SELECT_REGEX_AS_STR: &str = "\\.md$";
 pub const OUTPUT_FILE_NAME_EXTENSION_AS_STR: &str = "html";
 
 #[derive(Debug)]
@@ -17,13 +17,9 @@ pub struct Args {
     /// Example file: "article.md"
     pub(crate) input_list_pathable_string: Option<List<PathableString>>,
 
-    /// Input file name extension.
-    /// Example: "md" means a Markdown file extension.
-    pub(crate) input_file_name_extension: Option<String>,
-
-    /// Language encoding.
-    /// Example: "en" means English language encoding.
-    // pub(crate) language: Option<String>,
+    /// Input file name select regex.
+    /// Example: "\.md$" means a Markdown file extension.
+    // pub(crate) input_file_name_select_regex_string: Option<String>,
 
     /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.
     /// Example: 5 means print debug diagnostics.
@@ -59,8 +55,7 @@ pub struct Args {
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
         input_list_pathable_string: None,
-        input_file_name_extension: None,
-        // language: None,
+        // input_file_name_select_regex_string: None,
         // log_level: None,
         output_list_pathable_string: None,
         output_file_name_extension: None,
@@ -68,5 +63,5 @@ impl ::std::default::Default for Args {
         // script_url_list: None,
         template_list_pathable_string: None,
         test: false,
-    } }
+    }}
 }

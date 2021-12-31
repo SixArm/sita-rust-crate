@@ -15,7 +15,7 @@ impl StateTrait for StateWithTOML {
     }
 
     fn contains_key(&self, key: &str) -> bool {
-        ::toml::value::Table::contains_key(self, key)
+        self.contains_key(key)
     }
  
     fn insert(&mut self, key: String, value: String) -> () {

@@ -29,6 +29,29 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
     }
 }
 
+
+#[allow(dead_code)]
+fn assert_str_contains(outer: &str, inner: &str) {
+    assert!(
+        outer.contains(inner), 
+        "outer: {:?}\n inner: {}\n", &outer, &inner
+    );
+}
+
+fn assert_command_stdout_contains(command_name: &str, command_args: &[&str], target: &str) {
+    let output = Command::new(command_name)
+    .args(command_args)
+    .output()
+    .expect("failure");
+    let actual = ::std::str::from_utf8(&output.stdout)
+    .unwrap()
+    .to_string();
+    assert!(
+        actual.contains(target), 
+        "command: {:?}\nargs: {:?}\nactual: {:?}\ntarget: {}\n", &command_name, &command_args, &actual, &target
+    );
+}
+
 #[cfg(test)]
 #[allow(dead_code)]
 pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {

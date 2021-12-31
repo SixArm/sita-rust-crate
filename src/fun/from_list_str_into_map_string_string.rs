@@ -10,7 +10,9 @@ use crate::types::*;
 /// //=> ["alpha" => "bravo", "charlie" => "delta"]
 /// ```
 ///
+#[allow(dead_code)]
 pub fn from_list_str_into_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
+    trace!("from_list_str_into_map_string_string");
     let mut map: Map<String, String> = Map::new();
     for i in (0..vec_str.len()-1).step_by(2) {
         let k = String::from(vec_str[i]);

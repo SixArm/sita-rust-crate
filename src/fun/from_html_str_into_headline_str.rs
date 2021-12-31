@@ -20,6 +20,7 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 /// //=> "Alpha Bravo"
 /// ```
 ///
+#[allow(dead_code)]
 pub fn from_html_str_into_headline_str(html_str: &HtmlStr) -> Option<&str> {
     if let Some(captures) = (*REGEX).captures(html_str) {
         if let Some(x) = captures.name("headline") {

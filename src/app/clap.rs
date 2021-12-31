@@ -35,17 +35,12 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .help("An input path string. Example file: --input \"input.html\" … Example directory: --input \"inputs/\" … Example glob: --input \"inputs/**/*\" …"))
-    .arg(Arg::new("input_file_name_extension")
-        .long("input-extension")
-        .value_name("EXTENSION")
-        .takes_value(true)
-        .help("The input file name extension. Default: \"md\". Example: --input-extension \"md\" …"))
-    // .arg(Arg::new("language")
-    //     .long("language")
-    //     .value_name("LANGUAGE_ENCODING")
+        .help("An input path string.\nExample file: --input \"example.html\" …\nExample directory: --input \"examples/\" …\nExample glob: --input \"examples/**/*\" …"))
+    // .arg(Arg::new("input_file_name_select_regex_string")
+    //     .long("input-select")
+    //     .value_name("REGEX")
     //     .takes_value(true)
-    //     .help("The language encoding; Default: \"en\" for English. Example: --language \"en\""))
+    //     .help("The input file name select filter regular expression.\nExample: --input-select: \"^foo\" (starts with \"foo\")\nExample: --input-select \"md$\" (ends with \"md\")"))
     .arg(Arg::new("output")
         .short('o')
         .long("output")
@@ -54,19 +49,19 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .help("An output path string. Example file: --output \"output.html\" … Example directory: --output \"outputs/\" … Example glob: --output \"outputs/**/*\" …"))
+        .help("An output path string.\nExample file: --output \"example.html\" …\nExample directory: --output \"examples/\" …\nExample glob: --output \"examples/**/*\" …"))
     .arg(Arg::new("output_file_name_extension")
         .long("output-extension")
         .value_name("EXTENSION")
         .takes_value(true)
-        .help("The output file name extension. Default: \"html\". Example: --output-extension \"html\" …"))
+        .help("The output file name extension.\nDefault: \"html\".\nExample: --output-extension \"html\""))
     // .arg(Arg::new("script")
     //     .long("script")
     //     .value_name("URL …")
     //     .takes_value(true)
     //     .multiple_occurrences(true)
     //     .multiple_values(true)
-    //     .help("A script URL to add to the HTML header. Example: --script \"script.js\" …"))
+    //     .help("A script URL to add to the HTML header.\nExample: --script \"script.js\" …"))
     .arg(Arg::new("template")
         .short('t')
         .long("template")
@@ -75,11 +70,11 @@ pub fn app() -> App<'static> {
         .takes_value(true)
         .multiple_occurrences(true)
         .multiple_values(true)
-        .help("A template path string. Example file: --template \"template.html\" … Example directory: --template \"templates/\" … Example glob: --template \"templates/**/*\" …"))
+        .help("A template path string.\nExample file: --template \"example.html\" …\nExample directory: --template \"examples/\" …\nExample glob: --template \"examples/**/*\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
-        .help("Print test output for debugging, verifying, tracing, and the like. Example: --test"))
+        .help("Print test output for debugging, verifying, tracing, and the like.\nExample: --test"))
     // .arg(Arg::new("set")
     //     .short('s')
     //     .long("set")
@@ -87,13 +82,13 @@ pub fn app() -> App<'static> {
     //     .takes_value(true)
     //     .multiple_occurrences(true)
     //     .multiple_values(true)
-    //     .help("Set a variable name to a value. Example: --set pi \"3.1415\" …"))
+    //     .help("Set a variable name to a value.\nExample: --set pi \"3.1415\" …"))
     // .arg(Arg::new("verbose")
     //     .short('v')
     //     .long("verbose")
     //     .takes_value(false)
     //     .multiple_occurrences(true)
-    //     .help("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace. Example: --verbose …"))
+    //     .help("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.\nExample: --verbose …"))
 }
 
 /// Create an Args struct initiatied with the clap App settings.
@@ -107,14 +102,9 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    let input_file_name_extension = match matches.value_of("input_file_name_extension") {
-        Some(x) => Some(String::from(x)),
-        _ => None,
-    };
-
-    // let language = match matches.value_of("language") {
-    //     Some(x) => Some(x.into()),
-    //     _ =>  None,
+    // let input_file_name_select_regex_string = match matches.value_of("input_file_name_select_regex_string") {
+    //     Some(x) => Some(String::from(x)),
+    //     _ => None,
     // };
 
     let output_list_pathable_string = match matches.values_of("output") {
@@ -159,8 +149,7 @@ pub fn args() -> Args {
 
     let args = Args {
         input_list_pathable_string: input_list_pathable_string,
-        input_file_name_extension: input_file_name_extension,
-        // language: language,
+        //input_file_name_select_regex_string: input_file_name_select_regex_string,
         output_list_pathable_string: output_list_pathable_string,
         output_file_name_extension: output_file_name_extension,
         // script_url_list: script_url_list,

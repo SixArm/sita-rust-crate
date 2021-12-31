@@ -12,6 +12,7 @@ use std::ffi::OsStr;
 /// ```
 ///
 pub fn from_path_buf_into_sibling<P: Into<PathBuf>, E: AsRef<OsStr> + Sized>(path_buf: P, extension: E) -> PathBuf {
+    trace!("from_path_buf_into_sibling path_buf");
     let mut sibling = PathBuf::from(path_buf.into());
     sibling.set_extension(extension);
     sibling

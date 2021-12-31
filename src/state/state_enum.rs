@@ -5,7 +5,7 @@
 
 #[derive(Debug)]
 pub enum StateEnum {
-    StateWithMap(crate::state::state_with_map::StateWithMap),
+    StateWithBTMS(crate::state::state_with_btms::StateWithBTMS),
     StateWithJSON(crate::state::state_with_json::StateWithJSON),
     StateWithTOML(crate::state::state_with_toml::StateWithTOML),
     StateWithYAML(crate::state::state_with_yaml::StateWithYAML),

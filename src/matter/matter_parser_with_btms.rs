@@ -6,13 +6,13 @@ use regex::Regex;
 use crate::errors::*;
 use crate::types::*;
 use crate::matter::matter_parser_trait::MatterParserTrait;
-use crate::state::state_with_map::StateWithMap;
+use crate::state::state_with_btms::StateWithBTMS;
 
 #[derive(Debug)]
-pub struct MatterParserWithMap {
+pub struct MatterParserWithBTMS {
 }
 
-impl MatterParserTrait<StateWithMap> for MatterParserWithMap {
+impl MatterParserTrait<StateWithBTMS> for MatterParserWithBTMS {
 
     fn as_any(&self) -> &dyn Any {
         self
@@ -20,7 +20,7 @@ impl MatterParserTrait<StateWithMap> for MatterParserWithMap {
 
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        trace!("MatterParserWithMap::parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithBTMS::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -30,9 +30,9 @@ impl MatterParserTrait<StateWithMap> for MatterParserWithMap {
     }
 
     #[allow(dead_code)]
-    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithMap> {
-        trace!("MatterParserWithMap::parse_matter_text_to_state");
-        let mut state: StateWithMap = Map::new();
+    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithBTMS> {
+        trace!("MatterParserWithBTMS::parse_matter_text_to_state");
+        let mut state: StateWithBTMS = Map::new();
         for line in matter_text.split("\n") {
             if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
                 if let Some(key) = captures.name("key") {
@@ -60,7 +60,7 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
 
-    type MatterParserX = MatterParserWithMap;
+    type MatterParserX = MatterParserWithBTMS;
 
     const MIX_TEXT: &str = indoc!{r#"
         <!--
@@ -81,7 +81,7 @@ mod tests {
         charlie: delta
     "#};
 
-    fn expect_state() -> StateWithMap {
+    fn expect_state() -> StateWithBTMS {
         map!(
             String::from("alpha") => String::from("bravo"), 
             String::from("charlie") => String::from("delta")

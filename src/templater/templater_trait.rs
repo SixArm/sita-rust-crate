@@ -175,7 +175,8 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name = "alpha";
         let content_text = "{{ bravo }}";
-        templater.add_template_via_name_and_content_text(&name, &content_text);
+        let result = templater.add_template_via_name_and_content_text(&name, &content_text);
+        assert!(result.is_ok());
         assert!(templater.contains_any_template());
     }
 
@@ -184,14 +185,15 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name = "alpha";
         let content_file = TESTS_DIR.join("function").join("add_template_via_name_and_content_file").join("template.html");
-        templater.add_template_via_name_and_content_file(&name, &content_file);
+        let result = templater.add_template_via_name_and_content_file(&name, &content_file);
+        assert!(result.is_ok());
         assert!(templater.contains_any_template());
     }
 
     #[test]
     fn test_contains_any_template_x_true() {
         let mut templater  = TemplaterX::new();
-        templater.add_template_via_name_and_content_text("my-name", "my-content").unwrap();
+        templater.add_template_via_name_and_content_text("my-name", "my-content").expect("add_template_via_name_and_content_text");
         let flag = templater.contains_any_template();
         assert_eq!(flag, true);
     }

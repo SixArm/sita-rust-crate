@@ -43,4 +43,5 @@ toml = { version = "0.5.8", features = ["preserve_order"] } # TOML encoder/decod
 unicode-segmentation = "1.7.1" #  Iterators which split strings on graphemes, words, etc.
 url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
 version_check = "*" # Check the version of the installed/running rustc
+walkdir = "2" # Recursive directory traversal
 yaml-rust = "0.4.5" # YAML parser

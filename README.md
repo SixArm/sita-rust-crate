@@ -19,7 +19,7 @@ Sita aims to be simple for simple needs:
 * Sita uses simple default settings to get you up and running.
 
 * For example Sita can process one file from Markdown into HTML,
-  without needing any special setup or configuration.
+  without needing any special setup or any custom configuration.
 
 Sita aims to be flexible for complex needs:
 
@@ -213,69 +213,4 @@ subtitle: My Subtitle
 ```
 ```md
 The content starts here.
-```
-
-
-### Command line options
-
-Sita can use front matter variables that are set using files such as:
-
-```sh
-sita example.md --variable-file var.html
-sita example.md --variable-file var.json
-sita example.md --variable-file var.toml
-sita example.md --variable-file var.yaml
-```
-
-Sita chooses the format based on the file name.
-
-
-## Issues
-
-
-### TODO
-
-TODO list in priority order:
-
-* HTML default templates using the options `--lang`, `--title`, `--script`.
-
-* Front matter variables via JON, TOML, YAML, and the option `--variable-file`.
-
-
-## DEFERRED
-
-
-### Language option
-
-To set the language, use the command line option `--lang` such as:
-
-```sh
-$ sita example.md --lang en
-```
-
-The output file adds this HTML attribute:
-
-```html
-<html lang="en">
-```
-
-
-### Script option
-
-To use a script file, use the command line option `--script` such as:
-
-```sh
-$ sita example.md --script my.js
-```
-
-The output file adds this HTML:
-
-```html
-<script src="my.js"></script>
-```
-
-You can use `--script` multiple times such as:
-
-```sh
-$ sita example.md --script graphics.js utilities.js
 ```

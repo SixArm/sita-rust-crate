@@ -1369,6 +1369,7 @@ dependencies = [
  "unicode-segmentation",
  "url",
  "version_check",
+ "walkdir",
  "yaml-rust",
 ]
 

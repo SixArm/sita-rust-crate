@@ -22,6 +22,7 @@ Utilities:
 * [`matches`](https://crates.io/crates/matches) - A macro to evaluate if an expression matches a pattern
 * [`strsim`](https://crates.io/crates/strsim) - String similarity metrics
 * [`version_check`](https://crates.io/crates/version_check) - Check the version of the installed/running rustc
+* [`walkdir`](https://crates.io/crates/walkdir) - Recursive directory traversal
 
 Parsers, coders, serializers:
 

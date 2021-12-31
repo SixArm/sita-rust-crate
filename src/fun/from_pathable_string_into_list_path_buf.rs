@@ -1,4 +1,8 @@
 use std::path::PathBuf;
+//use glob::GlobError;
+use walkdir::WalkDir;
+
+use crate::errors::*;
 use crate::types::*;
 
 /// Convert from &PathableString into List<PathBuf>.
@@ -10,35 +14,66 @@ use crate::types::*;
 /// let into: List<PathBuf> = from_pathable_string_into_list_path_buf(from);
 /// //=> ["a", "a/a1.txt", "a/a2.txt"]
 /// ```
-///
-/// This function deliberately ignores errors.
-///
-#[allow(dead_code)]
-pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> List<PathBuf> {
-    ::glob::glob(&from)
-    .unwrap()
-    .filter_map(|x| x.ok())
-    .collect::<_>()
-}
-
-/// Convert from &List<PathableString> into List<PathBuf>.
 /// 
-/// Example:
-//
-/// ```rust
-/// let from: List<PathableString> = vec!["a/*", "b/*"];
-/// let into: List<PathBuf> = from_list_pathable_string_into_list_path_buf(from);
-/// //=> ["a", "a/a1.txt", "a/a2.txt", "b", "b/b1.txt", "b/b2.txt"]
-/// ```
-///
-/// This function deliberately ignores errors.
+/// This function deliberately filters out errors.
+/// 
+/// For example, this function will silently skip directories that the 
+/// owner of the running process does not have permission to access.
 ///
 #[allow(dead_code)]
-pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>) -> List<PathBuf> {
-    let x: List<PathBuf> = from.iter().flat_map(|from| 
-        from_pathable_string_into_list_path_buf(from)
-    ).collect::<_>();
-    x
+pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<List<PathBuf>> {
+    trace!("from_pathable_string_into_list_path_buf from: {:?}", from); 
+    let list_path_buf: List<PathBuf> = ::glob::glob(&from)
+    .chain_err(|| format!("from_pathable_string_into_list_path_buf glob from: {:?}", from))?
+    .inspect(|x|
+        println!("f1: {:?}", x)
+    )
+    .inspect(|x|
+        match x {
+            Ok(x) => trace!("from_pathable_string_into_list_path_buf glob ok. ␟from: {:?} ␟path: {:?}", from, x),
+            Err(err) => warn!("from_pathable_string_into_list_path_buf glob err. ␟from: {:?} ␟err: {:?}", from, err),
+        }
+    )
+    .filter_map(|x| 
+        x.ok()
+        //TODO
+        // match x {
+        //     Ok(path_buf) => path_buf,
+        //     Err(err) => bail!(err),
+        // }
+    )
+    .inspect(|x|
+        println!("f2: {:?}", x)
+    )
+    .flat_map(|path_buf|
+        WalkDir::new(&path_buf)
+        .into_iter()
+        .filter_entry(|e| 
+            crate::fun::walkdir_dir_entry_is_visible::walkdir_dir_entry_is_visible(&e)
+        )
+        .inspect(|x|
+            println!("f3: {:?}", x)
+        )
+        .inspect(|x| 
+            match x {
+                Ok(x) => trace!("from_pathable_string_into_list_path_buf dir entry ok. ␟from: {:?} ␟dir entry: {:?}", from, x),
+                Err(err) => warn!("from_pathable_string_into_list_path_buf dir entry err. ␟from: {:?} ␟err: {:?}", from, err),
+            }
+        )
+        .filter_map(|x|
+            x.ok()
+            //TODO
+            // match x {
+            //     Ok(dir_entry) => dir_entry,
+            //     Err(err) => bail!(err),
+            // }
+        )
+        .map(|x| 
+            PathBuf::from(x.path())
+        )
+    )
+    .collect::<_>();
+    Ok(list_path_buf)
 }
 
 #[cfg(test)]
@@ -51,12 +86,16 @@ mod tests {
     }    
 
     #[test]
-    fn test_from_pathable_string_into_list_path_buf() {
+    fn test_from_pathable_string_into_list_path_buf_x_dir() {
         let dir_as_buf = TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
-        let from: PathableString = format!("{}{}", dir_as_string, "/a/**/*");
-        let actual: List<PathBuf> = from_pathable_string_into_list_path_buf(&from);
+        let from: PathableString = format!("{}{}", dir_as_string, "/a");
+        let result = from_pathable_string_into_list_path_buf(&from);
+        assert!(result.is_ok());
+        let mut actual: List<PathBuf> = result.unwrap();
+        actual.sort();
         let expect: List<PathBuf> = list![
+            dir_as_buf.join("a"),
             dir_as_buf.join("a/aa"),
             dir_as_buf.join("a/aa/aaa"),
             dir_as_buf.join("a/aa/aab"),
@@ -68,27 +107,22 @@ mod tests {
     }
 
     #[test]
-    fn test_from_list_pathable_string_into_list_path_buf() {
+    fn test_from_pathable_string_into_list_path_buf_x_glob() {
         let dir_as_buf = TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
-        let from: List<PathableString> = list![
-            format!("{}{}", dir_as_string, "/a/**/*"),
-            format!("{}{}", dir_as_string, "/b/**/*")
-        ];
-        let actual: List<PathBuf> = from_list_pathable_string_into_list_path_buf(&from);
+        let from: PathableString = format!("{}{}", dir_as_string, "/a*");
+        let result = from_pathable_string_into_list_path_buf(&from);
+        assert!(result.is_ok());
+        let mut actual: List<PathBuf> = result.unwrap();
+        actual.sort();
         let expect: List<PathBuf> = list![
+            dir_as_buf.join("a"),
             dir_as_buf.join("a/aa"),
             dir_as_buf.join("a/aa/aaa"),
             dir_as_buf.join("a/aa/aab"),
             dir_as_buf.join("a/ab"),
             dir_as_buf.join("a/ab/aba"),
-            dir_as_buf.join("a/ab/abb"),
-            dir_as_buf.join("b/ba"),
-            dir_as_buf.join("b/ba/baa"),
-            dir_as_buf.join("b/ba/bab"),
-            dir_as_buf.join("b/bb"),
-            dir_as_buf.join("b/bb/bba"),
-            dir_as_buf.join("b/bb/bbb")
+            dir_as_buf.join("a/ab/abb")
         ];
         assert_eq!(actual, expect);
     }

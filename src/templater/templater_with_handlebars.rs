@@ -1,7 +1,6 @@
 //! Templater with Handlebars
 
 use handlebars::Handlebars;
-use serde::Serialize;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
@@ -79,7 +78,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         trace!("templater_with_handlebars.rs render_template_with_state_enum");
         //TODO make generic
         match state_enum {
-            StateEnum::StateWithMap(x) =>  self.handlebars.render(template_name, x),
+            StateEnum::StateWithBTMS(x) =>  self.handlebars.render(template_name, x),
             StateEnum::StateWithJSON(x) => self.handlebars.render(template_name, x),
             StateEnum::StateWithTOML(x) => self.handlebars.render(template_name, x),
             StateEnum::StateWithYAML(x) => self.handlebars.render(template_name, x),
@@ -95,9 +94,13 @@ mod tests {
     use lazy_static::*;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
+    use crate::matter::matter_parser_with_btms::MatterParserWithBTMS;
+    use crate::matter::matter_parser_with_json::MatterParserWithJSON;
+    use crate::matter::matter_parser_with_toml::MatterParserWithTOML;
+    use crate::matter::matter_parser_with_yaml::MatterParserWithYAML;
     use crate::state::state_enum::StateEnum;
+    use crate::state::state_with_btms::StateWithBTMS;
     use crate::state::state_with_json::StateWithJSON;
-    use crate::state::state_with_map::StateWithMap;
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
 
@@ -141,7 +144,8 @@ mod tests {
         let content_text = "{{ bravo }}";
         assert_eq!(templater.contains_template_name("alpha"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
-        templater.add_template_via_name_and_content_text(&name, &content_text);
+        let result = templater.add_template_via_name_and_content_text(&name, &content_text);
+        assert!(result.is_ok());
         assert_eq!(templater.contains_template_name("alpha"), true);
         assert_eq!(templater.contains_template_name("charlie"), false);
     }
@@ -154,7 +158,8 @@ mod tests {
         assert!(content_file.exists());
         assert_eq!(templater.contains_template_name("alpha"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
-        templater.add_template_via_name_and_content_file(&name, &content_file).expect("add_template_via_name_and_content_file");
+        let result = templater.add_template_via_name_and_content_file(&name, &content_file);
+        assert!(result.is_ok());
         assert_eq!(templater.contains_template_name("alpha"), true);
         assert_eq!(templater.contains_template_name("charlie"), false);
     }
@@ -163,7 +168,7 @@ mod tests {
     fn test_contains_any_template() {
         let mut templater  = TemplaterX::new();
         assert_eq!(templater.contains_any_template(), false);
-        templater.add_template_via_default();
+        templater.add_template_via_default().expect("add_template_via_default");
         assert_eq!(templater.contains_any_template(), true);
     }
 
@@ -171,7 +176,7 @@ mod tests {
     fn test_contains_template_name() {
         let mut templater  = TemplaterX::new();
         assert_eq!(templater.contains_template_name("default"), false);
-        templater.add_template_via_default();
+        templater.add_template_via_default().expect("add_template_via_default");
         assert_eq!(templater.contains_template_name("default"), true);
     }
 
@@ -188,7 +193,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_template_with_state_enum_x_map() {
+    fn test_render_template_with_state_enum_x_btms() {
         let mut templater = TemplaterX::new();
         templater.add_template_via_default().expect("default");
         let matter_text = indoc!{r#"
@@ -198,8 +203,8 @@ mod tests {
             -->
         "#};
         let name = templater.template_name_default();
-        let state  =  crate::matter::matter_parser_with_map::MatterParserWithMap{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
-        let state_enum = StateEnum::StateWithMap(state);
+        let state: StateWithBTMS = MatterParserWithBTMS{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithBTMS(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
@@ -215,7 +220,7 @@ mod tests {
             }
         "#};
         let name = templater.template_name_default();
-        let state: StateWithJSON = crate::matter::matter_parser_with_json::MatterParserWithJSON{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state: StateWithJSON = MatterParserWithJSON{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithJSON(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
@@ -230,7 +235,7 @@ mod tests {
             content = "my content"
         "#};
         let name = templater.template_name_default();
-        let state: StateWithTOML = crate::matter::matter_parser_with_toml::MatterParserWithTOML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state: StateWithTOML = MatterParserWithTOML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithTOML(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
@@ -245,7 +250,7 @@ mod tests {
             content: "my content"
         "#};
         let name = templater.template_name_default();
-        let state: StateWithYAML = crate::matter::matter_parser_with_yaml::MatterParserWithYAML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state: StateWithYAML = MatterParserWithYAML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithYAML(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
