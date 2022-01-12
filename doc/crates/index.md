@@ -29,6 +29,7 @@ Parsers, coders, serializers:
 * [`base64`](https://crates.io/crates/base64) - Encode and decode base64 as bytes or utf8
 * [`httpdate`](https://crates.io/crates/httpdate) - HTTP date parsing and formatting
 * [`json`](https://crates.io/crates/json) - JSON parser
+* [`lol_html`](https://crates.io/crates/lol_html) - Low Output Latency (LOL) streaming HTML rewriter
 * [`mime`](https://crates.io/crates/mime) - Strongly Typed Mimes
 * [`minidom`](https://crates.io/crates/minidom) - A small, simple DOM implementation on top of quick-xml
 * [`pulldown-cmark`](https://crates.io/crates/pulldown-cmark) - A pull parser for CommonMark
@@ -59,3 +60,9 @@ Maybe:
 * [`ammonia`](https://crates.io/crates/ammonia) - HTML sanitization
 * [`liquid`](https://crates.io/crates/liquid) - Liquid templating language
 * [`minidom`](https://crates.io/crates/minidom) - A small, simple DOM implementation on top of quick-xml
+
+Development-related:
+
+* [`cargo-crev`](https://crates.io/crates/cargo-crev) - Code review of dependencies
+
+    

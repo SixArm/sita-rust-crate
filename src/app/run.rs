@@ -162,6 +162,10 @@ fn do_path<T: TemplaterTrait>(
     .chain_err(|| "render_template_with_state")?;
     debug!("output_as_html_text: {:?}", &output_as_html_text);
 
+    trace!("Rewrite the HTML.");
+    let output_as_html_text = crate::rewriting::lol::rewrite(&output_as_html_text);
+    debug!("output_as_html_text: {:?}", &output_as_html_text);
+
     trace!("Write output file.");
     ::std::fs::write(&output, output_as_html_text)
     .chain_err(|| "write output")?;

@@ -24,6 +24,7 @@ json = "0.12.4" # JSON parser
 lazy_static = "1.4.0" # A macro for declaring lazily evaluated statics
 liquid = "0.22.0" #  Liquid templating language for Rust
 log = "0.4.0" # A Rust library providing a lightweight logging facade
+lol_html = "*" # Low Output Latency (LOL) streaming HTML rewriter
 loupe = "0.1" # Analyse and profile Rust code memory usage
 maplit = "1.0.2" # Macros for container literals with specific type
 matches = "*" # A macro to evaluate if an expression matches a pattern
@@ -45,3 +46,6 @@ url = "2.2.2" # URL library for Rust, based on the WHATWG URL Standard
 version_check = "*" # Check the version of the installed/running rustc
 walkdir = "2" # Recursive directory traversal
 yaml-rust = "0.4.5" # YAML parser
+
+# [dev-dependencies]
+# cargo-crev = "*"

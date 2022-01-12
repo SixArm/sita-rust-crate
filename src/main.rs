@@ -68,6 +68,10 @@ pub(crate) mod matter {
     pub(crate) mod matter_parser_with_yaml;
 }
 
+pub(crate) mod rewriting {
+    pub(crate) mod lol;
+}
+
 pub(crate) mod state {
     pub(crate) mod state_enum;
     pub(crate) mod state_trait;
