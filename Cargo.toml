@@ -31,7 +31,7 @@ matches = "*" # A macro to evaluate if an expression matches a pattern
 mime = "*" # Strongly Typed Mimes
 minidom = "0.13.0" # A small, simple DOM implementation on top of quick-xml
 once_cell = "1.7.2" # Single assignment cells and lazy values
-pulldown-cmark = "0.8.0" #  A pull parser for CommonMark
+pulldown-cmark = "0.9.0" #  A pull parser for CommonMark
 regex = "1.4.5" # Regular expressions parser, compiler, and executer
 rhai = "1.0.4" # Embedded scripting for Rust
 quick-xml = "0.22.0" # High-performance XML reader and writer
@@ -49,3 +49,4 @@ yaml-rust = "0.4.5" # YAML parser
 
 # [dev-dependencies]
 # cargo-crev = "*"
+# flamegraph = "*"
