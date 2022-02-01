@@ -7,32 +7,32 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ammonia = "3.1.1" # HTML Sanitization
-assertables = "3.2.1" # Runtime reliability checking macros
-base64 = "*" # Encodes and decodes base64 as bytes or utf8
-bytes = "*" # Types and traits for working with bytes
-clap = { version = "3.0.0-a", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
+ammonia = "3.1.3" # HTML Sanitization
+assertables = "3.2.2" # Runtime reliability checking macros
+base64 = "0.13.0" # Encodes and decodes base64 as bytes or utf8
+bytes = "1.1.0" # Types and traits for working with bytes
+clap = { version = "3.0.13", features = ["regex", "yaml", "wrap_help"] } # Command Line Argument Parser
 confy = "0.4.0" # Boilerplate-free configuration management
-env_logger = "0.8.3" # A logger that can be configured via environment variables
+env_logger = "0.8.4" # A logger that can be configured via environment variables
 error-chain = "0.12.4" # Consistent error handling
 glob = "0.3.0" # Support for matching file paths against Unix shell style patterns
-handlebars = { version = "4.1.6", features = ["script_helper"] } # Template engine based on JavaScript Handlebars templates
-httpdate = "*" # HTTP date parsing and formatting
+handlebars = { version = "4.2.1", features = ["script_helper"] } # Template engine based on JavaScript Handlebars templates
+httpdate = "1.0.2" # HTTP date parsing and formatting
 indoc = "1.0.3" # Indented document literals
-ipnet = "*" # Types and methods for working with IPv4 and IPv6 network addresses
+ipnet = "2.3.1" # Types and methods for working with IPv4 and IPv6 network addresses
 json = "0.12.4" # JSON parser
 lazy_static = "1.4.0" # A macro for declaring lazily evaluated statics
 liquid = "0.22.0" #  Liquid templating language for Rust
-log = "0.4.0" # A Rust library providing a lightweight logging facade
-lol_html = "*" # Low Output Latency (LOL) streaming HTML rewriter
-loupe = "0.1" # Analyse and profile Rust code memory usage
+log = "0.4.14" # A Rust library providing a lightweight logging facade
+lol_html = "0.3.0" # Low Output Latency (LOL) streaming HTML rewriter
+loupe = "0.1.3" # Analyse and profile Rust code memory usage
 maplit = "1.0.2" # Macros for container literals with specific type
-matches = "*" # A macro to evaluate if an expression matches a pattern
-mime = "*" # Strongly Typed Mimes
+matches = "0.1.9" # A macro to evaluate if an expression matches a pattern
+mime = "0.3.16" # Strongly Typed Mimes
 minidom = "0.13.0" # A small, simple DOM implementation on top of quick-xml
-once_cell = "1.7.2" # Single assignment cells and lazy values
-pulldown-cmark = "0.9.0" #  A pull parser for CommonMark
-regex = "1.4.5" # Regular expressions parser, compiler, and executer
+once_cell = "1.9.0" # Single assignment cells and lazy values
+pulldown-cmark = "0.9.1" #  A pull parser for CommonMark
+regex = "1.5.4" # Regular expressions parser, compiler, and executer
 rhai = { version = "1.4.1", features = [ "decimal", "internals", "metadata", "serde", "sync", "unicode-xid-ident" ] } # Embedded scripting for Rust
 quick-xml = "0.22.0" # High-performance XML reader and writer
 serde = { version = "1.0", features = ["derive"] } # Generic serialize/deserialize framework
@@ -49,4 +49,5 @@ yaml-rust = "0.4.5" # YAML parser
 
 # [dev-dependencies]
 # cargo-crev = "*"
+# cargo-edit = "*"
 # flamegraph = "*"
