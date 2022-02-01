@@ -9,9 +9,9 @@ use crate::fun::from_path_buf_into_sibling::*;
 use crate::state::state_trait::StateTrait;
 use crate::state::state_with_btms::StateWithBTMS;
 use crate::templater::templater_trait::TemplaterTrait;
-//use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
+use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 //use crate::templater::templater_with_liquid::TemplaterWithLiquid;
-use crate::templater::templater_with_tera::TemplaterWithTera;
+//use crate::templater::templater_with_tera::TemplaterWithTera;
 use crate::fun::from_html_str_into_headline_str::*;
 use crate::fun::from_pathable_string_into_list_path_buf::*;
 
@@ -44,9 +44,9 @@ pub(crate) fn run() -> Result<()> {
     trace!("Initialize arguments.");
     let args: Args = crate::app::clap::args();
     if args.test { println!("{:?}", args); }
-
+    
     trace!("Initialize templater.");
-    let mut templater = TemplaterWithTera::new_with_args(&args);
+    let mut templater = TemplaterWithHandlebars::new_with_args(&args);
 
     trace!("Add templates.");
     if let Some(template_list_pathable_string) = &args.template_list_pathable_string {
@@ -63,18 +63,39 @@ pub(crate) fn run() -> Result<()> {
                 let name_as_os_str = template_path_buf.file_name()
                 .chain_err(|| "template_path_buf.file_name cannot convert to OsStr")?;
                 let name = name_as_os_str.to_string_lossy();
-                templater.add_template_via_name_and_content_file(&name, &template_path_buf)
-                .chain_err(|| "add_template_via_name_and_content_file")?;
+                templater.register_template_via_name_and_content_file(&name, &template_path_buf)
+                .chain_err(|| "register_template_via_name_and_content_file")?;
             }
         }
     }
 
     trace!("Add default template as needed.");
     if !templater.contains_any_template() {
-        templater.add_template_via_default()
-        .chain_err(|| "add_template_via_default")?;
+        templater.register_template_via_default()
+        .chain_err(|| "register_template_via_default")?;
     }
 
+    trace!("Add helpers.");
+    if let Some(helper_list_pathable_string) = &args.helper_list_pathable_string {
+        for helper_pathable_string in helper_list_pathable_string {
+            trace!("Add helpers: helper_list_pathable_string: {}", &helper_pathable_string);
+            for helper_path_buf 
+            in from_pathable_string_into_list_path_buf(&helper_pathable_string)
+            .chain_err(|| "from_pathable_string_into_list_path_buf helper_pathable_string")?
+            .iter()
+            .filter(|&x| 
+                x.is_file()
+            ){
+                trace!("Add helpers: helper_path_buf: {:?}", &helper_path_buf);
+                let name_as_os_str = helper_path_buf.file_name()
+                .chain_err(|| "helper_path_buf.file_name cannot convert to OsStr")?;
+                let name = name_as_os_str.to_string_lossy();
+                templater.register_helper_via_name_and_content_file(&name, &helper_path_buf)
+                .chain_err(|| "add_helper_via_name_and_content_file")?;
+            }
+        }
+    }
+    
     trace!("Prepare items in order to speed up processing.");
     let output_file_name_extension = match &args.output_file_name_extension {
         Some(x) => x,
@@ -206,6 +227,7 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
     pulldown_cmark::html::push_html(&mut html_text, parser);
     html_text
 }
+
 
 #[cfg(test)]
 mod tests {

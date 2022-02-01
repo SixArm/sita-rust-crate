@@ -55,13 +55,6 @@ pub fn app() -> App<'static> {
         .value_name("EXTENSION")
         .takes_value(true)
         .help("The output file name extension.\nDefault: \"html\".\nExample: --output-extension \"html\""))
-    // .arg(Arg::new("script")
-    //     .long("script")
-    //     .value_name("URL …")
-    //     .takes_value(true)
-    //     .multiple_occurrences(true)
-    //     .multiple_values(true)
-    //     .help("A script URL to add to the HTML header.\nExample: --script \"script.js\" …"))
     .arg(Arg::new("template")
         .short('t')
         .long("template")
@@ -71,6 +64,15 @@ pub fn app() -> App<'static> {
         .multiple_occurrences(true)
         .multiple_values(true)
         .help("A template path string.\nExample file: --template \"example.html\" …\nExample directory: --template \"examples/\" …\nExample glob: --template \"examples/**/*\" …"))
+    .arg(Arg::new("helper")
+        .short('h')
+        .long("helper")
+        .alias("helpers")
+        .value_name("FILE | DIRECTORY | GLOB")
+        .takes_value(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
+        .help("A helper path string.\nExample file: --helper \"example.rhai\" …\nExample directory: --helper \"helpers/\" …\nExample glob: --helper \"helpers/**/*\" …"))
     .arg(Arg::new("test")
         .long("test")
         .takes_value(false)
@@ -82,7 +84,7 @@ pub fn app() -> App<'static> {
     //     .takes_value(true)
     //     .multiple_occurrences(true)
     //     .multiple_values(true)
-    //     .help("Set a variable name to a value.\nExample: --set pi \"3.1415\" …"))
+    //     .help("Set a variable name to a value.\nExample: --let pi \"3.1415\" …"))
     // .arg(Arg::new("verbose")
     //     .short('v')
     //     .long("verbose")
@@ -117,7 +119,7 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    // let script_url_list = match matches.values_of("script") {
+    // let helper_url_list = match matches.values_of("helper") {
     //     Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
     //     _ => None,
     // };
@@ -145,6 +147,11 @@ pub fn args() -> Args {
         _ => None,
     };
 
+    let helper_list_pathable_string = match matches.values_of("helper") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
+        _ => None,
+    };
+
     let test = matches.is_present("test");
 
     let args = Args {
@@ -152,9 +159,9 @@ pub fn args() -> Args {
         //input_file_name_select_regex_string: input_file_name_select_regex_string,
         output_list_pathable_string: output_list_pathable_string,
         output_file_name_extension: output_file_name_extension,
-        // script_url_list: script_url_list,
         // settings: settings,
         template_list_pathable_string: template_list_pathable_string,
+        helper_list_pathable_string: helper_list_pathable_string,
         test: test,
         // log_level: log_level,
     };

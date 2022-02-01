@@ -62,6 +62,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     remove_file_if_exists(&actual).expect("remove");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
+    remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
@@ -89,8 +90,8 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     let expect = base_path.join("example.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(template.exists(), "template path: {:?}", template);
-    assert!(!actual.exists(), "!actual path: {:?}", actual);
     assert!(expect.exists(), "expect path: {:?}", expect);
+    remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)

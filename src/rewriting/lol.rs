@@ -1,6 +1,5 @@
-use ::lol_html::{element, HtmlRewriter, Settings};
+use ::lol_html::{element, rewrite_str, HtmlRewriter, RewriteStrSettings, Settings};
 use lol_html::html_content::Element;
-use ::lazy_static::lazy_static;
 
 pub fn rewrite_href_from_http_to_https(e: &mut Element) {
     if let Some(mut x) = e.get_attribute("href") {
@@ -21,26 +20,19 @@ pub fn rewrite_href_from_md_to_html(e: &mut Element) {
 }
 
 pub fn rewrite(s: &str) -> String {
-        
-    let mut output = vec![];
-    {
-        let mut rewriter = HtmlRewriter::new(
-            Settings {
-                element_content_handlers: vec![
-                    element!("a[href]", |e| {
-                        rewrite_href_from_http_to_https(e);
-                        rewrite_href_from_md_to_html(e);
-                        Ok(())
-                    })
-                ],
-                ..Settings::default()
-            },
-            |c: &[u8]| output.extend_from_slice(c)
-        );
-        rewriter.write(s.as_bytes()).unwrap();
-        rewriter.end().unwrap();
-    }
-    String::from_utf8(output).unwrap()
+    let element_content_handlers = vec![
+        element!("a[href]", |e| {
+            crate::rewriting::lol::rewrite_href_from_http_to_https(e);
+            crate::rewriting::lol::rewrite_href_from_md_to_html(e);
+             Ok(())
+        })
+    ];
+    rewrite_str(s,
+        RewriteStrSettings {
+            element_content_handlers,
+            ..RewriteStrSettings::default()
+        }
+    ).unwrap()
 }
 
 #[cfg(test)]

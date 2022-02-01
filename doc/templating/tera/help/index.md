@@ -1,6 +1,6 @@
 # Templating Help for Tera
 
-A Tera Rust template is a text file syntax is based on Jinja2/Django templates. When the app renders a template, then the template's variables and expressions get replaced with values
+A Tera Rust template is a text file syntax is based on Jinja2/Django templates. When the app renders a template, then the template's variables and expressions get replaced with values.
 
 Syntax:
 

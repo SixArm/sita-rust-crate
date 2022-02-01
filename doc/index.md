@@ -8,6 +8,7 @@
 * [state](matter)
 * [testing](testing)
 * [templating](templating)
+* [comparisons](comparisons)
 
 
 ## Implementation overview

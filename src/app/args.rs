@@ -34,18 +34,19 @@ pub struct Args {
     /// Example: "html" means a HTML file extension.
     pub(crate) output_file_name_extension: Option<String>,
 
-    /// Script URL list.
-    /// Example: "https://example.com/script.js" is a JavaScript URL.
-    // pub(crate) script_url_list: Option<List<UrlString>>,
-
     /// Settings for the program.
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
     // pub(crate) settings: Option<Map<String, String>>,
 
     /// Template pathable string list.
+    /// Example file: "template.hbs"
     /// Example glob: "templates/**/*"
-    /// Example file: "template.html"
     pub(crate) template_list_pathable_string: Option<List<PathableString>>,
+
+    /// Helper pathable string list.
+    /// Example file: "helper.rhai"
+    /// Example glob: "helpers/**/*"
+    pub(crate) helper_list_pathable_string: Option<List<PathableString>>,
 
     /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
@@ -60,8 +61,8 @@ impl ::std::default::Default for Args {
         output_list_pathable_string: None,
         output_file_name_extension: None,
         // settings: None,
-        // script_url_list: None,
         template_list_pathable_string: None,
+        helper_list_pathable_string: None,
         test: false,
     }}
 }
