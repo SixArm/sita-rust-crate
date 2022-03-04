@@ -118,8 +118,9 @@ mod tests {
 
     lazy_static! {
         pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
+        pub static ref TESTY_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "src", "templater", "templater_with_handlebars"].iter().collect::<PathBuf>();
     }
-    
+
     const FAB_OUTPUT_HTML: &str = "my content";
 
     type TemplaterX<'templater> = TemplaterWithHandlebars<'templater>;
@@ -166,7 +167,9 @@ mod tests {
     fn test_register_template_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
         let name = "alpha";
-        let content_file = TESTS_DIR.join("function").join("register_template_via_name_and_content_file").join("template.html");
+        let content_file = TESTY_DIR
+            .join("register_template_via_name_and_content_file")
+            .join("template.html");
         assert!(content_file.exists());
         assert_eq!(templater.contains_template_name("alpha"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
@@ -256,7 +259,9 @@ mod tests {
     fn test_register_helper_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
         let name = "alpha";
-        let content_file = TESTS_DIR.join("function").join("register_helper_via_name_and_content_file").join("helper.rhai");
+        let content_file = TESTY_DIR
+            .join("register_helper_via_name_and_content_file")
+            .join("helper.rhai");
         assert!(content_file.exists());
         //TODO
         // assert_eq!(templater.contains_helper_name("alpha"), false);

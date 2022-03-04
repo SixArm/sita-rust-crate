@@ -1,6 +1,7 @@
 //! Templater management.
 //!
 //! This can use Handlebars, Liquid, Tera.
+//! 
 //! This can be expanded for potential future formats.
 
 #[derive(Debug)]
