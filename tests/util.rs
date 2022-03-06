@@ -20,35 +20,10 @@ lazy_static! {
 }
 
 #[allow(dead_code)]
-pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> Result<()>
-{
-    if path.as_ref().exists() {
-        ::std::fs::remove_file(path)
-    } else {
-        Ok(())
-    }
-}
-
-
-#[allow(dead_code)]
 fn assert_str_contains(outer: &str, inner: &str) {
     assert!(
         outer.contains(inner), 
         "outer: {:?}\n inner: {}\n", &outer, &inner
-    );
-}
-
-fn assert_command_stdout_contains(command_name: &str, command_args: &[&str], target: &str) {
-    let output = Command::new(command_name)
-    .args(command_args)
-    .output()
-    .expect("failure");
-    let actual = ::std::str::from_utf8(&output.stdout)
-    .unwrap()
-    .to_string();
-    assert!(
-        actual.contains(target), 
-        "command: {:?}\nargs: {:?}\nactual: {:?}\ntarget: {}\n", &command_name, &command_args, &actual, &target
     );
 }
 
@@ -59,10 +34,10 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     let input = base_path.join("example.md");
     let actual = base_path.join("example.html");
     let expect = base_path.join("example.html=expect.html");
-    remove_file_if_exists(&actual).expect("remove");
+    ::fun::remove_file_if_exists::remove_file_if_exists(&actual).expect("remove");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    remove_file_if_exists(&actual).expect("remove");
+    crate::fun::remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
@@ -71,7 +46,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-        assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,
@@ -91,7 +66,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     assert!(input.exists(), "input path: {:?}", input);
     assert!(template.exists(), "template path: {:?}", template);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    remove_file_if_exists(&actual).expect("remove");
+    crate::fun::remove_file_if_exists::remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
     let _output = Command::new(COMMAND)
@@ -102,7 +77,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,
