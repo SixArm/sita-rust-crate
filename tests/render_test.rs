@@ -1,6 +1,6 @@
-#[path = "util.rs"]
-mod util;
-use util::*;
+#[path = "testing.rs"]
+mod testing;
+use testing::*;
 
 #[test]
 fn test_minimal() {

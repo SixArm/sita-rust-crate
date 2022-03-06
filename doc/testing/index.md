@@ -1,5 +1,26 @@
 # Testing
 
+
+## Testing mod
+
+We prefer testing code that we can use in any other test file, 
+such as common configurations, helper functions, support code, etc.
+
+Our convention is to use this file name:
+
+```sh
+tests/testing.rs
+```
+
+Any test file can use it:
+
+```rust
+#[path = "testing.rs"]
+mod testing;
+use testing::*;
+```
+
+
 ## Testing the commands by using folders
 
 We want to test a wide variety of commands such as:

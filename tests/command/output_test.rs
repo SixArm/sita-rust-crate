@@ -3,9 +3,9 @@ use lazy_static::*;
 use std::path::PathBuf;
 use std::process::Command;
 
-#[path = "util.rs"]
-mod util;
-use util::*;
+#[path = "testing.rs"]
+mod testing;
+use testing::*;
 
 lazy_static! {
     pub static ref DIR = TESTS_DIR.join("command").join("output");

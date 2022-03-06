@@ -1,9 +1,9 @@
 use lazy_static::*;
 use std::path::PathBuf;
 
-#[path = "util.rs"]
-mod util;
-use util::*;
+#[path = "testing.rs"]
+mod testing;
+use testing::*;
 
 lazy_static! {
     pub static ref DIR = TESTS_DIR.join("markdown").join("matter").join("kinds");
