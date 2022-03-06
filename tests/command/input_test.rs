@@ -8,7 +8,7 @@ mod util;
 use util::*;
 
 lazy_static! {
-    pub static ref DIR: PathBuf = TESTS_DIR.join("command").join("input");
+    pub static ref DIR = TESTS_DIR.join("command").join("input");
 }
 
 #[test]
@@ -29,7 +29,7 @@ fn test_command_x_input() {
         .expect("failure");
     // Then
     assert!(actual.exists(), "actual.exists() path: {:?}", actual);
-    assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,

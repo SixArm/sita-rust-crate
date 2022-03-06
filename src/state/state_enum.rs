@@ -1,6 +1,7 @@
 //! State management.
 //!
 //! This can use HTML, JSON, TOML, YAML.
+//! 
 //! This can be expanded for potential future formats.
 
 #[derive(Debug)]

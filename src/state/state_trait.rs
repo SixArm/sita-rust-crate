@@ -1,6 +1,8 @@
 //! State management abstraction.
 //!
 //! This can use HTML, JSON, TOML, YAML, etc.
+//! 
+//! This can be expanded for potential future formats.
 
 use std::any::Any;
 use crate::state::state_enum::StateEnum;
