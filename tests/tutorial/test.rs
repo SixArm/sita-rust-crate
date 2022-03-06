@@ -5,7 +5,7 @@ use util::*;
 #[test]
 pub fn test_01_input() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("tutorial/01_input");
+    let dir = TESTS_DIR.join("tutorial/01_input");
     let input = dir.join("hello.md");
     let actual = dir.join("hello.html");
     let expect = dir.join("hello.html=expect.html");
@@ -19,7 +19,7 @@ pub fn test_01_input() {
         .expect("failure");
     // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,
@@ -31,7 +31,7 @@ pub fn test_01_input() {
 #[test]
 pub fn test_02_output() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("tutorial/02_output");
+    let dir = TESTS_DIR.join("tutorial/02_output");
     let input = dir.join("hello.md");
     let actual = dir.join("world.html");
     let expect = dir.join("world.html=expect.html");
@@ -47,7 +47,7 @@ pub fn test_02_output() {
         .expect("failure");
     // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,
@@ -59,7 +59,7 @@ pub fn test_02_output() {
 #[test]
 pub fn test_03_template() {
     // Given
-    let dir: PathBuf = TESTS_DIR.join("tutorial/03_template");
+    let dir = TESTS_DIR.join("tutorial/03_template");
     let template = dir.join("template.html");
     let input = dir.join("hello.md");
     let actual = dir.join("hello.html");
@@ -76,7 +76,7 @@ pub fn test_03_template() {
         .expect("failure");
     // Then
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq!(
+    assert_fn_ok_eq_other!(
         ::std::fs::read_to_string,
         &actual,
         &expect,
