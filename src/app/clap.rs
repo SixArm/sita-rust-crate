@@ -183,7 +183,7 @@ mod tests {
     //
     #[test]
     fn test_test() {
-        assert_command_stdout_contains(COMMAND, &["--test"], r#"Args { "#);
+        assert_command_stdout_contains!(COMMAND, &["--test"], r#"Args { "#);
     }
 
     // Test that the special argument `--verbose` is working.
@@ -194,17 +194,17 @@ mod tests {
     //
     // #[test]
     // fn test_verbose() {
-    //     assert_command_stdout_contains(COMMAND, &["--test"], r#" log_level: None"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
-    //     assert_command_stdout_contains(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test"], r#" log_level: None"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
+    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
     // }
 
     // #[path = "util.rs"]
@@ -220,19 +220,19 @@ mod tests {
         let s4 = "delta";
         let target = format!(" input_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
         // Test short `-i` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "-i", &s1, &s2, "-i", &s3, &s4], 
             &target
         );
         // Test long `--input` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--input", &s1, &s2, "--input", &s3, &s4], 
             &target
         );
         // Test alias `--inputs` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4], 
             &target
@@ -247,19 +247,19 @@ mod tests {
         let s4 = "delta";
         let target = format!(" output_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
         // Test short `-o` with multiple occurrences and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "-o", &s1, &s2, "-o", &s3, &s4], 
             &target
         );
         // Test long `--output` with multiple occurrences and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--output", &s1, &s2, "--output", &s3, &s4], 
             &target
         );
         // Test alias `--outputs` with multiple occurrences and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--outputs", &s1, &s2, "--outputs", &s3, &s4], 
             &target
@@ -268,7 +268,7 @@ mod tests {
 
     #[test]
     fn test_clap_output_file_name_extension() {
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--output-extension", "alpha"], 
             r#" output_file_name_extension: Some("alpha")"#
@@ -284,19 +284,19 @@ mod tests {
         let glob4 = format!("{}/{}", &glob_dir, "d/**/*");
         let target = format!(" template_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &glob1, &glob2, &glob3, &glob4);
         // Test short `-t` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "-t", &glob1, &glob2, "-t", &glob3, &glob4], 
             &target
         );
         // Test long `--template` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--template", &glob1, &glob2, "--template", &glob3, &glob4], 
             &target
         );
         // Test alias `--templates` with multiple occurances and multiple values
-        assert_command_stdout_contains(
+        assert_command_stdout_contains!(
             COMMAND, 
             &["--test", "--templates", &glob1, &glob2, "--templates", &glob3, &glob4], 
             &target
@@ -306,7 +306,7 @@ mod tests {
     // #[test]
     // fn test_clap_template_glob_to_template_path_set() {
     //     let dir = "from_set_pathable_string_into_set_path_buf/";
-    //     assert_command_stdout_contains(
+    //     assert_command_stdout_contains!(
     //         COMMAND, 
     //         &[
     //             "--test", 
@@ -345,7 +345,7 @@ mod tests {
 
     // #[test]
     // fn test_set() {
-    //     assert_command_stdout_contains(
+    //     assert_command_stdout_contains!(
     //         COMMAND, 
     //         &["--test", "--set", "alpha", "bravo", "--set", "charlie", "delta"], 
     //         r#" settings: Some({"alpha": "bravo", "charlie": "delta"})"#

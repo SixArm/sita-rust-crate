@@ -12,7 +12,7 @@ lazy_static! {
 #[test]
 fn test_html() {
     test_with_base_path_and_default_input_actual_expect(
-        MY_DIR.join("html")
+        DIR.join("html")
     );
 }
 

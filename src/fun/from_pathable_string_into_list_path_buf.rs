@@ -79,15 +79,10 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lazy_static::*;
-
-    lazy_static! {
-        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
-    }    
 
     #[test]
     fn test_from_pathable_string_into_list_path_buf_x_dir() {
-        let dir_as_buf = TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
+        let dir_as_buf = crate::test::TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let from: PathableString = format!("{}{}", dir_as_string, "/a");
         let result = from_pathable_string_into_list_path_buf(&from);
@@ -108,7 +103,7 @@ mod tests {
 
     #[test]
     fn test_from_pathable_string_into_list_path_buf_x_glob() {
-        let dir_as_buf = TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
+        let dir_as_buf = crate::test::TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let from: PathableString = format!("{}{}", dir_as_string, "/a*");
         let result = from_pathable_string_into_list_path_buf(&from);

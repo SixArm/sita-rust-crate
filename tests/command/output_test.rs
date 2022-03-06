@@ -1,15 +1,10 @@
 use assertables::*;
-use lazy_static::*;
 use std::path::PathBuf;
 use std::process::Command;
 
 #[path = "testing.rs"]
 mod testing;
 use testing::*;
-
-lazy_static! {
-    pub static ref DIR = TESTS_DIR.join("command").join("output");
-}
 
 //TODO
 // #[test]

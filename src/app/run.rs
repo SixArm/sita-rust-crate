@@ -235,10 +235,6 @@ mod tests {
     use ::std::path::PathBuf;
     use ::lazy_static::lazy_static;
 
-    lazy_static! {
-        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
-    }
-
     #[test]
     fn test_run() {
         //TODO
@@ -251,7 +247,7 @@ mod tests {
 
     #[test]
     fn test_read_content_as_mix_text() {
-        let input_file_path_buf = TESTS_DIR.join("function").join("read_content_as_mix_text").join("example.md");
+        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("read_content_as_mix_text").join("example.md");
         let content_as_mix_text: String = read_content_as_mix_text(&input_file_path_buf).unwrap();
         assert_eq!(content_as_mix_text, "# alpha\nbravo");
     }

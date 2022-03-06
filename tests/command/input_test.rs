@@ -1,7 +1,7 @@
 use assertables::*;
-use lazy_static::*;
 use std::path::PathBuf;
 use std::process::Command;
+use lazy_static::*;
 
 #[path = "testing.rs"]
 mod testing;

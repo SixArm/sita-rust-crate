@@ -27,6 +27,10 @@ pub use errors::*;
 extern crate log;
 extern crate env_logger;
 
+//// assertables
+#[macro_use]
+extern crate assertables;
+
 //// maplit
 // #[macro_use]
 // extern crate maplit;
@@ -35,6 +39,7 @@ extern crate env_logger;
 
 #[macro_use] pub(crate) mod types; // Type aliases
 pub(crate) mod util; // Utilties
+pub(crate) mod test; // Test helpers
 
 pub(crate) mod app { // Application
     pub(crate) mod args; // Arguments struct, such as set via `clap`.
