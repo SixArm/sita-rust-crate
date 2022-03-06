@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{PathBuf};
 use crate::errors::*;
 
 /// Vet input file path buffer exists.
@@ -36,6 +36,8 @@ pub fn vet_input_file_path_buf_metadata(input: &PathBuf) -> Result<()> {
     }
     Ok(())
 }
+
+
 
 #[cfg(test)]
 mod tests {
