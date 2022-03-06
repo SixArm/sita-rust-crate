@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use crate::errors::*;
 use crate::types::*;
-use crate::fun::from_pathable_string_into_list_path_buf::*;
+use crate::f::from_pathable_string_into_list_path_buf::*;
 
 /// Convert from &List<PathableString> into List<PathBuf>.
 /// 

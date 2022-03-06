@@ -43,7 +43,6 @@ pub fn vet_input_file_path_buf_metadata(input: &PathBuf) -> Result<()> {
 mod tests {
     use super::*;
     use ::std::path::PathBuf;
-    use ::lazy_static::lazy_static;
 
     #[test]
     fn test_vet_input_file_path_buf_exists_x_ok() {

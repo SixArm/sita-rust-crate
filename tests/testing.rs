@@ -1,13 +1,14 @@
 use assertables::*;
+use ::std::ffi::OsString;
 use std::path::{Path, PathBuf};
-use std::process::Command;
-
 use lazy_static::lazy_static;
-
-pub const COMMAND: &str = "./target/debug/sita";
 
 lazy_static! {
     pub static ref COMMAND_FILE: PathBuf = [env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"].iter().collect::<PathBuf>();
+}
+
+lazy_static! {
+    pub static ref COMMAND_OS: OsString = OsString::from([env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"].iter().collect::<PathBuf>());
 }
 
 lazy_static! {
@@ -49,7 +50,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
     remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .output()
@@ -78,7 +79,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: P
     remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .arg("--template")

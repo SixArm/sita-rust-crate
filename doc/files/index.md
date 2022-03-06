@@ -9,7 +9,7 @@
         * `config.rs` - Configuration struct, such as set via `confy`
         * `confy.rs` - Configuration file parsing tests, which load configuration variables.
         * `run.rs` - Run function that does the core business logic; called by `main.rs`.
-    * `fun/` - Functions, including utilties, helpers, converters, etc.
+    * `f/` - Functions, including utilties, helpers, converters, etc.
     * `markdown/` - Mardown-related
     * `matter/` - Markdown front matter and back matter files.
         * `matter_parser_enum.rs` - Matter parser enum (among BTMS, JSON, TOML, YAML).
@@ -32,6 +32,7 @@
         * `templater_with_tera.rs` - Templater implementation with Tera.
 * `tests/` - Tests of the system
     * `command/` - Command tests that run the app with various args
-    * `function/` - Function tests, such as function example data and example files.
+    * `f/` - Function tests, such as function example data and example files.
     * `markdown/` - Markdown tests, such as parsing, including front matter kinds
+    * `src/` - Source test extras, such as example data and example files.
     * `tutorial/` - Tutorial tests that match the README documentation

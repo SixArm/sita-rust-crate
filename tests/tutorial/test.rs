@@ -12,7 +12,7 @@ pub fn test_01_input() {
     remove_file_if_exists(&actual).expect("remove");
     // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .output()
@@ -38,7 +38,7 @@ pub fn test_02_output() {
     remove_file_if_exists(&actual).expect("remove");
     // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .arg("--output")
@@ -67,7 +67,7 @@ pub fn test_03_template() {
     remove_file_if_exists(&actual).expect("remove");
     // When
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--template")
         .arg(&template)
         .arg("--input")

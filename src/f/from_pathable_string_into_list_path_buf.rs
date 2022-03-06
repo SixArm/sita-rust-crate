@@ -49,7 +49,7 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
         WalkDir::new(&path_buf)
         .into_iter()
         .filter_entry(|e| 
-            crate::fun::walkdir_dir_entry_is_visible::walkdir_dir_entry_is_visible(&e)
+            crate::f::walkdir_dir_entry_is_visible::walkdir_dir_entry_is_visible(&e)
         )
         .inspect(|x|
             println!("f3: {:?}", x)

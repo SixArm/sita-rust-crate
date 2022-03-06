@@ -20,6 +20,7 @@
 use clap::{Arg, Command};
 use crate::app::args::Args;
 use crate::types::*;
+use crate::test::*;
 
 /// Create a clap app.
 pub fn app() -> Command<'static> {
@@ -183,7 +184,10 @@ mod tests {
     //
     #[test]
     fn test_test() {
-        assert_command_stdout_contains!(COMMAND, &["--test"], r#"Args { "#);
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test"]);
+        let target = r#"Args { "#;
+        assert_command_stdout_contains!(command, &target);
     }
 
     // Test that the special argument `--verbose` is working.
@@ -219,24 +223,21 @@ mod tests {
         let s3 = "charlie";
         let s4 = "delta";
         let target = format!(" input_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+
         // Test short `-i` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "-i", &s1, &s2, "-i", &s3, &s4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "-i", &s1, &s2, "-i", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test long `--input` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--input", &s1, &s2, "--input", &s3, &s4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--input", &s1, &s2, "--input", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test alias `--inputs` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
     }
 
     #[test]
@@ -246,33 +247,30 @@ mod tests {
         let s3 = "charlie";
         let s4 = "delta";
         let target = format!(" output_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
+
         // Test short `-o` with multiple occurrences and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "-o", &s1, &s2, "-o", &s3, &s4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "-o", &s1, &s2, "-o", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test long `--output` with multiple occurrences and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--output", &s1, &s2, "--output", &s3, &s4], 
-            &target
-        );
+        // Test short `-o` with multiple occurrences and multiple values
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--output", &s1, &s2, "--output", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test alias `--outputs` with multiple occurrences and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--outputs", &s1, &s2, "--outputs", &s3, &s4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--outputs", &s1, &s2, "--outputs", &s3, &s4]);
+        assert_command_stdout_contains!(command, &target);
     }
 
     #[test]
     fn test_clap_output_file_name_extension() {
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--output-extension", "alpha"], 
-            r#" output_file_name_extension: Some("alpha")"#
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--output-extension", "alpha"]);
+        let target = r#" output_file_name_extension: Some("alpha")"#;
+        assert_command_stdout_contains!(command, &target);
     }
 
     #[test]
@@ -283,24 +281,22 @@ mod tests {
         let glob3 = format!("{}/{}", &glob_dir, "c/**/*");
         let glob4 = format!("{}/{}", &glob_dir, "d/**/*");
         let target = format!(" template_list_pathable_string: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &glob1, &glob2, &glob3, &glob4);
+
         // Test short `-t` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "-t", &glob1, &glob2, "-t", &glob3, &glob4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "-t", &glob1, &glob2, "-t", &glob3, &glob4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test long `--template` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--template", &glob1, &glob2, "--template", &glob3, &glob4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--template", &glob1, &glob2, "--template", &glob3, &glob4]);
+        assert_command_stdout_contains!(command, &target);
+
         // Test alias `--templates` with multiple occurances and multiple values
-        assert_command_stdout_contains!(
-            COMMAND, 
-            &["--test", "--templates", &glob1, &glob2, "--templates", &glob3, &glob4], 
-            &target
-        );
+        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--templates", &glob1, &glob2, "--templates", &glob3, &glob4]);
+        assert_command_stdout_contains!(command, &target);
+
     }
 
     // #[test]
@@ -345,11 +341,10 @@ mod tests {
 
     // #[test]
     // fn test_set() {
-    //     assert_command_stdout_contains!(
-    //         COMMAND, 
-    //         &["--test", "--set", "alpha", "bravo", "--set", "charlie", "delta"], 
-    //         r#" settings: Some({"alpha": "bravo", "charlie": "delta"})"#
-    //     );
+    //     let mut command = ::std::process::Command::new(&*COMMAND_OS);
+    //     command.args(&["--test", "--set", "alpha", "bravo", "--set", "charlie", "delta"]);
+    //     let target = r#" settings: Some({"alpha": "bravo", "charlie": "delta"})"#;
+    //     assert_command_stdout_contains!(command, &target);
     // }
 
 }

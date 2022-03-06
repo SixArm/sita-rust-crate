@@ -22,7 +22,7 @@ fn test_command_x_input() {
     remove_file_if_exists(&actual).expect("remove");
     // When
     assert!(!actual.exists(), "!actual.exists() path: {:?}", actual);
-    let _output = Command::new(COMMAND)
+    let _output = ::std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .output()

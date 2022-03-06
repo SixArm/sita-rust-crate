@@ -5,15 +5,15 @@ use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::errors::*;
-use crate::fun::from_path_buf_into_sibling::*;
+use crate::f::from_path_buf_into_sibling::*;
 use crate::state::state_trait::StateTrait;
 use crate::state::state_with_btms::StateWithBTMS;
 use crate::templater::templater_trait::TemplaterTrait;
 use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 //use crate::templater::templater_with_liquid::TemplaterWithLiquid;
 //use crate::templater::templater_with_tera::TemplaterWithTera;
-use crate::fun::from_html_str_into_headline_str::*;
-use crate::fun::from_pathable_string_into_list_path_buf::*;
+use crate::f::from_html_str_into_headline_str::*;
+use crate::f::from_pathable_string_into_list_path_buf::*;
 
 /// Run everything.
 ///
