@@ -25,7 +25,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
     fn new_with_args(_args: &Args) -> Self {
         trace!("templater_with_handlebars.rs new_with_args");
-        let handlebars = Handlebars::default();
+        let mut handlebars = Handlebars::default();
         handlebars.set_strict_mode(true);
         TemplaterWithHandlebars {
             handlebars: handlebars,
