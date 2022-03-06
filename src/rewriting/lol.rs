@@ -1,4 +1,4 @@
-use ::lol_html::{element, rewrite_str, HtmlRewriter, RewriteStrSettings, Settings};
+use ::lol_html::{element, rewrite_str, RewriteStrSettings}; // , HtmlRewriter, Settings
 use lol_html::html_content::Element;
 
 pub fn rewrite_href_from_http_to_https(e: &mut Element) {
