@@ -51,6 +51,7 @@ pub(crate) mod fun { // Functions
     pub(crate) mod from_path_buf_into_sibling; // from PathBuf into sibling PathBuf
     pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
+    pub(crate) mod remove_file_if_exists;
     pub(crate) mod walkdir_dir_entry_is_hidden;
     pub(crate) mod walkdir_dir_entry_is_visible;
 }
