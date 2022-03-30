@@ -98,10 +98,6 @@ mod tests {
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
 
-    lazy_static! {
-        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
-    }
-
     const FAB_OUTPUT_HTML: &str = "my content";
 
     type TemplaterX = TemplaterWithLiquid;
@@ -148,7 +144,11 @@ mod tests {
     fn test_register_template_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
         let name = "alpha";
-        let content_file = TESTS_DIR.join("function").join("register_template_via_name_and_content_file").join("template.html")
+        let content_file = TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("register_template_via_name_and_content_file")
+            .join("template.html");
         assert!(content_file.exists());
         assert_eq!(templater.contains_template_name("alpha"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
