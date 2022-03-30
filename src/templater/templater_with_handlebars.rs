@@ -244,7 +244,7 @@ mod tests {
     #[test]
     fn test_register_helper_via_name_and_content_text() {
         let mut templater = TemplaterX::new();
-        let name = "alpha";
+        let _name = "alpha";
         let content_text = "{{ bravo }}";
         //TODO
         // assert_eq!(templater.contains_helper_name("alpha"), false);
@@ -258,7 +258,7 @@ mod tests {
     #[test]
     fn test_register_helper_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
-        let name = "alpha";
+        let _name = "alpha";
         let content_file = TESTY_DIR
             .join("register_helper_via_name_and_content_file")
             .join("helper.rhai");
