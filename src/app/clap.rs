@@ -20,7 +20,6 @@
 use clap::{Arg, Command};
 use crate::app::args::Args;
 use crate::types::*;
-use crate::test::*;
 
 /// Create a clap app.
 pub fn app() -> Command<'static> {
