@@ -41,6 +41,7 @@ serde_yaml = "0.8.23"
 strsim = "0.10.0"
 tera = "1.15.0"
 toml = { version = "0.5.8", features = ["preserve_order"] } # TOML encoder/decoder
+typeables = "2.3.0"
 unicode-segmentation = "1.9.0"
 url = "2.2.2"
 version_check = "0.9.4"
