@@ -174,7 +174,6 @@ pub fn args() -> Args {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::indoc::indoc;
 
     // Test that the special argument `--test` is working.
     //
