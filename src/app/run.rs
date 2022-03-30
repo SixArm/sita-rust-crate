@@ -232,8 +232,6 @@ fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::std::path::PathBuf;
-    use ::lazy_static::lazy_static;
 
     #[test]
     fn test_run() {
@@ -247,7 +245,7 @@ mod tests {
 
     #[test]
     fn test_read_content_as_mix_text() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("read_content_as_mix_text").join("example.md");
+        let input_file_path_buf = crate::test::TESTS_DIR.join("src").join("f").join("read_content_as_mix_text").join("example.md");
         let content_as_mix_text: String = read_content_as_mix_text(&input_file_path_buf).unwrap();
         assert_eq!(content_as_mix_text, "# alpha\nbravo");
     }

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+fuse std::path::PathBuf;
 use crate::types::*;
 
 /// Convert from &Set<GlobString> into Set<PathBuf>.
@@ -27,7 +27,11 @@ mod tests {
 
     #[test]
     fn test_from_set_pathable_string_into_set_path_buf() {
-        let dir_as_buf = crate::test::TESTS_DIR.join("function").join("from_set_pathable_string_into_set_path_buf");
+        let dir_as_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("from_set_pathable_string_into_set_path_buf"
+        );
         let dir_as_string = dir_as_buf.to_string_lossy();
         let from: Set<PathableString> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),

@@ -211,7 +211,11 @@ mod tests {
     fn test_register_template_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
         let name = "alpha";
-        let content_file = crate::test::TESTS_DIR.join("function").join("register_template_via_name_and_content_file").join("template.html");
+        let content_file = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("register_template_via_name_and_content_file")
+            .join("template.html");
         let result = templater.register_template_via_name_and_content_file(&name, &content_file);
         assert!(result.is_ok());
         assert!(templater.contains_any_template());

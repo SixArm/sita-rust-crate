@@ -44,7 +44,7 @@ mod tests {
 
     #[test]
     fn test_from_list_pathable_string_into_list_path_buf_x_dir() {
-        let dir_as_buf = crate::test::TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
+        let dir_as_buf = crate::test::TESTS_DIR.join("src").join("f").join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let from: List<PathableString> = list![
             format!("{}{}", dir_as_string, "/a"),
@@ -75,7 +75,10 @@ mod tests {
 
     #[test]
     fn test_from_list_pathable_string_into_list_path_buf_x_glob() {
-        let dir_as_buf = crate::test::TESTS_DIR.join("function").join("from_pathable_string_into_list_path_buf");
+        let dir_as_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("from_pathable_string_into_list_path_buf");
         let dir_as_string = dir_as_buf.to_string_lossy();
         let from: List<PathableString> = list![
             format!("{}{}", dir_as_string, "/a*"),

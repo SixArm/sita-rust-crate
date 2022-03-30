@@ -38,36 +38,50 @@ pub fn vet_input_file_path_buf_metadata(input: &PathBuf) -> Result<()> {
 }
 
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::std::path::PathBuf;
-
+    
     #[test]
     fn test_vet_input_file_path_buf_exists_x_ok() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("vet_input_file_path_buf_exists").join("example.txt");
+        let input_file_path_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("vet_input_file_path_buf_exists")
+            .join("example.txt");
         let x = vet_input_file_path_buf_exists(&input_file_path_buf);
         assert!(x.is_ok());
     }
 
     #[test]
     fn test_vet_input_file_path_buf_exists_x_err() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("vet_input_file_path_buf_exists").join("missing");
+        let input_file_path_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("vet_input_file_path_buf_exists")
+            .join("missing");
         let x = vet_input_file_path_buf_exists(&input_file_path_buf);
         assert!(x.is_err());
     }
 
     #[test]
     fn test_vet_input_file_path_buf_metadata_x_ok() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("vet_input_file_path_buf_metadata").join("example.txt");
+        let input_file_path_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("vet_input_file_path_buf_metadata")
+            .join("example.txt");
         let x = vet_input_file_path_buf_metadata(&input_file_path_buf);
         assert!(x.is_ok());
     }
 
     #[test]
     fn test_vet_input_file_path_buf_metadata_x_err() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("function").join("vet_input_file_path_buf_metadata").join("missing");
+        let input_file_path_buf = crate::test::TESTS_DIR
+            .join("src")
+            .join("f")
+            .join("vet_input_file_path_buf_metadata")
+            .join("missing");
         let x = vet_input_file_path_buf_metadata(&input_file_path_buf);
         assert!(x.is_err());
     }
