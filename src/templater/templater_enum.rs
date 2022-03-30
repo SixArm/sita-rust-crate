@@ -6,7 +6,7 @@
 
 #[derive(Debug)]
 pub enum TemplaterEnum<'templater> {
-    TemplaterWithHandlebars(crate::templater::templater_with_handlebars::TemplaterWithHandlebars<'templater>),
-    //TemplaterWithLiquid(crate::templater::templater_with_liquid::TemplaterWithLiquid),
-    TemplaterWithTera(crate::templater::templater_with_tera::TemplaterWithTera),
+    #[allow(dead_code)] TemplaterWithHandlebars(crate::templater::templater_with_handlebars::TemplaterWithHandlebars<'templater>),
+    // #[allow(dead_code)] TemplaterWithLiquid(crate::templater::templater_with_liquid::TemplaterWithLiquid),
+    #[allow(dead_code)] TemplaterWithTera(crate::templater::templater_with_tera::TemplaterWithTera),
 }
