@@ -17,13 +17,9 @@ pub struct Args {
     /// Example file: "article.md"
     pub(crate) input_list_pathable_string: Option<List<PathableString>>,
 
-    /// Input file name select regex.
-    /// Example: "\.md$" means a Markdown file extension.
-    // pub(crate) input_file_name_select_regex_string: Option<String>,
-
     /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.
     /// Example: 5 means print debug diagnostics.
-    // pub(crate) log_level: Option<::log::Level>,
+    pub(crate) log_level: Option<::log::Level>,
 
     /// Output pathable string list.
     /// Example directory: "results/"
@@ -34,9 +30,9 @@ pub struct Args {
     /// Example: "html" means a HTML file extension.
     pub(crate) output_file_name_extension: Option<String>,
 
-    /// Settings for the program.
+    /// Settings map for the program.
     /// Example: {"alpha" => "bravo", "charlie" => "delta"}
-    // pub(crate) settings: Option<Map<String, String>>,
+    pub(crate) settings: Option<Map<String, String>>,
 
     /// Template pathable string list.
     /// Example file: "template.hbs"
@@ -56,11 +52,10 @@ pub struct Args {
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
         input_list_pathable_string: None,
-        // input_file_name_select_regex_string: None,
-        // log_level: None,
+        log_level: None,
         output_list_pathable_string: None,
         output_file_name_extension: None,
-        // settings: None,
+        settings: None,
         template_list_pathable_string: None,
         helper_list_pathable_string: None,
         test: false,
