@@ -8,7 +8,9 @@ mod testing;
 use testing::*;
 
 lazy_static! {
-    pub static ref DIR = TESTS_DIR.join("command").join("input");
+    pub static ref DIR = TESTS_DIR
+    .join("command")
+    .join("input");
 }
 
 #[test]

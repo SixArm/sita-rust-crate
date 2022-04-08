@@ -6,7 +6,9 @@ mod testing;
 use testing::*;
 
 lazy_static! {
-    pub static ref DIR = TESTS_DIR.join("markdown").join("matter").join("kinds");
+    pub static ref DIR = TESTS_DIR
+        .join("markdown")
+        .join("matter").join("kinds");
 }
 
 #[test]

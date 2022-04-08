@@ -202,6 +202,7 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name = "alpha";
         let content_text = "{{ bravo }}";
+        assert!(!templater.contains_any_template());
         let result = templater.register_template_via_name_and_content_text(&name, &content_text);
         assert!(result.is_ok());
         assert!(templater.contains_any_template());
@@ -213,9 +214,12 @@ mod tests {
         let name = "alpha";
         let content_file = crate::test::TESTS_DIR
             .join("src")
-            .join("f")
+            .join("templater")
+            .join("templater_trait")
             .join("register_template_via_name_and_content_file")
             .join("template.html");
+        assert!(content_file.exists(), "content_file: {:?}", content_file);
+        assert!(!templater.contains_any_template());
         let result = templater.register_template_via_name_and_content_file(&name, &content_file);
         assert!(result.is_ok());
         assert!(templater.contains_any_template());
