@@ -79,53 +79,51 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
 #[cfg(test)]
 mod tests {
     use super::*;
+    use once_cell::sync::Lazy;
+
+    pub static DIR: Lazy<PathBuf> = Lazy::new(||
+        crate::test::TESTS_DIR
+        .join("src")
+        .join("f")
+        .join("from_pathable_string_into_list_path_buf")
+    );
 
     #[test]
     fn test_from_pathable_string_into_list_path_buf_x_dir() {
-        let dir_as_buf = crate::test::TESTS_DIR
-            .join("src")
-            .join("f")
-            .join("from_pathable_string_into_list_path_buf"
-        );
-        let dir_as_string = dir_as_buf.to_string_lossy();
+        let dir_as_string = DIR.to_string_lossy();
         let from: PathableString = format!("{}{}", dir_as_string, "/a");
         let result = from_pathable_string_into_list_path_buf(&from);
         assert!(result.is_ok());
         let mut actual: List<PathBuf> = result.unwrap();
         actual.sort();
         let expect: List<PathBuf> = list![
-            dir_as_buf.join("a"),
-            dir_as_buf.join("a/aa"),
-            dir_as_buf.join("a/aa/aaa"),
-            dir_as_buf.join("a/aa/aab"),
-            dir_as_buf.join("a/ab"),
-            dir_as_buf.join("a/ab/aba"),
-            dir_as_buf.join("a/ab/abb")
+            DIR.join("a"),
+            DIR.join("a/aa"),
+            DIR.join("a/aa/aaa"),
+            DIR.join("a/aa/aab"),
+            DIR.join("a/ab"),
+            DIR.join("a/ab/aba"),
+            DIR.join("a/ab/abb")
         ];
         assert_eq!(actual, expect);
     }
 
     #[test]
     fn test_from_pathable_string_into_list_path_buf_x_glob() {
-        let dir_as_buf = crate::test::TESTS_DIR
-            .join("src")
-            .join("f")
-            .join("from_pathable_string_into_list_path_buf"
-        );
-        let dir_as_string = dir_as_buf.to_string_lossy();
+        let dir_as_string = DIR.to_string_lossy();
         let from: PathableString = format!("{}{}", dir_as_string, "/a*");
         let result = from_pathable_string_into_list_path_buf(&from);
         assert!(result.is_ok());
         let mut actual: List<PathBuf> = result.unwrap();
         actual.sort();
         let expect: List<PathBuf> = list![
-            dir_as_buf.join("a"),
-            dir_as_buf.join("a/aa"),
-            dir_as_buf.join("a/aa/aaa"),
-            dir_as_buf.join("a/aa/aab"),
-            dir_as_buf.join("a/ab"),
-            dir_as_buf.join("a/ab/aba"),
-            dir_as_buf.join("a/ab/abb")
+            DIR.join("a"),
+            DIR.join("a/aa"),
+            DIR.join("a/aa/aaa"),
+            DIR.join("a/aa/aab"),
+            DIR.join("a/ab"),
+            DIR.join("a/ab/aba"),
+            DIR.join("a/ab/abb")
         ];
         assert_eq!(actual, expect);
     }

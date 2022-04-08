@@ -1,4 +1,4 @@
-fuse std::path::PathBuf;
+use std::path::PathBuf;
 use crate::types::*;
 
 /// Convert from &Set<GlobString> into Set<PathBuf>.
@@ -24,33 +24,37 @@ pub fn from_set_pathable_string_into_set_path_buf(glob_string_set: &Set<GlobStri
 #[cfg(test)]
 mod tests {
     use super::*;
+    use once_cell::sync::Lazy;
+
+    pub static DIR: Lazy<PathBuf> = Lazy::new(||
+        crate::test::TESTS_DIR
+        .join("src")
+        .join("f")
+        .join("from_set_pathable_string_into_set_path_buf")
+    );
 
     #[test]
     fn test_from_set_pathable_string_into_set_path_buf() {
-        let dir_as_buf = crate::test::TESTS_DIR
-            .join("src")
-            .join("f")
-            .join("from_set_pathable_string_into_set_path_buf");
-        let dir_as_string = dir_as_buf.to_string_lossy();
+        let dir_as_string = DIR.to_string_lossy();
         let from: Set<PathableString> = set![
             format!("{}{}", dir_as_string, "/a/**/*"),
             format!("{}{}", dir_as_string, "/b/**/*")
         ];
         let actual: Set<PathBuf> = from_set_pathable_string_into_set_path_buf(&from);
         let expect: Set<PathBuf> = set![
-            dir_as_buf.join("a/aa"),
-            dir_as_buf.join("a/aa/aaa"),
-            dir_as_buf.join("a/aa/aab"),
-            dir_as_buf.join("a/ab"),
-            dir_as_buf.join("a/ab/aba"),
-            dir_as_buf.join("a/ab/abb"),
-            dir_as_buf.join("b/ba"),
-            dir_as_buf.join("b/ba/baa"),
-            dir_as_buf.join("b/ba/bab"),
-            dir_as_buf.join("b/bb"),
-            dir_as_buf.join("b/bb/bba"),
-            dir_as_buf.join("b/bb/bbb"),
-            dir_as_buf.join("b/bb/bbb")
+            DIR.join("a/aa"),
+            DIR.join("a/aa/aaa"),
+            DIR.join("a/aa/aab"),
+            DIR.join("a/ab"),
+            DIR.join("a/ab/aba"),
+            DIR.join("a/ab/abb"),
+            DIR.join("b/ba"),
+            DIR.join("b/ba/baa"),
+            DIR.join("b/ba/bab"),
+            DIR.join("b/bb"),
+            DIR.join("b/bb/bba"),
+            DIR.join("b/bb/bbb"),
+            DIR.join("b/bb/bbb")
         ];
         assert_eq!(actual, expect);
     }
