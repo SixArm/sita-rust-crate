@@ -65,4 +65,3 @@ Development-related:
 
 * [`cargo-crev`](https://crates.io/crates/cargo-crev) - Code review of dependencies
 
-    

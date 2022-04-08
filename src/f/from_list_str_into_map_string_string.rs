@@ -1,7 +1,7 @@
 use crate::types::*;
 
 /// Convert from &Vec<&str> into Map<String, String>.
-/// 
+///
 /// Example:
 //
 /// ```rust

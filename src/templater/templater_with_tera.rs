@@ -28,7 +28,7 @@ impl TemplaterTrait for TemplaterWithTera {
         my_tera.autoescape_on(vec![]); // disable autoescaping completely
         TemplaterWithTera {
             tera: my_tera,
-        }        
+        }
     }
 
     fn template_name_default(&self) -> String {
@@ -60,7 +60,7 @@ impl TemplaterTrait for TemplaterWithTera {
 
     fn contains_template_name(&self, name: &str) -> bool {
         trace!("templater_with_tera.rs contains_template_name");
-        self.tera.get_template_names().any(|x| x == name) 
+        self.tera.get_template_names().any(|x| x == name)
     }
 
     fn template_names_as_set_str(&self) -> Set<&str> {
@@ -72,7 +72,7 @@ impl TemplaterTrait for TemplaterWithTera {
         trace!("templater_with_tera.rs register_helper_via_name_and_content_file: name: {} content_text: {}", &name, &content_text);
         panic!("todo");
     }
-    
+
     fn register_helper_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
         trace!("templater_with_tera.rs register_helper_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
         panic!("todo");

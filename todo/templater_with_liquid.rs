@@ -126,7 +126,7 @@ mod tests {
         let templater = TemplaterX::new();
         assert_eq!(templater.template_content_text_default(), "{{ content }}");
     }
-    
+
     #[test]
     fn test_register_template_via_name_and_content_text() {
         let mut templater = TemplaterX::new();

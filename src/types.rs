@@ -65,7 +65,7 @@ macro_rules! list {
 /// OPTIMIZE: add pre-allocation logic.
 ///
 #[allow(unused_macros)]
-macro_rules! map { 
+macro_rules! map {
     ( $( $k:expr => $v:expr ),* ) => {
         {
             let mut m = ::std::collections::BTreeMap::new();
@@ -352,7 +352,7 @@ mod tests {
     #[test]
     fn test_list_macro_with_multiline() {
         let x = list!(
-            1, 
+            1,
             2
         );
         assert!(x.contains(&1));
@@ -374,7 +374,7 @@ mod tests {
     #[test]
     fn test_map_macro_with_multiline() {
         let x = map!(
-            1 => 2, 
+            1 => 2,
             3 => 4
         );
         assert_eq!(x.get(&1).unwrap(), &2);
@@ -396,7 +396,7 @@ mod tests {
     #[test]
     fn test_queue_macro_with_multiline() {
         let x = queue!(
-            1, 
+            1,
             2
         );
         assert!(x.contains(&1));
@@ -440,7 +440,7 @@ mod tests {
     #[test]
     fn test_stack_macro_with_multiline() {
         let x = stack!(
-            1, 
+            1,
             2
         );
         assert!(x.contains(&1));

@@ -12,7 +12,7 @@ pub struct MatterParserWithTOML {
 }
 
 impl MatterParserTrait<StateWithTOML> for MatterParserWithTOML {
-    
+
     fn as_any(&self) -> &dyn Any {
         self
     }
@@ -27,7 +27,7 @@ impl MatterParserTrait<StateWithTOML> for MatterParserWithTOML {
             String::from(captures.name("matter").unwrap().as_str()),
         ))
     }
-    
+
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithTOML> {
         trace!("MatterParserWithTOML::parse_matter_text_to_state");

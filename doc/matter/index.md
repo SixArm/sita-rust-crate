@@ -5,7 +5,7 @@ Matter is our generic term for web page file front matter.
 
 ## Flavors
 
-Various blog tools can use front matter with various flavors, meaning various formats such as HTML, or JSON, or TOML, or YAML. 
+Various blog tools can use front matter with various flavors, meaning various formats such as HTML, or JSON, or TOML, or YAML.
 
 Sita can use any of these flavors.
 

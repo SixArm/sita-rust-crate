@@ -7,11 +7,11 @@ pub static REGEX: Lazy<Regex> = Lazy::new(|| {
 });
 
 /// Convert from HtmlStr into a headline str.
-/// 
+///
 /// This finds the first <h1> tag and returns the inner text.
-/// 
+///
 /// A typical use case is scanning a web page to find a viable title.
-/// 
+///
 /// Example:
 //
 /// ```rust

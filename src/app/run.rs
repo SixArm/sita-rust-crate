@@ -44,7 +44,7 @@ pub(crate) fn run() -> Result<()> {
     trace!("Initialize arguments.");
     let args: Args = crate::app::clap::args();
     if args.test { println!("{:?}", args); }
-    
+
     trace!("Initialize templater.");
     let mut templater = TemplaterWithHandlebars::new_with_args(&args);
 
@@ -52,11 +52,11 @@ pub(crate) fn run() -> Result<()> {
     if let Some(template_list_pathable_string) = &args.template_list_pathable_string {
         for template_pathable_string in template_list_pathable_string {
             trace!("Add templates: template_list_pathable_string: {}", &template_pathable_string);
-            for template_path_buf 
+            for template_path_buf
             in from_pathable_string_into_list_path_buf(&template_pathable_string)
             .chain_err(|| "from_pathable_string_into_list_path_buf template_pathable_string")?
             .iter()
-            .filter(|&x| 
+            .filter(|&x|
                 x.is_file()
             ){
                 trace!("Add templates: template_path_buf: {:?}", &template_path_buf);
@@ -79,11 +79,11 @@ pub(crate) fn run() -> Result<()> {
     if let Some(helper_list_pathable_string) = &args.helper_list_pathable_string {
         for helper_pathable_string in helper_list_pathable_string {
             trace!("Add helpers: helper_list_pathable_string: {}", &helper_pathable_string);
-            for helper_path_buf 
+            for helper_path_buf
             in from_pathable_string_into_list_path_buf(&helper_pathable_string)
             .chain_err(|| "from_pathable_string_into_list_path_buf helper_pathable_string")?
             .iter()
-            .filter(|&x| 
+            .filter(|&x|
                 x.is_file()
             ){
                 trace!("Add helpers: helper_path_buf: {:?}", &helper_path_buf);
@@ -95,7 +95,7 @@ pub(crate) fn run() -> Result<()> {
             }
         }
     }
-    
+
     trace!("Prepare items in order to speed up processing.");
     let output_file_name_extension = match &args.output_file_name_extension {
         Some(x) => x,
@@ -106,11 +106,11 @@ pub(crate) fn run() -> Result<()> {
     if let Some(input_list_pathable_string) = &args.input_list_pathable_string {
         for input_pathable_string in input_list_pathable_string {
             trace!("Process inputs: input_pathable_string={}", input_pathable_string);
-            for input_path_buf 
+            for input_path_buf
             in from_pathable_string_into_list_path_buf(&input_pathable_string)
             .chain_err(|| "from_pathable_string_into_list_path_buf input_pathable_string")?
             .iter()
-            .filter(|&x| 
+            .filter(|&x|
                 x.is_file()
             ){
                 trace!("Process inputs: input_path_buf: {:?}", input_path_buf);
@@ -124,15 +124,15 @@ pub(crate) fn run() -> Result<()> {
                 )?;
             }
         }
-    }    
-    
+    }
+
     Ok(())
 }
 
 fn do_path<T: TemplaterTrait>(
-    _args: &Args, 
-    templater: &T, 
-    input: &PathBuf, 
+    _args: &Args,
+    templater: &T,
+    input: &PathBuf,
     output: &PathBuf
 ) -> Result<()> {
     trace!("do path(…) → input: {:?}", input);
@@ -177,7 +177,7 @@ fn do_path<T: TemplaterTrait>(
     trace!("Select the template name."); //TODO make dynamic
     let template_name = *templater.template_names_as_set_str().iter().next().expect("template_name");
     debug!("template_name: {:?}", &template_name);
- 
+
     trace!("Render the template.");
     let output_as_html_text = templater.render_template_with_state_enum(&template_name, &state_enum)
     .chain_err(|| "render_template_with_state")?;
@@ -245,7 +245,11 @@ mod tests {
 
     #[test]
     fn test_read_content_as_mix_text() {
-        let input_file_path_buf = crate::test::TESTS_DIR.join("src").join("f").join("read_content_as_mix_text").join("example.md");
+        let input_file_path_buf = crate::test::TESTS_DIR
+        .join("src")
+        .join("f")
+        .join("read_content_as_mix_text")
+        .join("example.md");
         let content_as_mix_text: String = read_content_as_mix_text(&input_file_path_buf).unwrap();
         assert_eq!(content_as_mix_text, "# alpha\nbravo");
     }

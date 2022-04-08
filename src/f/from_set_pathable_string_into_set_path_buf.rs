@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use crate::types::*;
 
 /// Convert from &Set<GlobString> into Set<PathBuf>.
-/// 
+///
 /// Example:
 //
 /// ```rust
@@ -15,7 +15,7 @@ use crate::types::*;
 ///
 #[allow(dead_code)]
 pub fn from_set_pathable_string_into_set_path_buf(glob_string_set: &Set<GlobString>) -> Set<PathBuf> {
-    let x: Set<PathBuf> = glob_string_set.iter().flat_map(|glob_string| 
+    let x: Set<PathBuf> = glob_string_set.iter().flat_map(|glob_string|
         ::glob::glob(&glob_string).unwrap().filter_map(|x| x.ok())
     ).collect::<_>();
     x

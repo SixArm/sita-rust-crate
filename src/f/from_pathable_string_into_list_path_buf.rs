@@ -6,7 +6,7 @@ use crate::errors::*;
 use crate::types::*;
 
 /// Convert from &PathableString into List<PathBuf>.
-/// 
+///
 /// Example:
 //
 /// ```rust
@@ -14,15 +14,15 @@ use crate::types::*;
 /// let into: List<PathBuf> = from_pathable_string_into_list_path_buf(from);
 /// //=> ["a", "a/a1.txt", "a/a2.txt"]
 /// ```
-/// 
+///
 /// This function deliberately filters out errors.
-/// 
-/// For example, this function will silently skip directories that the 
+///
+/// For example, this function will silently skip directories that the
 /// owner of the running process does not have permission to access.
 ///
 #[allow(dead_code)]
 pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<List<PathBuf>> {
-    trace!("from_pathable_string_into_list_path_buf from: {:?}", from); 
+    trace!("from_pathable_string_into_list_path_buf from: {:?}", from);
     let list_path_buf: List<PathBuf> = ::glob::glob(&from)
     .chain_err(|| format!("from_pathable_string_into_list_path_buf glob from: {:?}", from))?
     .inspect(|x|
@@ -34,7 +34,7 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
             Err(err) => warn!("from_pathable_string_into_list_path_buf glob err. ␟from: {:?} ␟err: {:?}", from, err),
         }
     )
-    .filter_map(|x| 
+    .filter_map(|x|
         x.ok()
         //TODO
         // match x {
@@ -48,13 +48,13 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
     .flat_map(|path_buf|
         WalkDir::new(&path_buf)
         .into_iter()
-        .filter_entry(|e| 
+        .filter_entry(|e|
             crate::f::walkdir_dir_entry_is_visible::walkdir_dir_entry_is_visible(&e)
         )
         .inspect(|x|
             println!("f3: {:?}", x)
         )
-        .inspect(|x| 
+        .inspect(|x|
             match x {
                 Ok(x) => trace!("from_pathable_string_into_list_path_buf dir entry ok. ␟from: {:?} ␟dir entry: {:?}", from, x),
                 Err(err) => warn!("from_pathable_string_into_list_path_buf dir entry err. ␟from: {:?} ␟err: {:?}", from, err),
@@ -68,7 +68,7 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
             //     Err(err) => bail!(err),
             // }
         )
-        .map(|x| 
+        .map(|x|
             PathBuf::from(x.path())
         )
     )

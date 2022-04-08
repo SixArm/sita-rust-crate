@@ -17,7 +17,7 @@ impl StateTrait for StateWithYAML {
     fn contains_key(&self, key: &str) -> bool {
         self.contains_key(&::serde_yaml::Value::String(String::from(key)))
     }
-         
+
     fn insert(&mut self, key: String, value: String) -> () {
         self.insert(::serde_yaml::Value::String(String::from(key)), ::serde_yaml::Value::String(value));
     }

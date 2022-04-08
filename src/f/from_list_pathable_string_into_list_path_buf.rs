@@ -4,7 +4,7 @@ use crate::types::*;
 use crate::f::from_pathable_string_into_list_path_buf::*;
 
 /// Convert from &List<PathableString> into List<PathBuf>.
-/// 
+///
 /// Example:
 //
 /// ```rust
@@ -14,10 +14,10 @@ use crate::f::from_pathable_string_into_list_path_buf::*;
 /// ```
 ///
 /// This function deliberately filters out errors.
-/// 
-/// For example, this function will silently skip directories that the 
+///
+/// For example, this function will silently skip directories that the
 /// owner of the running process does not have permission to access.
-/// 
+///
 #[allow(dead_code)]
 pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>) -> Result<List<PathBuf>> {
     trace!("from_list_pathable_string_into_list_path_buf");

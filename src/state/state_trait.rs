@@ -1,7 +1,7 @@
 //! State management abstraction.
 //!
 //! This can use HTML, JSON, TOML, YAML, etc.
-//! 
+//!
 //! This can be expanded for potential future formats.
 
 use std::any::Any;
@@ -23,8 +23,8 @@ pub trait StateTrait: std::fmt::Debug {
 
     /// If the key doesn't exist then insert the key and value.
     fn contains_key_or_insert(&mut self, key: String, value: String) -> () {
-        if !self.contains_key(&key) { 
-            self.insert(key, value); 
+        if !self.contains_key(&key) {
+            self.insert(key, value);
         }
     }
 

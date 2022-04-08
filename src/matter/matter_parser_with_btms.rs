@@ -83,7 +83,7 @@ mod tests {
 
     fn expect_state() -> StateWithBTMS {
         map!(
-            String::from("alpha") => String::from("bravo"), 
+            String::from("alpha") => String::from("bravo"),
             String::from("charlie") => String::from("delta")
         )
     }
@@ -91,7 +91,7 @@ mod tests {
     #[test]
     fn test_parse_mix_text_to_content_text_and_matter_text_x_present() {
         let result = MatterParserX{}.parse_mix_text_to_content_text_and_matter_text(MIX_TEXT);
-        assert!(result.is_ok());        
+        assert!(result.is_ok());
         let (content_text, matter_text) = result.unwrap();
         assert_eq!(content_text, CONTENT_TEXT);
         assert_eq!(matter_text, MATTER_TEXT);

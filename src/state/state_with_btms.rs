@@ -21,5 +21,5 @@ impl StateTrait for StateWithBTMS {
     fn insert(&mut self, key: String, value: String) -> () {
         self.insert(key, value);
     }
-    
+
 }

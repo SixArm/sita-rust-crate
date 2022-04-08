@@ -79,13 +79,13 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         self.handlebars.register_script_helper(&name, &content_text)
         .chain_err(|| "register_helper_via_name_and_content_text")
     }
-    
+
     fn register_helper_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
         trace!("templater_with_handlebars.rs register_helper_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
         self.handlebars.register_script_helper_file(&name, &content_file)
         .chain_err(|| "register_helper_via_name_and_content_file")
     }
-    
+
     fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
         trace!("templater_with_handlebars.rs render_template_with_state_enum");
         //TODO make generic
@@ -178,7 +178,7 @@ mod tests {
         assert_eq!(templater.contains_template_name("alpha"), true);
         assert_eq!(templater.contains_template_name("charlie"), false);
     }
-        
+
     #[test]
     fn test_contains_any_template() {
         let mut templater  = TemplaterX::new();
@@ -254,7 +254,7 @@ mod tests {
         // assert_eq!(templater.contains_helper_name("alpha"), true);
         // assert_eq!(templater.contains_helper_name("charlie"), false);
     }
-    
+
     #[test]
     fn test_register_helper_via_name_and_content_file() {
         let mut templater = TemplaterX::new();

@@ -17,9 +17,9 @@ impl StateTrait for StateWithJSON {
     fn contains_key(&self, key: &str) -> bool {
         self.contains_key(key)
     }
-            
+
     fn insert(&mut self, key: String, value: String) -> () {
         self.insert(key, ::serde_json::Value::String(value));
     }
-    
+
 }

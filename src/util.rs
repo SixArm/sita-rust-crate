@@ -41,7 +41,7 @@ pub fn vet_input_file_path_buf_metadata(input: &PathBuf) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_vet_input_file_path_buf_exists_x_ok() {
         let input_file_path_buf = crate::test::TESTS_DIR

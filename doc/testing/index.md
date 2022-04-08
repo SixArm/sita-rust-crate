@@ -3,7 +3,7 @@
 
 ## Testing mod
 
-We prefer testing code that we can use in any other test file, 
+We prefer testing code that we can use in any other test file,
 such as common configurations, helper functions, support code, etc.
 
 Our convention is to use this file name:

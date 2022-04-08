@@ -16,7 +16,7 @@ impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
     fn as_any(&self) -> &dyn Any {
         self
     }
-    
+
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
         trace!("MatterParserWithJSON::parse_mix_text_to_content_text_and_matter_text");

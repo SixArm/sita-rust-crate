@@ -7,12 +7,12 @@ pub fn parser(text: &str) -> Parser  {
 }
 
 /// Create pulldown cmark options.
-/// 
+///
 /// This implementation adds all options;
 /// this should be equivalent to Options::all()
-/// 
+///
 /// TODO: make the options choosable via CLAP
-/// 
+///
 fn options() -> Options {
     let mut options = Options::empty();
     options.insert(Options::ENABLE_FOOTNOTES);
@@ -63,7 +63,7 @@ mod tests {
         assert_eq!(actual, expect);
     }
 
- 
+
     #[test]
     fn test_option_heading_attributes() {
         let markdown = indoc!{r#"
