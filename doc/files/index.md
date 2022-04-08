@@ -32,7 +32,6 @@
         * `templater_with_tera.rs` - Templater implementation with Tera.
 * `tests/` - Tests of the system
     * `command/` - Command tests that run the app with various args
-    * `f/` - Function tests, such as function example data and example files.
     * `markdown/` - Markdown tests, such as parsing, including front matter kinds
     * `src/` - Source test extras, such as example data and example files.
     * `tutorial/` - Tutorial tests that match the README documentation
