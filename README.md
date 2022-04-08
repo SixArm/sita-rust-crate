@@ -4,7 +4,7 @@ Sita is a static site generator.
 
 Sita aims to be simple for simple needs, and flexible for complex needs.
 
-Sita is simpler than other static site generators, such as Jekyll, Hugo, Zola, etc.
+Sita aims to be simpler than other static site generators, such as Jekyll, Hugo, Zola, etc.
 
 Contents:
 
@@ -26,7 +26,7 @@ Sita aims to be flexible for complex needs:
 * Sita uses more capabilties to integrate your work in more ways.
 
 * For example Sita can use front matter variables that can be set
-  via HTML, or JSON, or TOML, or YAML, or other options.
+  via HTML, JSON, TOML, YAML, XML, or other options.
 
 Sita is currently being developed:
 
@@ -38,7 +38,7 @@ Sita is currently being developed:
 ## Getting started
 
 
-### --help 
+### --help
 
 Get the Sita help introduction:
 
@@ -117,7 +117,7 @@ Features:
 
 * Compile from a typical Markdown file into a typical HTML web page.
 
-* Front matter can be written in HTML, or JSON, or TOML, or YAML. 
+* Front matter can be written in HTML, JSON, TOML, YAML, XML.
 
 Features that we may add in the future if people want to fund them:
 
@@ -144,7 +144,7 @@ Sita is being developed to use multiple template engines.
 
 The roadmap is:
 
-* Handlebars - because of speed and simplicity.
+* Handlebars - because of speed and use by Rust ecosystem.
 
 * Liquid - because of popularity with ecommerce developers.
 
@@ -153,7 +153,7 @@ The roadmap is:
 
 ## State variables
 
-State variables can be set by using front matter as HTML, JSON, TOML, YAML, or command line options.
+State variables can be set by using front matter as HTML, JSON, TOML, YAML, XML, or command line options.
 
 
 ### HTML
@@ -210,6 +210,19 @@ Example:
 title: My Title
 subtitle: My Subtitle
 ---
+```
+```md
+The content starts here.
+```
+
+
+### XML (coming soon)
+
+Example:
+
+```xml
+<let key="title" value="My Title"/>
+<let key="subtitle" value="My Subtitle"/>
 ```
 ```md
 The content starts here.
