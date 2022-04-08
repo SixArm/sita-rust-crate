@@ -11,12 +11,12 @@ use crate::types::*;
 /// ```
 ///
 #[allow(dead_code)]
-pub fn from_list_str_into_map_string_string(vec_str: &Vec<&str>) -> Map<String, String> {
+pub fn from_list_str_into_map_string_string(list_str: &List<&str>) -> Map<String, String> {
     trace!("from_list_str_into_map_string_string");
     let mut map: Map<String, String> = Map::new();
-    for i in (0..vec_str.len()-1).step_by(2) {
-        let k = String::from(vec_str[i]);
-        let v = String::from(vec_str[i+1]);
+    for i in (0..list_str.len()-1).step_by(2) {
+        let k = String::from(list_str[i]);
+        let v = String::from(list_str[i+1]);
         map.insert(k, v);
     }
     map
