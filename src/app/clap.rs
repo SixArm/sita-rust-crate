@@ -19,6 +19,7 @@
 
 use clap::{Arg, Command};
 use crate::app::args::Args;
+use crate::f::from_list_str_into_map_string_string::*;
 use crate::types::*;
 
 /// Create a clap app.
@@ -36,11 +37,6 @@ pub fn app() -> Command<'static> {
         .multiple_occurrences(true)
         .multiple_values(true)
         .help("An input path string.\nExample file: --input \"example.html\" …\nExample directory: --input \"examples/\" …\nExample glob: --input \"examples/**/*\" …"))
-    // .arg(Arg::new("input_file_name_select_regex_string")
-    //     .long("input-select")
-    //     .value_name("REGEX")
-    //     .takes_value(true)
-    //     .help("The input file name select filter regular expression.\nExample: --input-select: \"^foo\" (starts with \"foo\")\nExample: --input-select \"md$\" (ends with \"md\")"))
     .arg(Arg::new("output")
         .short('o')
         .long("output")
@@ -77,20 +73,20 @@ pub fn app() -> Command<'static> {
         .long("test")
         .takes_value(false)
         .help("Print test output for debugging, verifying, tracing, and the like.\nExample: --test"))
-    // .arg(Arg::new("set")
-    //     .short('s')
-    //     .long("set")
-    //     .value_names(&["NAME", "VALUE"])
-    //     .takes_value(true)
-    //     .multiple_occurrences(true)
-    //     .multiple_values(true)
-    //     .help("Set a variable name to a value.\nExample: --let pi \"3.1415\" …"))
-    // .arg(Arg::new("verbose")
-    //     .short('v')
-    //     .long("verbose")
-    //     .takes_value(false)
-    //     .multiple_occurrences(true)
-    //     .help("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.\nExample: --verbose …"))
+    .arg(Arg::new("set")
+        .short('s')
+        .long("set")
+        .value_names(&["NAME", "VALUE"])
+        .takes_value(true)
+        .multiple_occurrences(true)
+        .multiple_values(true)
+        .help("Set a variable name to a value.\nExample: --set pi 3.1415 …"))
+    .arg(Arg::new("verbose")
+        .short('v')
+        .long("verbose")
+        .takes_value(false)
+        .multiple_occurrences(true)
+        .help("Set the verbosity level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.\nExample: --verbose …"))
 }
 
 /// Create an Args struct initiatied with the clap App settings.
@@ -104,11 +100,6 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    // let input_file_name_select_regex_string = match matches.value_of("input_file_name_select_regex_string") {
-    //     Some(x) => Some(String::from(x)),
-    //     _ => None,
-    // };
-
     let output_list_pathable_string = match matches.values_of("output") {
         Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
         _ => None,
@@ -119,28 +110,28 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    // let helper_url_list = match matches.values_of("helper") {
-    //     Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
-    //     _ => None,
-    // };
+    let helper_url_list = match matches.values_of("helper") {
+        Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
+        _ => None,
+    };
 
-    // let settings = match matches.values_of("set") {
-    //     Some(x) => {
-    //         let vec: Vec<&str> = x.collect();
-    //         Some(from_list_str_into_map_string_string(&vec))
-    //     },
-    //     _ => None,
-    // };
+    let settings = match matches.values_of("set") {
+        Some(x) => {
+            let list_str = x.into_iter().collect::<List<&str>>();
+            Some(from_list_str_into_map_string_string(&list_str))
+        },
+        _ => None,
+    };
 
-    // let log_level = match matches.occurrences_of("verbose") {
-    //     0 => None,
-    //     1 => Some(::log::Level::Error),
-    //     2 => Some(::log::Level::Warn),
-    //     3 => Some(::log::Level::Info),
-    //     4 => Some(::log::Level::Debug),
-    //     5 => Some(::log::Level::Trace),
-    //     _ => Some(::log::Level::Trace),
-    // };
+    let log_level = match matches.occurrences_of("verbose") {
+        0 => None,
+        1 => Some(::log::Level::Error),
+        2 => Some(::log::Level::Warn),
+        3 => Some(::log::Level::Info),
+        4 => Some(::log::Level::Debug),
+        5 => Some(::log::Level::Trace),
+        _ => Some(::log::Level::Trace),
+    };
 
     let template_list_pathable_string = match matches.values_of("template") {
         Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
@@ -156,23 +147,23 @@ pub fn args() -> Args {
 
     let args = Args {
         input_list_pathable_string: input_list_pathable_string,
-        //input_file_name_select_regex_string: input_file_name_select_regex_string,
+        log_level: log_level,
         output_list_pathable_string: output_list_pathable_string,
         output_file_name_extension: output_file_name_extension,
-        // settings: settings,
+        settings: settings,
         template_list_pathable_string: template_list_pathable_string,
         helper_list_pathable_string: helper_list_pathable_string,
         test: test,
-        // log_level: log_level,
     };
 
     trace!("clap::args -> {:?}", args);
-    args    
+    args
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
 
     // Test that the special argument `--test` is working.
     //
@@ -194,20 +185,20 @@ mod tests {
     // show diagnostics, because the `--verbose` argument turns on logging output,
     // which can include debugging messages, warnings, errors, and so on.
     //
-    // #[test]
-    // fn test_verbose() {
-    //     assert_command_stdout_contains!(COMMAND, &["--test"], r#" log_level: None"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "-v"], r#" log_level: Some(Error)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
-    //     assert_command_stdout_contains!(COMMAND, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
-    // }
+    #[test]
+    fn test_verbose() {
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test"], r#" log_level: None"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "-v"], r#" log_level: Some(Error)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "-vv"], r#" log_level: Some(Warn)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "-vvv"], r#" log_level: Some(Info)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "-vvvv"], r#" log_level: Some(Debug)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "-vvvvv"], r#" log_level: Some(Trace)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "--verbose"], r#" log_level: Some(Error)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "--verbose", "--verbose"], r#" log_level: Some(Warn)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Info)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Debug)"#);
+        assert_program_args_stdout_contains!(&*COMMAND_OS, &["--test", "--verbose", "--verbose", "--verbose", "--verbose", "--verbose"], r#" log_level: Some(Trace)"#);
+    }
 
     // #[path = "util.rs"]
     // mod util;
@@ -301,16 +292,16 @@ mod tests {
     // fn test_clap_template_glob_to_template_path_set() {
     //     let dir = "from_set_pathable_string_into_set_path_buf/";
     //     assert_command_stdout_contains!(
-    //         COMMAND, 
+    //         COMMAND,
     //         &[
-    //             "--test", 
-    //             "--template", 
-    //             &format!("{}{}", &dir, "a/**/*"), 
-    //             &format!("{}{}", &dir, "b/**/*"), 
-    //             "--template", 
-    //             &format!("{}{}", &dir, "c/**/*"), 
-    //             &format!("{}{}", &dir, "d/**/*"), 
-    //         ], 
+    //             "--test",
+    //             "--template",
+    //             &format!("{}{}", &dir, "a/**/*"),
+    //             &format!("{}{}", &dir, "b/**/*"),
+    //             "--template",
+    //             &format!("{}{}", &dir, "c/**/*"),
+    //             &format!("{}{}", &dir, "d/**/*"),
+    //         ],
     //         &format!(" template_path_set:  Some([\"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\"]",
     //             &format!("{}{}", &dir, "a/aa"),
     //             &format!("{}{}", &dir, "a/aa/aaa"),
