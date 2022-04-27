@@ -110,8 +110,8 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    let helper_url_list = match matches.values_of("helper") {
-        Some(x) => Some(x.map(|x| String::from(x)).collect::<List<UrlString>>()),
+    let helper_list_pathable_string = match matches.values_of("helper") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
         _ => None,
     };
 
@@ -123,6 +123,13 @@ pub fn args() -> Args {
         _ => None,
     };
 
+    let template_list_pathable_string = match matches.values_of("template") {
+        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
+        _ => None,
+    };
+
+    let test = matches.is_present("test");
+
     let log_level = match matches.occurrences_of("verbose") {
         0 => None,
         1 => Some(::log::Level::Error),
@@ -132,18 +139,6 @@ pub fn args() -> Args {
         5 => Some(::log::Level::Trace),
         _ => Some(::log::Level::Trace),
     };
-
-    let template_list_pathable_string = match matches.values_of("template") {
-        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
-        _ => None,
-    };
-
-    let helper_list_pathable_string = match matches.values_of("helper") {
-        Some(x) => Some(x.map(|x| PathableString::from(x)).collect::<List<PathableString>>()),
-        _ => None,
-    };
-
-    let test = matches.is_present("test");
 
     let args = Args {
         input_list_pathable_string: input_list_pathable_string,
@@ -164,6 +159,7 @@ pub fn args() -> Args {
 mod tests {
     use super::*;
     use crate::test::*;
+    use assertables::*;
 
     // Test that the special argument `--test` is working.
     //

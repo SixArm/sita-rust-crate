@@ -28,7 +28,7 @@ extern crate log;
 extern crate env_logger;
 
 //// assertables
-#[macro_use]
+//#[macro_use]
 extern crate assertables;
 
 //// maplit
