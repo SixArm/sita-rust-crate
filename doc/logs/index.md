@@ -1,6 +1,6 @@
 # Logs
 
-Sita currently has some logging capabilties, and more to come.
+Sita currently has some logging capabilities, and more to come.
 
 Sita currently uses the environment variable `RUST_LOG` in order to set the log level.
 

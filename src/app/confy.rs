@@ -11,7 +11,7 @@ mod tests {
 
     #[test]
     fn test_confy() {
-        let config: Config = ::confy::load("sita").unwrap();
+        let config: Config = ::confy::load("sita", None).unwrap();
         dbg!(config);
         // assert_eq!(i_string, o_string); //TODO
     }

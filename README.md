@@ -23,7 +23,7 @@ Sita aims to be simple for simple needs:
 
 Sita aims to be flexible for complex needs:
 
-* Sita uses more capabilties to integrate your work in more ways.
+* Sita uses more capabilities to integrate your work in more ways.
 
 * For example Sita can use front matter variables that can be set
   via HTML, JSON, TOML, YAML, XML, or other options.
@@ -146,9 +146,9 @@ The roadmap is:
 
 * Handlebars - because of speed and use by Rust ecosystem.
 
-* Liquid - because of popularity with ecommerce developers.
+* Liquid - because of popularity with e-commerce developers.
 
-* Tera - because of advanced capabilties and pure Rust.
+* Tera - because of advanced capabilities and pure Rust.
 
 
 ## State variables

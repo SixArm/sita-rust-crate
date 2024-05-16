@@ -38,7 +38,7 @@ pub(crate) fn run() -> Result<()> {
     trace!("run()");
 
     trace!("Initialize configuration.");
-    let _config: Config = ::confy::load("sita")
+    let _config: Config = ::confy::load("sita", None)
     .chain_err(|| "error: confy load")?;
 
     trace!("Initialize arguments.");
