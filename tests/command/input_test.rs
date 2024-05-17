@@ -1,22 +1,22 @@
 use assertables::*;
 use std::path::PathBuf;
 use std::process::Command;
-use lazy_static::*;
+use once_cell::sync::Lazy;
 
 #[path = "testing.rs"]
 mod testing;
 use testing::*;
 
-lazy_static! {
-    pub static ref DIR = TESTS_DIR
+pub static DIR: Lazy<PathBuf> = Lazy::new(||
+    crate::testing::TESTS_DIR
     .join("command")
-    .join("input");
-}
+    .join("input")
+);
 
 #[test]
 fn test_command_x_input() {
     // Given
-    let input: PathBuf = DIR.join("example.md");
+    let input: PathBuf = DIR.join("arg-input.md");
     let actual: PathBuf = DIR.join("example.html");
     let expect: PathBuf = DIR.join("example.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
