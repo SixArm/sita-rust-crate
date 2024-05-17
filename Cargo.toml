@@ -57,9 +57,6 @@ ipnet = "2.5.0"
 # json: JSON parser
 json = "0.12.4"
 
-# lazy_static: A macro for declaring lazily evaluated statics
-lazy_static = "1.4.0"
-
 # liquid: Templating language for Rust
 liquid = "0.26.0"
 

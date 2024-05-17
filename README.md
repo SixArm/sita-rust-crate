@@ -6,10 +6,6 @@ Sita aims to be simple for simple needs, and flexible for complex needs.
 
 Sita aims to be simpler than other static site generators, such as Astro, Eleventy, Jekyll, Hugo, Zola, etc.
 
-Contents:
-
-* [](#)
-
 
 ## Introduction
 

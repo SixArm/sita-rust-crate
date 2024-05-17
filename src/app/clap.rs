@@ -26,7 +26,7 @@ use crate::types::*;
 pub fn app() -> Command<'static> {
     trace!("clap::app");
     Command::new("Sita")
-    .version("1.0.0")
+    .version("0.1.0")
     .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
     .arg(Arg::new("input")
         .short('i')

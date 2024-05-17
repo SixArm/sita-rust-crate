@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 use serde::Serialize;
+use once_cell::sync::Lazy;
 use crate::app::args::Args;
 use crate::errors::*;
 use crate::types::*;
@@ -85,7 +86,6 @@ impl TemplaterTrait for TemplaterWithLiquid {
 mod tests {
     use super::*;
     use indoc::indoc;
-    use lazy_static::*;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
     use crate::matter::matter_parser_with_html::MatterParserWithHTML;

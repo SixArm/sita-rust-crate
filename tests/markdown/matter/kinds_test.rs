@@ -1,15 +1,16 @@
-use lazy_static::*;
 use std::path::PathBuf;
+use once_cell::sync::Lazy;
 
 #[path = "testing.rs"]
 mod testing;
 use testing::*;
 
-lazy_static! {
-    pub static ref DIR = TESTS_DIR
-        .join("markdown")
-        .join("matter").join("kinds");
-}
+pub static DIR: Lazy<PathBuf> = Lazy::new(||
+    crate::test::TESTS_DIR
+    .join("markdown")
+    .join("matter")
+    .join("kinds")
+);
 
 #[test]
 fn test_html() {

@@ -12,7 +12,6 @@ App crates:
 Initialization:
 
 * [`once_cell`](https://crates.io/crates/once_cell) - Single assignment cells and lazy values
-* [`lazy_static`](https://crates.io/crates/lazy_static) - Lazy evaluated statics
 
 Utilities:
 

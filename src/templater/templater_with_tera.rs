@@ -103,7 +103,7 @@ pub fn from_state_enum_to_tera_context(state_enum: &crate::state::state_enum::St
 mod tests {
     use super::*;
     use indoc::indoc;
-    use lazy_static::*;
+    use once_cell::sync::Lazy;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
     use crate::matter::matter_parser_with_html::MatterParserWithHTML;
@@ -117,10 +117,13 @@ mod tests {
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
 
-    lazy_static! {
-        pub static ref TESTS_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>();
-        pub static ref TESTY_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "src", "templater", "templater_with_tera"].iter().collect::<PathBuf>();
-    }
+    pub static TESTS_DIR: Lazy<PathBuf> = Lazy::new(||
+        [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>()
+    );
+
+    pub static TESTY_DIR: Lazy<PathBuf> = Lazy::new(||
+        [env!("CARGO_MANIFEST_DIR"), "tests", "src", "templater", "templater_with_tera"].iter().collect::<PathBuf>()
+    );
 
     const FAB_OUTPUT_HTML: &str = "my content";
 

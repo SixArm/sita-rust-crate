@@ -23,12 +23,12 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()>
 mod tests {
     use super::*;
     use ::std::path::PathBuf;
-    use ::lazy_static::lazy_static;
+    use once_cell::sync::Lazy;
 
-    lazy_static! {
-        pub static ref TMP_DIR: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tmp"].iter().collect::<PathBuf>();
-    }
-
+    pub static TMP_DIR: Lazy<PathBuf> = Lazy::new(||
+        [env!("CARGO_MANIFEST_DIR"), "tmp"].iter().collect::<PathBuf>()
+    );
+    
     #[test]
     fn test_remove_file_if_exists_x_present() {
         let file = TMP_DIR.join("test_remove_file_if_exists_x_present.tmp");
