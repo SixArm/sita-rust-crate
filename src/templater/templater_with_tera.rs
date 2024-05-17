@@ -92,7 +92,7 @@ impl TemplaterTrait for TemplaterWithTera {
 
 pub fn from_state_enum_to_tera_context(state_enum: &crate::state::state_enum::StateEnum) -> ::tera::Result<::tera::Context> {
     match state_enum {
-        crate::state::state_enum::StateEnum::StateWithBTMS(x) => ::tera::Context::from_serialize(x),
+        crate::state::state_enum::StateEnum::StateWithMap(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithJSON(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithTOML(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithYAML(x) => ::tera::Context::from_serialize(x),
@@ -106,12 +106,13 @@ mod tests {
     use lazy_static::*;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
-    use crate::matter::matter_parser_with_btms::MatterParserWithBTMS;
+    use crate::matter::matter_parser_with_html::MatterParserWithHTML;
     use crate::matter::matter_parser_with_json::MatterParserWithJSON;
+    use crate::matter::matter_parser_with_markdown_comments::MatterParserWithMarkdownComments;
     use crate::matter::matter_parser_with_toml::MatterParserWithTOML;
     use crate::matter::matter_parser_with_yaml::MatterParserWithYAML;
     use crate::state::state_enum::StateEnum;
-    use crate::state::state_with_btms::StateWithBTMS;
+    use crate::state::state_with_map::StateWithMap;
     use crate::state::state_with_json::StateWithJSON;
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
@@ -248,7 +249,7 @@ mod tests {
     // }
 
     #[test]
-    fn test_render_template_with_state_enum_x_btms() {
+    fn test_render_template_with_state_enum_x_html() {
         let mut templater = TemplaterX::new();
         templater.register_template_via_default().expect("default");
         let matter_text = indoc!{r#"
@@ -258,8 +259,8 @@ mod tests {
             -->
         "#};
         let name = templater.template_name_default();
-        let state: StateWithBTMS = MatterParserWithBTMS{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
-        let state_enum = StateEnum::StateWithBTMS(state);
+        let state: StateWithMap = MatterParserWithHTML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithMap(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
@@ -277,6 +278,21 @@ mod tests {
         let name = templater.template_name_default();
         let state: StateWithJSON = MatterParserWithJSON{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithJSON(state);
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
+        assert_eq!(actual, FAB_OUTPUT_HTML);
+    }
+
+    #[test]
+    fn test_render_template_with_state_enum_x_markdown_comments() {
+        let mut templater = TemplaterX::new();
+        templater.register_template_via_default().expect("default");
+        let matter_text = indoc!{r#"
+            [//]: # (title: my title)
+            [//]: # (content: my content)    
+        "#};
+        let name = templater.template_name_default();
+        let state: StateWithMap = MatterParserWithMarkdownComments{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithMap(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }

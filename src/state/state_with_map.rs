@@ -2,16 +2,16 @@ use std::any::Any;
 use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
 
-pub type StateWithBTMS = crate::types::Map<String, String>;
+pub type StateWithMap = crate::types::Map<String, String>;
 
-impl StateTrait for StateWithBTMS {
+impl StateTrait for StateWithMap {
 
     fn as_any(&self) -> &dyn Any {
         self
     }
 
     fn to_state_enum(&self) -> StateEnum {
-        StateEnum::StateWithBTMS(self.clone())
+        StateEnum::StateWithMap(self.clone())
     }
 
     fn contains_key(&self, key: &str) -> bool {

@@ -68,8 +68,9 @@ pub(crate) mod markdown {
 pub(crate) mod matter {
     pub(crate) mod matter_parser_mutex;
     pub(crate) mod matter_parser_trait;
-    pub(crate) mod matter_parser_with_btms;
+    pub(crate) mod matter_parser_with_html;
     pub(crate) mod matter_parser_with_json;
+    pub(crate) mod matter_parser_with_markdown_comments;
     pub(crate) mod matter_parser_with_toml;
     pub(crate) mod matter_parser_with_yaml;
 }
@@ -81,7 +82,7 @@ pub(crate) mod rewriting {
 pub(crate) mod state {
     pub(crate) mod state_enum;
     pub(crate) mod state_trait;
-    pub(crate) mod state_with_btms;
+    pub(crate) mod state_with_map;
     pub(crate) mod state_with_json;
     pub(crate) mod state_with_toml;
     pub(crate) mod state_with_yaml;

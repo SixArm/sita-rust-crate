@@ -7,7 +7,7 @@ use crate::app::config::Config;
 use crate::errors::*;
 use crate::f::from_path_buf_into_sibling::*;
 use crate::state::state_trait::StateTrait;
-use crate::state::state_with_btms::StateWithBTMS;
+use crate::state::state_with_map::StateWithMap;
 use crate::templater::templater_trait::TemplaterTrait;
 use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 //use crate::templater::templater_with_liquid::TemplaterWithLiquid;
@@ -150,7 +150,7 @@ fn do_path<T: TemplaterTrait>(
         state_trait = parsed.1;
     } else {
         content_as_markdown_text = content_as_mix_text.into();
-        state_trait = Box::new(StateWithBTMS::new());
+        state_trait = Box::new(StateWithMap::new());
     }
     debug!("state_trait: {:?}", &state_trait);
 

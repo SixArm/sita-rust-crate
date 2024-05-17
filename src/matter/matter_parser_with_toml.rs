@@ -17,6 +17,28 @@ impl MatterParserTrait<StateWithTOML> for MatterParserWithTOML {
         self
     }
 
+    /// Example:
+    /// 
+    /// ```
+    /// # use ::indoc::indoc;
+    /// let mix_text = indoc!{r#"
+    ///     +++
+    ///     alpha = "bravo"
+    ///     charlie = "delta"
+    ///     +++
+    ///     echo
+    ///     foxtrot
+    /// "#};
+    /// let content_text, matter_text = parse_mix_text_to_content_text_and_matter_text(mix_text).unwrap();
+    /// assert_eq!(content_text, indoc!{r#"
+    ///     echo
+    ///     foxtrot
+    /// "#};
+    /// assert_eq!(matter_text, indoc!{r#"
+    ///     alpha = "bravo"
+    ///     charlie = "delta"
+    /// "#};
+    /// ```
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
         trace!("MatterParserWithTOML::parse_mix_text_to_content_text_and_matter_text");
@@ -28,6 +50,18 @@ impl MatterParserTrait<StateWithTOML> for MatterParserWithTOML {
         ))
     }
 
+    /// Example:
+    /// 
+    /// ```
+    /// # use ::indoc::indoc;
+    /// let matter_text = indoc!{r#"
+    ///     alpha = "bravo"
+    ///     charlie = "delta"
+    /// "#};
+    /// let state = parse_matter_text_to_state(mix_text).unwrap();
+    /// assert_eq!(state.get("alpha"), String::from("bravo"));
+    /// assert_eq!(state.get("charlie"), String::from("delta"));
+    /// ```
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithTOML> {
         trace!("MatterParserWithTOML::parse_matter_text_to_state");

@@ -1,4 +1,4 @@
-//! Markdown matter using HTML front matter.
+//! Matter parser using Markdown comment code front matter.
 
 use std::any::Any;
 use once_cell::sync::Lazy;
@@ -6,21 +6,41 @@ use regex::Regex;
 use crate::errors::*;
 use crate::types::*;
 use crate::matter::matter_parser_trait::MatterParserTrait;
-use crate::state::state_with_btms::StateWithBTMS;
+use crate::state::state_with_map::StateWithMap;
 
 #[derive(Debug)]
-pub struct MatterParserWithBTMS {
+pub struct MatterParserWithMarkdownComments {
 }
 
-impl MatterParserTrait<StateWithBTMS> for MatterParserWithBTMS {
+impl MatterParserTrait<StateWithMap> for MatterParserWithMarkdownComments {
 
     fn as_any(&self) -> &dyn Any {
         self
     }
 
+    /// Example:
+    /// 
+    /// ```
+    /// # use ::indoc::indoc;
+    /// let mix_text = indoc!{r#"
+    ///     [//]: # (alpha: bravo)
+    ///     [//]: # (charlie: delta)
+    ///     echo
+    ///     foxtrot
+    /// "#};
+    /// let content_text, matter_text = parse_mix_text_to_content_text_and_matter_text(mix_text).unwrap();
+    /// assert_eq!(content_text, indoc!{r#"
+    ///     echo
+    ///     foxtrot
+    /// "#};
+    /// assert_eq!(matter_text, indoc!{r#"
+    ///     [//]: # (alpha: bravo)
+    ///     [//]: # (charlie: delta)
+    /// "#};
+    /// ```
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        trace!("MatterParserWithBTMS::parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithMarkdownComments::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -29,10 +49,24 @@ impl MatterParserTrait<StateWithBTMS> for MatterParserWithBTMS {
         ))
     }
 
+    /// Example:
+    /// 
+    /// ```
+    /// # use ::indoc::indoc;
+    /// let mix_text = indoc!{r#"
+    ///     [//]: # (alpha: bravo)
+    ///     [//]: # (charlie: delta)
+    ///     echo
+    ///     foxtrot
+    /// "#};
+    /// let state = parse_matter_text_to_state(mix_text).unwrap();
+    /// assert_eq!(state.get("alpha"), String::from("bravo"));
+    /// assert_eq!(state.get("charlie"), String::from("delta"));
+    /// ```
     #[allow(dead_code)]
-    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithBTMS> {
-        trace!("MatterParserWithBTMS::parse_matter_text_to_state");
-        let mut state: StateWithBTMS = Map::new();
+    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithMap> {
+        trace!("MatterParserWithMarkdownComments::parse_matter_text_to_state");
+        let mut state: StateWithMap = Map::new();
         for line in matter_text.split("\n") {
             if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
                 if let Some(key) = captures.name("key") {
@@ -48,11 +82,11 @@ impl MatterParserTrait<StateWithBTMS> for MatterParserWithBTMS {
 }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?\n)-->\n(?P<content>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A(\s*\n)*(?P<matter>(\s*\[//\]: # .*?\)\s*\n)+)(\s*\n)*(?P<content>.*)\z").unwrap()
 });
 
 pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\A\s*(?P<key>\w+?):\s*(?P<value>.*?)\s*\z").unwrap()
+    Regex::new(r"\A\s*\[//\]: # \((?P<key>\w+?):\s*(?P<value>.*?)\)\s*\z").unwrap()
 });
 
 #[cfg(test)]
@@ -60,13 +94,11 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
 
-    type MatterParserX = MatterParserWithBTMS;
+    type MatterParserX = MatterParserWithMarkdownComments;
 
     const MIX_TEXT: &str = indoc!{r#"
-        <!--
-        alpha: bravo
-        charlie: delta
-        -->
+        [//]: # (alpha: bravo)
+        [//]: # (charlie: delta)
         echo
         foxtrot
     "#};
@@ -77,11 +109,11 @@ mod tests {
     "#};
 
     const MATTER_TEXT: &str = indoc!{r#"
-        alpha: bravo
-        charlie: delta
+        [//]: # (alpha: bravo)
+        [//]: # (charlie: delta)
     "#};
 
-    fn expect_state() -> StateWithBTMS {
+    fn expect_state() -> StateWithMap {
         map!(
             String::from("alpha") => String::from("bravo"),
             String::from("charlie") => String::from("delta")

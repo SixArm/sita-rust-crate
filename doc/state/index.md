@@ -4,7 +4,7 @@ State is how Sita holds variables, such a web page front matter markup.
 
 State can use any of these flavors:
 
-* HTML key value lookup, implemented with Rust standard `BTreeMap<String, String>`.
+* Map lookup, implemented with Rust standard `BTreeMap<String, String>`.
 
 * JSON tree, implemented with Rust Serde JSON `serde_json::Map`.
 

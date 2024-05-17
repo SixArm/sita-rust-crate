@@ -26,6 +26,13 @@ fn test_json() {
 }
 
 #[test]
+fn test_markdown_comments() {
+    test_with_base_path_and_default_input_actual_expect(
+        DIR.join("markdown_comments")
+    );
+}
+
+#[test]
 fn test_toml() {
     test_with_base_path_and_default_input_actual_expect(
         DIR.join("toml")

@@ -28,7 +28,6 @@ Boolean helpers that can be used in if as subexpression, for example `{{#if (gt 
 * `or`
 * `not`
 
-
 Example:
 
 ```handlebars

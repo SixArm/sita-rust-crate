@@ -16,8 +16,8 @@ Example of front matter with HTML:
 
 ```
 <!--
-    title: Hello World
-    contact: alice@example.com
+title: Hello World
+contact: alice@example.com
 -->
 Content starts here.
 ```
@@ -42,8 +42,8 @@ Example of front matter with TOML:
 
 ```
 +++
-    title = "Hello World"
-    contact = "alice@example.com"
+title = "Hello World"
+contact = "alice@example.com"
 +++
 Content starts here.
 ```
@@ -55,8 +55,19 @@ Example of front matter with YAML:
 
 ```
 ---
-    title: Hello World
-    contact: alice@example.com
+title: Hello World
+contact: alice@example.com
 ---
+Content starts here.
+```
+
+### Markdown comments
+
+Example of front matter with Markdown comments:
+
+```
+[//] # (title: Hello World)
+[//] # (contact: alice@example.com)
+
 Content starts here.
 ```

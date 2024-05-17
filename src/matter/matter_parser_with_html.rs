@@ -1,17 +1,18 @@
-//! Markdown matter using JSON front matter.
+//! Markdown matter using HTML front matter.
 
 use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use crate::errors::*;
+use crate::types::*;
 use crate::matter::matter_parser_trait::MatterParserTrait;
-use crate::state::state_with_json::StateWithJSON;
+use crate::state::state_with_map::StateWithMap;
 
 #[derive(Debug)]
-pub struct MatterParserWithJSON {
+pub struct MatterParserWithHTML {
 }
 
-impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
+impl MatterParserTrait<StateWithMap> for MatterParserWithHTML {
 
     fn as_any(&self) -> &dyn Any {
         self
@@ -22,10 +23,10 @@ impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
     /// ```
     /// # use ::indoc::indoc;
     /// let mix_text = indoc!{r#"
-    ///     {
-    ///         "alpha": "bravo",
-    ///         "charlie": "delta",
-    ///     }
+    ///     <!--
+    ///     alpha: bravo
+    ///     charlie: delta
+    ///     -->
     ///     echo
     ///     foxtrot
     /// "#};
@@ -35,15 +36,13 @@ impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
     ///     foxtrot
     /// "#};
     /// assert_eq!(matter_text, indoc!{r#"
-    ///     {
-    ///         "alpha": "bravo",
-    ///         "charlie": "delta"
-    ///     }
+    ///     alpha: bravo
+    ///     charlie: delta
     /// "#};
     /// ```
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String)> {
-        trace!("MatterParserWithJSON::parse_mix_text_to_content_text_and_matter_text");
+        trace!("MatterParserWithHTML::parse_mix_text_to_content_text_and_matter_text");
         let captures = REGEX.captures(mix_text)
         .chain_err(|| "captures")?;
         Ok((
@@ -56,29 +55,38 @@ impl MatterParserTrait<StateWithJSON> for MatterParserWithJSON {
     /// 
     /// ```
     /// # use ::indoc::indoc;
-    /// let mix_text = indoc!{r#"
-    ///     {
-    ///         "alpha": "bravo",
-    ///         "charlie": "delta",
-    ///     }
-    ///     echo
-    ///     foxtrot
+    /// let matter_text = indoc!{r#"
+    ///     alpha: bravo
+    ///     charlie: delta
     /// "#};
     /// let state = parse_matter_text_to_state(mix_text).unwrap();
     /// assert_eq!(state.get("alpha"), String::from("bravo"));
     /// assert_eq!(state.get("charlie"), String::from("delta"));
     /// ```
     #[allow(dead_code)]
-    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithJSON> {
-        trace!("MatterParserWithJSON::parse_matter_text_to_state");
-        ::serde_json::from_str(matter_text)
-        .chain_err(|| "::serde_json::from_str")
+    fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<StateWithMap> {
+        trace!("MatterParserWithHTML::parse_matter_text_to_state");
+        let mut state: StateWithMap = Map::new();
+        for line in matter_text.split("\n") {
+            if let Some(captures) = (*PARSE_LINE_TO_KEY_VALUE_REGEX).captures(line) {
+                if let Some(key) = captures.name("key") {
+                    if let Some(value) = captures.name("value") {
+                        state.insert(String::from(key.as_str()), String::from(value.as_str()));
+                    }
+                }
+            }
+        }
+        Ok(state)
     }
 
 }
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?m)(?s)\A(?P<matter>\{.*?\n\}\n)(?P<content>.*)\z").unwrap()
+    Regex::new(r"(?m)(?s)\A<!--\n(?P<matter>.*?\n)-->\n(?P<content>.*)\z").unwrap()
+});
+
+pub static PARSE_LINE_TO_KEY_VALUE_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"\A\s*(?P<key>\w+?):\s*(?P<value>.*?)\s*\z").unwrap()
 });
 
 #[cfg(test)]
@@ -86,13 +94,13 @@ mod tests {
     use super::*;
     use ::indoc::indoc;
 
-    type MatterParserX = MatterParserWithJSON;
+    type MatterParserX = MatterParserWithHTML;
 
     const MIX_TEXT: &str = indoc!{r#"
-        {
-            "alpha": "bravo",
-            "charlie": "delta"
-        }
+        <!--
+        alpha: bravo
+        charlie: delta
+        -->
         echo
         foxtrot
     "#};
@@ -103,19 +111,15 @@ mod tests {
     "#};
 
     const MATTER_TEXT: &str = indoc!{r#"
-        {
-            "alpha": "bravo",
-            "charlie": "delta"
-        }
+        alpha: bravo
+        charlie: delta
     "#};
 
-    fn expect_state() -> StateWithJSON {
-        serde_json::from_str(indoc!{r#"
-            {
-                "alpha": "bravo",
-                "charlie": "delta"
-            }
-        "#}).unwrap()
+    fn expect_state() -> StateWithMap {
+        map!(
+            String::from("alpha") => String::from("bravo"),
+            String::from("charlie") => String::from("delta")
+        )
     }
 
     #[test]

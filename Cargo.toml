@@ -1,8 +1,15 @@
 [package]
 name = "sita"
-version = "1.0.0"
+version = "0.1.0"
 authors = ["Joel Parker Henderson <joel@joelparkerhenderson.com>"]
 edition = "2021"
+description = "Sita: static site generator (SSG) for Markdown and HTML"
+readme = "README.md"
+repository = "https://github.com/sixarm/sita-rust-crate/"
+license = "MIT OR Apache-2.0 OR GPL-2.0 OR GPL-3.0"
+keywords = ["static", "site", "generator", "ssg", "template"]
+categories = ["web-programming", "template-engine", "text-processing"]
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

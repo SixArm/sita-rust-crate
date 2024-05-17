@@ -88,12 +88,13 @@ mod tests {
     use lazy_static::*;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
-    use crate::matter::matter_parser_with_btms::MatterParserWithBTMS;
+    use crate::matter::matter_parser_with_html::MatterParserWithHTML;
     use crate::matter::matter_parser_with_json::MatterParserWithJSON;
+    use crate::matter::matter_parser_with_toml::MatterParserWithMarkdownComments;
     use crate::matter::matter_parser_with_toml::MatterParserWithTOML;
     use crate::matter::matter_parser_with_yaml::MatterParserWithYAML;
     use crate::state::state_enum::StateEnum;
-    use crate::state::state_with_btms::StateWithBTMS;
+    use crate::state::state_with_map::StateWithMap;
     use crate::state::state_with_json::StateWithJSON;
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
@@ -197,8 +198,8 @@ mod tests {
             -->
         "#};
         let name = templater.template_name_default();
-        let state: StateWithBTMS = MatterParserWithBTMS{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
-        let state_enum = StateEnum::StateWithBTMS(state);
+        let state: StateWithMap = MatterParserWithHTML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithMap(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }
