@@ -53,6 +53,7 @@ pub(crate) mod f { // Functions
     pub(crate) mod from_html_str_into_headline_str; // from HtmlStr into headline str
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
+    pub(crate) mod from_input_pathable_string_and_output_pathable_string_into_map; // from input Pathable string and output Pathable string into BTreeMap<PathBuf, PathBuf>
     pub(crate) mod from_path_buf_into_sibling; // from PathBuf into sibling PathBuf
     pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
