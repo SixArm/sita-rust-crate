@@ -40,7 +40,7 @@ impl TemplaterTrait for TemplaterWithLiquid {
     //TODO
     fn template_content_text_default(&self) -> String {
         trace!("templater_with_liquid.rs template_content_text_default");
-        String::from("{{ content }}")
+        String::from("{{{ content }}}")
     }
 
 
@@ -125,7 +125,7 @@ mod tests {
     #[test]
     fn test_templater_content_text_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{ content }}");
+        assert_eq!(templater.template_content_text_default(), "{{{ content }}}");
     }
 
     #[test]

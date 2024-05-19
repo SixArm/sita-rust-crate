@@ -27,7 +27,7 @@ mod tests {
     use once_cell::sync::Lazy;
 
     pub static DIR: Lazy<PathBuf> = Lazy::new(||
-        crate::test::TESTS_DIR
+        crate::testing::TESTS_DIR
         .join("src")
         .join("f")
         .join("from_set_pathable_string_into_set_path_buf")

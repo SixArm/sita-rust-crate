@@ -41,11 +41,11 @@ pub trait TemplaterTrait {
     //
     fn template_name_default(&self) -> String;
 
-    // Get the template content text e.g. "{{ content }}".
+    // Get the template content text e.g. "{{{ content }}}".
     //
     // ```
     // let content_text = template_content_text_default();
-    // assert_eq!(content_text, "{{ content }}");
+    // assert_eq!(content_text, "{{{ content }}}");
     // ```
     //
     fn template_content_text_default(&self) -> String;
@@ -57,7 +57,7 @@ pub trait TemplaterTrait {
     // ```
     // let templater: Templater = TemplaterWithHandlebars::new();
     // register_template_via_default(templater);
-    // //-> Handlebars now has a template name "default" with content "{{ content }}"
+    // //-> Handlebars now has a template name "default" with content "{{{ content }}}"
     // ```
     //
     fn register_template_via_default(&mut self) -> Result<()> where Self: Sized {
@@ -212,7 +212,7 @@ mod tests {
     fn test_register_template_via_name_and_content_file() {
         let mut templater = TemplaterX::new();
         let name = "alpha";
-        let content_file = crate::test::TESTS_DIR
+        let content_file = crate::testing::TESTS_DIR
             .join("src")
             .join("templater")
             .join("templater_trait")

@@ -39,7 +39,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
     fn template_content_text_default(&self) -> String {
         trace!("templater_with_handlebars.rs template_content_text_default");
-        String::from("{{ content }}")
+        String::from("{{{ content }}}")
     }
 
     fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn test_templater_content_text_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{ content }}");
+        assert_eq!(templater.template_content_text_default(), "{{{ content }}}");
     }
 
     #[test]
@@ -212,13 +212,13 @@ mod tests {
     }
 
     #[test]
-    fn test_render_template_with_state_enum_x_btms() {
+    fn test_render_template_x_matter_parser_with_html() {
         let mut templater = TemplaterX::new();
         templater.register_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             <!--
-                title: my title
-                content: my content
+            title: my title
+            content: my content
             -->
         "#};
         let name = templater.template_name_default();
@@ -229,7 +229,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_template_with_state_enum_x_json() {
+    fn test_render_template_x_matter_parser_with_json() {
         let mut templater = TemplaterX::new();
         templater.register_template_via_default().expect("default");
         let matter_text = indoc!{r#"
@@ -241,6 +241,51 @@ mod tests {
         let name = templater.template_name_default();
         let state: StateWithJSON = MatterParserWithJSON{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithJSON(state);
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
+        assert_eq!(actual, FAB_OUTPUT_HTML);
+    }
+
+    #[test]
+    fn test_render_template_x_matter_parser_with_markdown_comments() {
+        let mut templater = TemplaterX::new();
+        templater.register_template_via_default().expect("default");
+        let matter_text = indoc!{r#"
+            [//]: # (title: my title)
+            [//]: # (content: my content)
+        "#};
+        let name: String = templater.template_name_default();
+        let state: StateWithMap = MatterParserWithMarkdownComments{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithMap(state);
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
+        assert_eq!(actual, FAB_OUTPUT_HTML);
+    }
+
+    #[test]
+    fn test_render_template_x_matter_parser_with_toml() {
+        let mut templater = TemplaterX::new();
+        templater.register_template_via_default().expect("default");
+        let matter_text = indoc!{r#"
+            title = "my title"
+            content = "my content"
+        "#};
+        let name = templater.template_name_default();
+        let state: StateWithTOML = MatterParserWithTOML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithTOML(state);
+        let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
+        assert_eq!(actual, FAB_OUTPUT_HTML);
+    }
+
+    #[test]
+    fn test_render_template_x_matter_parser_with_yaml() {
+        let mut templater = TemplaterX::new();
+        templater.register_template_via_default().expect("default");
+        let matter_text = indoc!{r#"
+            title: my title
+            content: my content
+        "#};
+        let name = templater.template_name_default();
+        let state: StateWithYAML = MatterParserWithYAML{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
+        let state_enum = StateEnum::StateWithYAML(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
     }

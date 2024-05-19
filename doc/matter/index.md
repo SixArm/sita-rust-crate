@@ -66,8 +66,8 @@ Content starts here.
 Example of front matter with Markdown comments:
 
 ```
-[//] # (title: Hello World)
-[//] # (contact: alice@example.com)
+[//]: # (title: Hello World)
+[//]: # (contact: alice@example.com)
 
 Content starts here.
 ```

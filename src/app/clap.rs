@@ -158,7 +158,7 @@ pub fn args() -> Args {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
+    use crate::testing::*;
     use assertables::*;
 
     // Test that the special argument `--test` is working.

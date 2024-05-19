@@ -44,7 +44,7 @@ mod tests {
 
     #[test]
     fn test_vet_input_file_path_buf_exists_x_ok() {
-        let input_file_path_buf = crate::test::TESTS_DIR
+        let input_file_path_buf = crate::testing::TESTS_DIR
             .join("src")
             .join("f")
             .join("vet_input_file_path_buf_exists")
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn test_vet_input_file_path_buf_exists_x_err() {
-        let input_file_path_buf = crate::test::TESTS_DIR
+        let input_file_path_buf = crate::testing::TESTS_DIR
             .join("src")
             .join("f")
             .join("vet_input_file_path_buf_exists")
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_vet_input_file_path_buf_metadata_x_ok() {
-        let input_file_path_buf = crate::test::TESTS_DIR
+        let input_file_path_buf = crate::testing::TESTS_DIR
             .join("src")
             .join("f")
             .join("vet_input_file_path_buf_metadata")
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_vet_input_file_path_buf_metadata_x_err() {
-        let input_file_path_buf = crate::test::TESTS_DIR
+        let input_file_path_buf = crate::testing::TESTS_DIR
             .join("src")
             .join("f")
             .join("vet_input_file_path_buf_metadata")

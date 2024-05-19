@@ -17,7 +17,7 @@ Any test file can use it:
 ```rust
 #[path = "testing.rs"]
 mod testing;
-use testing::*;
+use crate::testing::*;
 ```
 
 

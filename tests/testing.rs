@@ -63,7 +63,7 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()>
 
 #[cfg(test)]
 #[allow(dead_code)]
-pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
+pub fn test_with_base_path_and_default_input_actual_expect(base_path: &PathBuf) {
     // Prep
     let input = base_path.join("example.md");
     let actual = base_path.join("example.html");
@@ -91,7 +91,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: PathBuf) {
 
 #[cfg(test)]
 #[allow(dead_code)]
-pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: PathBuf) {
+pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: &PathBuf) {
     // Prep
     let input = base_path.join("example.md");
     let template = base_path.join("template.html");

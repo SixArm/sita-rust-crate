@@ -162,7 +162,7 @@ fn do_path<T: TemplaterTrait>(
     state_trait.insert(String::from("content"), content_as_html_text.clone());
     debug!("state_trait: {:?}", &state_trait);
 
-    trace!("Set the state with special keys.");
+    trace!("Set the state trait title as needed via the first headline.");
     if !state_trait.contains_key("title") {
         if let Some(title) = from_html_str_into_headline_str(&content_as_html_text) {
             state_trait.contains_key_or_insert(String::from("title"), String::from(title));
@@ -245,7 +245,7 @@ mod tests {
 
     #[test]
     fn test_read_content_as_mix_text() {
-        let input_file_path_buf = crate::test::TESTS_DIR
+        let input_file_path_buf = crate::testing::TESTS_DIR
         .join("src")
         .join("f")
         .join("read_content_as_mix_text")

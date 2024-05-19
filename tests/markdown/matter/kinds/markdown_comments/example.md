@@ -1,4 +1,4 @@
-[\\] # (alpha: bravo)
-[\\] # (charlie: delta)
+[//]: # (alpha: bravo)
+[//]: # (charlie: delta)
 
 hello world

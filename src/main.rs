@@ -39,7 +39,7 @@ extern crate assertables;
 
 #[macro_use] pub(crate) mod types; // Type aliases
 pub(crate) mod util; // Utilties
-pub(crate) mod test; // Test helpers
+pub(crate) mod testing; // Test helpers
 
 pub(crate) mod app { // Application
     pub(crate) mod args; // Arguments struct, such as set via `clap`.

@@ -74,7 +74,7 @@ Create a file `template.html` with this text:
 ```html
 <html>
   <body>
-    {{ content }}
+    {{{} content }}}
   </body>
 </html>
 ```
