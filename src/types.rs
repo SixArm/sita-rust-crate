@@ -132,6 +132,7 @@ macro_rules! queue {
 /// ```
 /// let x: Set<i32> = set!(1, 2);
 /// assert!(x.contains(&1));
+/// assert!(x.contains(&2));
 /// ```
 ///
 /// OPTIMIZE: add pre-allocation logic.

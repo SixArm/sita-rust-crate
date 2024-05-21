@@ -50,16 +50,23 @@ pub(crate) mod app { // Application
 }
 
 pub(crate) mod f { // Functions
+    pub(crate) mod dir_entry_is_hidden; // DirEntry is hidden i.e. basename starts with a period.
+    pub(crate) mod dir_entry_is_visible; // DirEntry is visible i.e. basename starts with a non-period.
+    pub(crate) mod dir_entry_is_in_extension_set; // DirEntry ends with e.g. Markdown file extension "md" or "markdown".
+    pub(crate) mod dir_entry_first_with_expect; // Get the first DirEntry from a directory.
     pub(crate) mod from_html_str_into_headline_str; // from HtmlStr into headline str
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
-    pub(crate) mod from_input_pathable_string_and_output_pathable_string_into_map; // from input Pathable string and output Pathable string into BTreeMap<PathBuf, PathBuf>
+    pub(crate) mod from_input_pathable_string_and_output_pathable_string_into_map; // from input Pathable string and output Pathable string into Map<PathBuf, PathBuf>
+    pub(crate) mod from_input_dir_and_output_dir_into_map; // from input directory path and output directory path into Map<PathBuf, PathBuf>
     pub(crate) mod from_path_buf_into_sibling; // from PathBuf into sibling PathBuf
     pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
     pub(crate) mod remove_file_if_exists;
-    pub(crate) mod walkdir_dir_entry_is_hidden;
-    pub(crate) mod walkdir_dir_entry_is_visible;
+    pub(crate) mod walkdir_dir_entry_is_hidden; // DirEntry is hidden i.e. basename starts with a period.
+    pub(crate) mod walkdir_dir_entry_is_visible; // DirEntry is visible i.e. basename starts with a non-period.
+    pub(crate) mod walkdir_dir_entry_is_in_extension_set; // DirEntry ends with e.g. Markdown file extension "md" or "markdown".
+    pub(crate) mod walkdir_dir_entry_first_with_expect; // Get the first DirEntry from a directory.
 }
 
 pub(crate) mod markdown {

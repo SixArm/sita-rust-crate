@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use crate::errors::*;
 use crate::types::*;
-//use crate::f::from_pathable_string_into_list_path_buf::*;
+use crate::f::from_input_dir_and_output_dir_into_map::*;
 
 /// Convert from an input pathable string and output pathable string into
 /// an ordered map of input file path to output file path.
@@ -36,29 +36,7 @@ pub fn from_input_pathable_string_and_output_pathable_string_into_map(input: &Pa
         return Ok(map);
     }
     if input_pathbuf.is_dir() && output_pathbuf.is_dir() {
-        use walkdir::WalkDir;
-        WalkDir::new(&input_pathbuf)
-            .follow_links(true)
-            .into_iter()
-            .filter_map(|e| 
-                e.ok()
-            )
-            .filter(|e|
-                if let Some(s) = e.file_name().to_str() {
-                    !s.starts_with(".") 
-                    && s.ends_with(".md")
-                } else {
-                    false
-                }
-            ).for_each(|e| {
-                let depth = e.depth();
-                let sub_pathbuf: PathBuf = e.path().iter().skip(depth).collect::<PathBuf>();
-                let input_file_pathbuf = input_pathbuf.join(&sub_pathbuf);
-                let output_file_pathbuf = output_pathbuf.join(&sub_pathbuf);
-                trace!("sub_pathbuf: {:?}, input_file_pathbuf: {:?}, output_file_pathbuf: {:?} ", sub_pathbuf, input_file_pathbuf, output_file_pathbuf);
-                map.insert(input_file_pathbuf, output_file_pathbuf);
-            });
-        return Ok(map);
+        return from_input_dir_and_output_dir_into_map(input_pathbuf, output_pathbuf)
     }
     return Ok(map)
 }
