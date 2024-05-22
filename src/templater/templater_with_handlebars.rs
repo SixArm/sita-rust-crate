@@ -4,7 +4,7 @@ use handlebars::Handlebars;
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
-use crate::types::*;
+use crate::types::{html::*, set::*};
 use crate::state::state_enum::StateEnum;
 use crate::templater::templater_trait::TemplaterTrait;
 

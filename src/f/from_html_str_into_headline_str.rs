@@ -1,6 +1,6 @@
 use once_cell::sync::Lazy;
 use regex::Regex;
-use crate::types::*;
+use crate::types::html::*;
 
 pub static REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"(?i)(?m)(?s)<h1( .*?)?>(?P<headline>.*?)\s*</h1>").unwrap()

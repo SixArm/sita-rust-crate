@@ -4,7 +4,7 @@ use std::any::Any;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use crate::errors::*;
-use crate::types::*;
+use crate::types::map::*;
 use crate::matter::matter_parser_trait::MatterParserTrait;
 use crate::state::state_with_map::StateWithMap;
 

@@ -20,7 +20,7 @@
 use clap::{Arg, Command};
 use crate::app::args::Args;
 use crate::f::from_list_str_into_map_string_string::*;
-use crate::types::*;
+use crate::types::{list::*, pathable::*};
 
 /// Create a clap app.
 pub fn app() -> Command<'static> {

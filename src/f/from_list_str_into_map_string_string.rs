@@ -1,4 +1,4 @@
-use crate::types::*;
+use crate::types::{list::*, map::*};
 
 /// Convert from &Vec<&str> into Map<String, String>.
 ///

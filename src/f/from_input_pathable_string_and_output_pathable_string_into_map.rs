@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use crate::errors::*;
-use crate::types::*;
+use crate::types::{map::*, pathable::*};
 use crate::f::from_input_dir_and_output_dir_into_map::*;
 
 /// Convert from an input pathable string and output pathable string into
@@ -45,6 +45,7 @@ pub fn from_input_pathable_string_and_output_pathable_string_into_map(input: &Pa
 mod tests {
     use super::*;
     use once_cell::sync::Lazy;
+    use crate::types::{set::*};
 
     pub static DIR: Lazy<PathBuf> = Lazy::new(||
         crate::testing::TESTS_DIR

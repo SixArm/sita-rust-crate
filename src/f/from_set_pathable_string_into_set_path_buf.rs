@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use crate::types::*;
+use crate::types::{glob::*, set::*};
 
 /// Convert from &Set<GlobString> into Set<PathBuf>.
 ///
@@ -25,6 +25,7 @@ pub fn from_set_pathable_string_into_set_path_buf(glob_string_set: &Set<GlobStri
 mod tests {
     use super::*;
     use once_cell::sync::Lazy;
+    use crate::types::{pathable::*};
 
     pub static DIR: Lazy<PathBuf> = Lazy::new(||
         crate::testing::TESTS_DIR

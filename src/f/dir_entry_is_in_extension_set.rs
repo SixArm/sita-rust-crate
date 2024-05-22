@@ -1,6 +1,6 @@
 use std::ffi::OsString;
 use std::fs::DirEntry;
-use crate::types::Set;
+use crate::types::set::*;
 
 pub fn dir_entry_is_in_extension_set(dir_entry: &DirEntry, extension_set: &Set<OsString>) -> bool {
     if let Some(extension) =  dir_entry.path().extension() {

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use walkdir::WalkDir;
 
 use crate::errors::*;
-use crate::types::*;
+use crate::types::{list::*, pathable::*};
 
 /// Convert from &PathableString into List<PathBuf>.
 ///

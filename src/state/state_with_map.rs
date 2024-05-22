@@ -1,8 +1,9 @@
 use std::any::Any;
 use crate::state::state_trait::StateTrait;
 use crate::state::state_enum::StateEnum;
+use crate::types::map::*;
 
-pub type StateWithMap = crate::types::Map<String, String>;
+pub type StateWithMap = Map<String, String>;
 
 impl StateTrait for StateWithMap {
 

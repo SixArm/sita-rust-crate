@@ -4,7 +4,7 @@
 //! We have these args in their own file in order to be flexible,
 //! such as being able to start our app with other arg parsers.
 
-use crate::types::*;
+use crate::types::{list::*, map::*, pathable::*};
 
 //pub const INPUT_FILE_NAME_SELECT_REGEX_AS_STR: &str = "\\.md$";
 pub const OUTPUT_FILE_NAME_EXTENSION_AS_STR: &str = "html";

@@ -7,7 +7,7 @@
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::errors::*;
-use crate::types::*;
+use crate::types::{html::*, set::*};
 
 pub trait TemplaterTrait {
 

@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 use std::ffi::OsString;
 use once_cell::sync::Lazy;
 use crate::errors::*;
-use crate::types::{Map, Set};
+use crate::types::{map::*, set::*};
 use crate::f::walkdir_dir_entry_is_in_extension_set::*;
 use crate::f::walkdir_dir_entry_is_visible::*;
 
