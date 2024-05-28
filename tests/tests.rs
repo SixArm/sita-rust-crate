@@ -17,13 +17,13 @@ mod markdown {
     }
 }
 mod render {
-    mod minimal;
-    mod title;
     mod matter_with_html;
     mod matter_with_json;
     mod matter_with_markdown_comments;
     mod matter_with_toml;
     mod matter_with_yaml;
+    mod minimal;
+    mod title;
 }
 // mod src {
 //     mod f {
@@ -58,16 +58,7 @@ mod render {
 //         mod vet_input_file_path_buf_metadata;
 //     }
 // }
-// mod templater {
-//     mod templater_trait {
-// ./src/templater/templater_trait/register_helper_via_name_and_content_file
-// ./src/templater/templater_trait/register_template_via_name_and_content_file
-// ./src/templater/templater_with_handlebars
-// ./src/templater/templater_with_handlebars/register_helper_via_name_and_content_file
-// ./src/templater/templater_with_handlebars/register_template_via_name_and_content_file
-// ./src/templater/templater_with_tera
-// ./src/templater/templater_with_tera/register_helper_via_name_and_content_file
-// ./src/templater/templater_with_tera/register_template_via_name_and_content_file
+
 mod tutorial {
     mod tutorial_01_input;
     mod tutorial_02_output;

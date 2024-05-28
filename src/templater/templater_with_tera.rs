@@ -2,7 +2,6 @@
 
 use std::path::PathBuf;
 use crate::app::args::Args;
-use crate::errors::*;
 use crate::types::{html::*, set::*};
 use crate::state::state_enum::StateEnum;
 use crate::templater::templater_trait::TemplaterTrait;
@@ -11,19 +10,20 @@ use crate::templater::templater_trait::TemplaterTrait;
 pub struct TemplaterWithTera {
     pub tera: ::tera::Tera,
 }
-
 impl TemplaterTrait for TemplaterWithTera {
 
     fn new() -> Self {
-        trace!("templater_with_tera.rs new");
+        trace!("{} ➡ new", file!());
         let my_tera = ::tera::Tera::default();
         TemplaterWithTera {
             tera: my_tera,
         }
     }
 
-    fn new_with_args(_args: &Args) -> Self {
-        trace!("templater_with_tera.rs new_with_args");
+    fn new_with_args(
+        _args: &Args
+    ) -> Self {
+        trace!("{} ➡ new_with_args", file!());
         let mut my_tera = ::tera::Tera::default();
         my_tera.autoescape_on(vec![]); // disable autoescaping completely
         TemplaterWithTera {
@@ -31,72 +31,113 @@ impl TemplaterTrait for TemplaterWithTera {
         }
     }
 
-    fn template_name_default(&self) -> String {
-        trace!("templater_with_tera.rs template_name_default");
+    fn template_name_default(
+        &self
+    ) -> String {
+        trace!("{} ➡ template_name_default", file!());
         String::from("default")
     }
 
-    fn template_content_text_default(&self) -> String {
-        trace!("templater_with_tera.rs template_name_default");
+    fn template_content_text_default(
+        &self
+    ) -> String {
+        trace!("{} ➡ template_name_default", file!());
         String::from("{{ content }}")
     }
 
-    fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("templater_with_tera.rs register_template_via_name_and_content_file: name: {} content_text: …", &name);
-        self.tera.add_raw_template(&name, &content_text)
-        .chain_err(|| "register_template_via_name_and_content_text")
+    fn register_template_via_name_and_content_text(
+        &mut self,
+        name: impl AsRef<str>,
+        content_text: impl AsRef<str>
+    ) -> Result<(), Error> {
+        let name = name.as_ref();
+        let content_text = content_text.as_ref();
+        trace!("{} ➡ register_template_via_name_and_content_text ➡ name: {:?}, content_text.len(): {}", file!(), name, content_text.len());
+        self.tera.add_raw_template(name, content_text)
+        .map_or_else(
+            |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
+            |()| Ok(())
+        )
     }
 
-    fn register_template_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
-        trace!("templater_with_tera.rs register_template_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
-        self.tera.add_template_file(&content_file, Some(name))
-        .chain_err(|| "register_template_via_name_and_content_file")
-    }
-
-    fn contains_any_template(&self) -> bool {
-        trace!("templater_with_tera.rs contains_any_template");
+    fn contains_any_template(
+        &self
+    ) -> bool {
+        trace!("{} ➡ contains_any_template", file!());
         self.tera.get_template_names().nth(0).is_some()
     }
 
-    fn contains_template_name(&self, name: &str) -> bool {
-        trace!("templater_with_tera.rs contains_template_name");
+    fn contains_template_name(
+        &self,
+        name: impl AsRef<str>
+    ) -> bool {
+        let name = name.as_ref();
+        trace!("{} ➡ contains_template_name ➡ name: {}", file!(), name);
         self.tera.get_template_names().any(|x| x == name)
     }
 
-    fn template_names_as_set_str(&self) -> Set<&str> {
-        trace!("templater_with_tera.rs template_names_as_set_str");
+    fn template_names_as_set_str(
+        &self
+    ) -> Set<&str> {
+        trace!("{} ➡ template_names_as_set_str", file!());
         self.tera.get_template_names().collect::<_>()
     }
 
-    fn register_helper_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("templater_with_tera.rs register_helper_via_name_and_content_file: name: {} content_text: {}", &name, &content_text);
-        panic!("todo");
-    }
-
-    fn register_helper_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
-        trace!("templater_with_tera.rs register_helper_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
-        panic!("todo");
-    }
-
-    fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
-        trace!("templater_with_tera.rs render_template_with_state_enum");
+    fn render_template_with_state_enum(
+        &self,
+        name: impl AsRef<str>,
+        state_enum: &StateEnum
+    ) -> Result<HtmlString, Error> {
+        let name = name.as_ref();
+        trace!("{} ➡ render_template_with_state_enum ➡ name: {}", file!(), name);
         let context = from_state_enum_to_tera_context(&state_enum)
-        .chain_err(|| "create tera context")?;
+        .map_or_else(
+            |err| Err(Error::FromStateEnumToTeraContext(err)),
+            |context| Ok(context)
+        )?;
         debug!("context: {:?}", &context);
-        let html = self.tera.render(&template_name, &context)
-        .chain_err(|| "render template with tera context")?;
+        let html = self.tera.render(name, &context)
+        .map_or_else(
+            |err: tera::Error| Err(Error::Render(err)),
+            |html_string| Ok(html_string)
+        )?;
         Ok(html)
     }
 
 }
 
-pub fn from_state_enum_to_tera_context(state_enum: &crate::state::state_enum::StateEnum) -> ::tera::Result<::tera::Context> {
+pub fn from_state_enum_to_tera_context(
+    state_enum: &crate::state::state_enum::StateEnum
+) -> ::tera::Result<::tera::Context> {
     match state_enum {
         crate::state::state_enum::StateEnum::StateWithMap(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithJSON(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithTOML(x) => ::tera::Context::from_serialize(x),
         crate::state::state_enum::StateEnum::StateWithYAML(x) => ::tera::Context::from_serialize(x),
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+
+    #[error ("RegisterTemplateViaNameAndContentText ➡ {0:?}")]
+    RegisterTemplateViaNameAndContentText(tera::Error),
+
+    #[error ("RegisterTemplateViaNameAndContentFile ➡ {0:?}")]
+    RegisterTemplateViaNameAndContentFile(tera::Error),
+
+    #[error ("RegisterExtraViaNameAndContentText ➡ {0:?}")]
+    RegisterExtraViaNameAndContentText(tera::Error),
+
+    #[error ("RegisterExtraViaNameAndContentFile ➡ {0:?}")]
+    RegisterExtraViaNameAndContentFile(tera::Error),
+
+    #[error ("FromStateEnumToTeraContext ➡ {0:?}")]
+    FromStateEnumToTeraContext(tera::Error),
+
+    #[error ("Render ➡ {0:?}")]
+    Render(tera::Error),
+
 }
 
 #[cfg(test)]
@@ -145,66 +186,86 @@ mod tests {
     #[test]
     fn test_templater_name_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_name_default(), "default");
+        assert_eq!(
+            templater.template_name_default(),
+            "default"
+        );
     }
 
     #[test]
     fn test_templater_content_text_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{ content }}");
+        assert_eq!(
+            templater.template_content_text_default(),
+            "{{ content }}"
+        );
     }
 
     #[test]
     fn test_register_template_via_name_and_content_text() {
         let mut templater = TemplaterX::new();
-        let name = "alpha";
+        let name = "alfa";
         let content_text = "{{ bravo }}";
-        assert_eq!(templater.contains_template_name("alpha"), false);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_text(&name, &content_text);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-    }
-
-    #[test]
-    fn test_register_template_via_name_and_content_file() {
-        let mut templater = TemplaterX::new();
-        let name = "alpha";
-        let content_file = TESTY_DIR
-            .join("register_template_via_name_and_content_file")
-            .join("template.html");
-        assert!(content_file.exists());
-        assert_eq!(templater.contains_template_name("alpha"), false);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_file(&name, &content_file);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
-        assert_eq!(templater.contains_template_name("charlie"), false);
+        assert_eq!(
+            templater.contains_template_name("alfa"),
+            false
+        );
+        assert_eq!(
+            templater.contains_template_name("charlie"),
+            false
+        );
+        templater.register_template_via_name_and_content_text(
+            String::from(name),
+            String::from(content_text)
+        ).expect("register_template_via_name_and_content_text");
+        assert_eq!(
+            templater.contains_template_name("alfa"),
+            true
+        );
+        assert_eq!(
+            templater.contains_template_name("charlie"),
+            false
+        );
     }
 
     #[test]
     fn test_contains_any_template_x_true() {
         let mut templater  = TemplaterX::new();
-        templater.register_template_via_name_and_content_text("my-name", "my-content").expect("register_template_via_name_and_content_text");
+        templater.register_template_via_name_and_content_text(
+            "my-name",
+            "my-content"
+        ).expect("register_template_via_name_and_content_text");
         let flag = templater.contains_any_template();
-        assert_eq!(flag, true);
+        assert_eq!(
+            flag,
+            true
+        );
     }
 
     #[test]
     fn test_contains_any_template() {
         let mut templater  = TemplaterX::new();
-        assert_eq!(templater.contains_any_template(), false);
+        assert_eq!(
+            templater.contains_any_template(), false
+        );
         templater.register_template_via_default().expect("register_template_via_default");
-        assert_eq!(templater.contains_any_template(), true);
+        assert_eq!(
+            templater.contains_any_template(),
+            true
+        );
     }
 
     #[test]
     fn test_contains_template_name() {
         let mut templater  = TemplaterX::new();
-        assert_eq!(templater.contains_template_name("default"), false);
+        assert_eq!(
+            templater.contains_template_name("default"), false
+        );
         templater.register_template_via_default().expect("register_template_via_default");
-        assert_eq!(templater.contains_template_name("default"), true);
+        assert_eq!(
+            templater.contains_template_name("default"),
+            true
+        );
     }
 
 
@@ -213,43 +274,20 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name_0: &str = "my-name-0";
         let name_1: &str = "my-name-1";
-        templater.register_template_via_name_and_content_text(&name_0, "my text 0").expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(&name_1, "my text 1").expect("register_template_via_name_and_content_text");
+        let content_text_0 = "my text 0";
+        let content_text_1 = "my text 1";
+        templater.register_template_via_name_and_content_text(
+            String::from(name_0),
+            String::from(content_text_0)
+        ).expect("register_template_via_name_and_content_text");
+        templater.register_template_via_name_and_content_text(
+            String::from(name_1),
+            String::from(content_text_1)
+        ).expect("register_template_via_name_and_content_text");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);
     }
-
-    //TODO
-    // #[test]
-    // fn test_register_helper_via_name_and_content_text() {
-    //     let mut templater = TemplaterX::new();
-    //     let name = "alpha";
-    //     let content_text = "{{ bravo }}";
-    //     assert_eq!(templater.contains_helper_name("alpha"), false);
-    //     assert_eq!(templater.contains_helper_name("charlie"), false);
-    //     let result = templater.register_helper_via_name_and_content_text(&name, &content_text);
-    //     assert!(result.is_ok());
-    //     assert_eq!(templater.contains_helper_name("alpha"), true);
-    //     assert_eq!(templater.contains_helper_name("charlie"), false);
-    // }
-
-    //TODO
-    // #[test]
-    // fn test_register_helper_via_name_and_content_file() {
-    //     let mut templater = TemplaterX::new();
-    //     let name = "alpha";
-    //     let content_file = TESTY_DIR
-    //          .join("register_helper_via_name_and_content_file")
-    //          .join("helper.rhai");
-    //     assert!(content_file.exists());
-    //     assert_eq!(templater.contains_helper_name("alpha"), false);
-    //     assert_eq!(templater.contains_helper_name("charlie"), false);
-    //     let result = templater.register_helper_via_name_and_content_file(&name, &content_file);
-    //     assert!(result.is_ok());
-    //     assert_eq!(templater.contains_helper_name("alpha"), true);
-    //     assert_eq!(templater.contains_helper_name("charlie"), false);
-    // }
 
     #[test]
     fn test_render_template_with_state_enum_x_html() {
@@ -291,7 +329,7 @@ mod tests {
         templater.register_template_via_default().expect("default");
         let matter_text = indoc!{r#"
             [//]: # (title: my title)
-            [//]: # (content: my content)    
+            [//]: # (content: my content)
         "#};
         let name = templater.template_name_default();
         let state: StateWithMap = MatterParserWithMarkdownComments{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");

@@ -16,7 +16,7 @@ use crate::types::{glob::*, set::*};
 #[allow(dead_code)]
 pub fn from_set_pathable_string_into_set_path_buf(glob_string_set: &Set<GlobString>) -> Set<PathBuf> {
     let x: Set<PathBuf> = glob_string_set.iter().flat_map(|glob_string|
-        ::glob::glob(&glob_string).unwrap().filter_map(|x| x.ok())
+        ::glob::glob(&glob_string).unwrap().filter_map(|val| val.ok())
     ).collect::<_>();
     x
 }

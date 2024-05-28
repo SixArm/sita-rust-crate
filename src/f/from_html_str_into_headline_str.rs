@@ -39,33 +39,33 @@ mod tests {
     fn test_from_html_str_into_headline_str_x_present_x_h1_lowercase_and_plain() {
         let html_str = indoc!{r#"
             lorem ipsum
-            <h1>alpha bravo</h1>
+            <h1>alfa bravo</h1>
             lorem ipsum
          "#};
         let option = from_html_str_into_headline_str(&html_str);
         assert!(option.is_some());
         let headline_str = option.unwrap();
-        assert_eq!(headline_str, "alpha bravo");
+        assert_eq!(headline_str, "alfa bravo");
     }
 
     #[test]
     fn test_from_html_str_into_headline_str_x_present_x_h1_uppercase_and_extra() {
         let html_str = indoc!{r#"
             lorem ipsum
-            <H1 class="foo">alpha bravo</H1>
+            <H1 class="foo">alfa bravo</H1>
             lorem ipsum
          "#};
         let option = from_html_str_into_headline_str(&html_str);
         assert!(option.is_some());
         let headline_str = option.unwrap();
-        assert_eq!(headline_str, "alpha bravo");
+        assert_eq!(headline_str, "alfa bravo");
     }
 
     #[test]
     fn test_from_html_str_into_headline_str_x_absent() {
         let html_str = indoc!{r#"
             lorem ipsum
-            alpha bravo
+            alfa bravo
             lorem ipsum
         "#};
         let option = from_html_str_into_headline_str(&html_str);

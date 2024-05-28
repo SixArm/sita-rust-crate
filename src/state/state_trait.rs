@@ -9,16 +9,17 @@ use crate::state::state_enum::StateEnum;
 
 pub trait StateTrait: std::fmt::Debug {
 
-    // Convert from this specific state to any type.
+    /// Convert from the specific state to any type.
+    #[allow(dead_code)]
     fn as_any(&self) -> &dyn Any;
 
-    // Convert from this specific state to a state enum.
+    /// Convert from this specific state to a state enum.
     fn to_state_enum(&self) -> StateEnum;
 
-    // Does the state contain the key?
+    /// Does the state contain the key?
     fn contains_key(&self, key: &str) -> bool;
 
-    // Insert the key and value.
+    /// Insert the key and value.
     fn insert(&mut self, key: String, value: String) -> ();
 
     /// If the key doesn't exist then insert the key and value.

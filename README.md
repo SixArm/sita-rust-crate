@@ -31,6 +31,12 @@ Sita is currently being developed:
 * You can open a GitHub issue or contact us at sita@sixarm.com.
 
 
+## Sīta is a goddess
+
+Sīta is an earth goddess who blesses the land with good crops. In the Vedic period, she was one of the goddesses associated with fertility.
+The word Sīta is a poetic term that signifies fertility and blessings coming from agriculture.
+
+
 ## Getting started
 
 

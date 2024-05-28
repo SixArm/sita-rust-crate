@@ -1,9 +1,7 @@
 //! Templater with Handlebars
 
 use handlebars::Handlebars;
-use std::path::PathBuf;
 use crate::app::args::Args;
-use crate::errors::*;
 use crate::types::{html::*, set::*};
 use crate::state::state_enum::StateEnum;
 use crate::templater::templater_trait::TemplaterTrait;
@@ -16,15 +14,17 @@ pub struct TemplaterWithHandlebars<'templater> {
 impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
     fn new() -> Self {
-        trace!("templater_with_handlebars.rs new");
-        let mut handlebars = Handlebars::default();
+        trace!("{} ➡ new", file!());
+        let handlebars = Handlebars::default();
         TemplaterWithHandlebars {
             handlebars: handlebars,
         }
     }
 
-    fn new_with_args(_args: &Args) -> Self {
-        trace!("templater_with_handlebars.rs new_with_args");
+    fn new_with_args(
+        _args: &Args
+    ) -> Self {
+        trace!("{} ➡ new_with_args", file!());
         let mut handlebars = Handlebars::default();
         handlebars.set_strict_mode(true);
         TemplaterWithHandlebars {
@@ -32,41 +32,52 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         }
     }
 
-    fn template_name_default(&self) -> String {
-        trace!("templater_with_handlebars.rs template_name_default");
+    fn template_name_default(
+        &self
+    ) -> String {
+        trace!("{} ➡ template_name_default", file!());
         String::from("default")
     }
 
-    fn template_content_text_default(&self) -> String {
-        trace!("templater_with_handlebars.rs template_content_text_default");
+    fn template_content_text_default(
+        &self
+    ) -> String {
+        trace!("{} ➡ template_content_text_default", file!());
         String::from("{{{ content }}}")
     }
 
-    fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("templater_with_handlebars.rs register_template_via_name_and_content_text: name: {} content_text: …", &name);
-        self.handlebars.register_template_string(&name, &content_text)
-        .chain_err(|| "register_template_via_name_and_content_text")
+    fn register_template_via_name_and_content_text(
+        &mut self,
+        name: impl AsRef<str>,
+        content_text: impl AsRef<str>
+    ) -> Result<(), impl std::error::Error> {
+        trace!("{} ➡ register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", file!(), name.as_ref(), content_text.as_ref().len());
+        self.handlebars.register_template_string(name.as_ref(), &content_text)
+        .map_or_else(
+            |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
+            |()| Ok(())
+        )
     }
 
-    fn register_template_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
-        trace!("templater_with_handlebars.rs register_template_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
-        let content_text = ::std::fs::read_to_string(content_file)
-        .chain_err(|| "register_template_via_name_and_content_file read_to_string")?;
-        self.register_template_via_name_and_content_text(&name, &content_text)
-    }
-
-    fn contains_any_template(&self) -> bool {
-        trace!("templater_with_handlebars.rs contains_any_template");
+    fn contains_any_template(
+        &self
+    ) -> bool {
+        trace!("{} ➡ contains_any_template", file!());
         !self.handlebars.get_templates().is_empty()
     }
 
-    fn contains_template_name(&self, name: &str) -> bool {
-        trace!("templater_with_handlebars.rs contains_template_name");
-        self.handlebars.get_template(&name).is_some()
+    fn contains_template_name(
+        &self,
+        name: impl AsRef<str>
+    ) -> bool {
+        trace!("{} ➡ contains_template_name", file!());
+        self.handlebars.get_template(name.as_ref()).is_some()
     }
 
-    fn template_names_as_set_str(&self) -> Set<&str> {
-        trace!("templater_with_handlebars.rs template_names_as_set_str");
+    fn template_names_as_set_str(
+        &self
+    ) -> Set<&str> {
+        trace!("{} ➡ template_names_as_set_str", file!());
         let mut names: Set<&str> = Set::new();
         for key in self.handlebars.get_templates().keys() {
             names.insert(key);
@@ -74,28 +85,34 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         names
     }
 
-    fn register_helper_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("templater_with_handlebars.rs register_helper_via_name_and_content_text: name: {} content_text: …", &name);
-        self.handlebars.register_script_helper(&name, &content_text)
-        .chain_err(|| "register_helper_via_name_and_content_text")
-    }
-
-    fn register_helper_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
-        trace!("templater_with_handlebars.rs register_helper_via_name_and_content_file: name: {} content_file: {:?}", &name, &content_file);
-        self.handlebars.register_script_helper_file(&name, &content_file)
-        .chain_err(|| "register_helper_via_name_and_content_file")
-    }
-
-    fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
-        trace!("templater_with_handlebars.rs render_template_with_state_enum");
+    fn render_template_with_state_enum(
+        &self,
+        template_name: impl AsRef<str>,
+        state_enum: &StateEnum
+    ) -> Result<HtmlString, impl std::error::Error> {
+        trace!("{} ➡ render_template_with_state_enum", file!());
         //TODO make generic
         match state_enum {
-            StateEnum::StateWithMap(x) =>  self.handlebars.render(template_name, x),
-            StateEnum::StateWithJSON(x) => self.handlebars.render(template_name, x),
-            StateEnum::StateWithTOML(x) => self.handlebars.render(template_name, x),
-            StateEnum::StateWithYAML(x) => self.handlebars.render(template_name, x),
-        }.chain_err(|| "render_template_with_state_enum")
+            StateEnum::StateWithMap(x) =>  self.handlebars.render(template_name.as_ref(), x),
+            StateEnum::StateWithJSON(x) => self.handlebars.render(template_name.as_ref(), x),
+            StateEnum::StateWithTOML(x) => self.handlebars.render(template_name.as_ref(), x),
+            StateEnum::StateWithYAML(x) => self.handlebars.render(template_name.as_ref(), x),
+        }.map_or_else(
+            |err| Err(Error::Render(err)),
+            |html_string| Ok(html_string)
+        )
     }
+
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+
+    #[error ("RegisterTemplateViaNameAndContentText ➡ {0:?}")]
+    RegisterTemplateViaNameAndContentText(handlebars::TemplateError),
+
+    #[error ("Render ➡ {0:?}")]
+    Render(handlebars::RenderError),
 
 }
 
@@ -103,7 +120,6 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 mod tests {
     use super::*;
     use indoc::indoc;
-    use once_cell::sync::Lazy;
     use crate::app::args::Args;
     use crate::matter::matter_parser_trait::MatterParserTrait;
     use crate::matter::matter_parser_with_html::MatterParserWithHTML;
@@ -116,14 +132,6 @@ mod tests {
     use crate::state::state_with_json::StateWithJSON;
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
-
-    pub static TESTS_DIR: Lazy<PathBuf> = Lazy::new(||
-        [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>()
-    );
-
-    pub static TESTY_DIR: Lazy<PathBuf> = Lazy::new(||
-        [env!("CARGO_MANIFEST_DIR"), "tests", "src", "templater", "templater_with_handlebars"].iter().collect::<PathBuf>()
-    );
 
     const FAB_OUTPUT_HTML: &str = "my content";
 
@@ -157,46 +165,30 @@ mod tests {
     #[test]
     fn test_register_template_via_name_and_content_text() {
         let mut templater = TemplaterX::new();
-        let name = "alpha";
+        let name = "alfa";
         let content_text = "{{ bravo }}";
-        assert_eq!(templater.contains_template_name("alpha"), false);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_text(&name, &content_text);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-    }
-
-    #[test]
-    fn test_register_template_via_name_and_content_file() {
-        let mut templater = TemplaterX::new();
-        let name = "alpha";
-        let content_file = TESTY_DIR
-            .join("register_template_via_name_and_content_file")
-            .join("template.html");
-        assert!(content_file.exists());
-        assert_eq!(templater.contains_template_name("alpha"), false);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_file(&name, &content_file);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
-        assert_eq!(templater.contains_template_name("charlie"), false);
+        assert!(!templater.contains_template_name(name));
+        templater.register_template_via_name_and_content_text(
+            String::from(name),
+            String::from(content_text)
+        ).expect("register_template_via_name_and_content_text");
+        assert!(templater.contains_template_name(name));
     }
 
     #[test]
     fn test_contains_any_template() {
         let mut templater  = TemplaterX::new();
-        assert_eq!(templater.contains_any_template(), false);
+        assert!(!templater.contains_any_template());
         templater.register_template_via_default().expect("register_template_via_default");
-        assert_eq!(templater.contains_any_template(), true);
+        assert!(templater.contains_any_template());
     }
 
     #[test]
     fn test_contains_template_name() {
         let mut templater  = TemplaterX::new();
-        assert_eq!(templater.contains_template_name("default"), false);
+        assert!(!templater.contains_template_name("default"));
         templater.register_template_via_default().expect("register_template_via_default");
-        assert_eq!(templater.contains_template_name("default"), true);
+        assert!(templater.contains_template_name("default"));
     }
 
     #[test]
@@ -204,8 +196,16 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name_0: &str = "my-name-0";
         let name_1: &str = "my-name-1";
-        templater.register_template_via_name_and_content_text(&name_0, "my text 0").expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(&name_1, "my text 1").expect("register_template_via_name_and_content_text");
+        let content_text_0 = "my text 0";
+        let content_text_1 = "my text 1";
+        templater.register_template_via_name_and_content_text(
+            String::from(name_0),
+            String::from(content_text_0)
+        ).expect("register_template_via_name_and_content_text");
+        templater.register_template_via_name_and_content_text(
+            String::from(name_1),
+            String::from(content_text_1)
+        ).expect("register_template_via_name_and_content_text");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);
@@ -288,37 +288,6 @@ mod tests {
         let state_enum = StateEnum::StateWithYAML(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
         assert_eq!(actual, FAB_OUTPUT_HTML);
-    }
-
-    #[test]
-    fn test_register_helper_via_name_and_content_text() {
-        let mut templater = TemplaterX::new();
-        let _name = "alpha";
-        let content_text = "{{ bravo }}";
-        //TODO
-        // assert_eq!(templater.contains_helper_name("alpha"), false);
-        // assert_eq!(templater.contains_helper_name("charlie"), false);
-        // let result = templater.register_helper_via_name_and_content_text(&name, &content_text);
-        // assert!(result.is_ok());
-        // assert_eq!(templater.contains_helper_name("alpha"), true);
-        // assert_eq!(templater.contains_helper_name("charlie"), false);
-    }
-
-    #[test]
-    fn test_register_helper_via_name_and_content_file() {
-        let mut templater = TemplaterX::new();
-        let _name = "alpha";
-        let content_file = TESTY_DIR
-            .join("register_helper_via_name_and_content_file")
-            .join("helper.rhai");
-        assert!(content_file.exists());
-        //TODO
-        // assert_eq!(templater.contains_helper_name("alpha"), false);
-        // assert_eq!(templater.contains_helper_name("charlie"), false);
-        // let result = templater.register_helper_via_name_and_content_file(&name, &content_file);
-        // assert!(result.is_ok());
-        // assert_eq!(templater.contains_helper_name("alpha"), true);
-        // assert_eq!(templater.contains_helper_name("charlie"), false);
     }
 
     #[test]

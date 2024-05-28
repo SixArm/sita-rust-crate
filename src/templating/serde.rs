@@ -15,7 +15,7 @@ mod tests {
     fn test_x_json() {
         let s = r#"
         {
-          "alpha": 123,
+          "alfa": 123,
           "bravo": "charlie",
           "delta": true,
           "echo": {
@@ -26,7 +26,6 @@ mod tests {
         }
         "#;
         let result: Result<::serde_json::Value, ::serde_json::Error> = ::serde_json::from_str(s);
-        assert!(result.is_ok());
         let x: ::serde_json::Value = result.unwrap();
         assert_eq!(x["bravo"].as_str().unwrap(), "charlie");
     }
@@ -34,7 +33,7 @@ mod tests {
     #[test]
     fn test_x_toml() {
         let s = r#"
-        alpha = 7
+        alfa = 7
         bravo = "charlie"
         delta = true
 
@@ -44,7 +43,6 @@ mod tests {
         india = true
         "#;
         let result: Result<::toml::Value, ::toml::de::Error> = ::toml::from_str(s);
-        assert!(result.is_ok());
         let x: ::toml::Value = result.unwrap();
         assert_eq!(x["bravo"].as_str().unwrap(), "charlie");
     }
@@ -52,7 +50,7 @@ mod tests {
     #[test]
     fn test_x_yaml() {
         let s = r#"
-        alpha: 123
+        alfa: 123
         bravo: charlie
         delta: true
         echo:
@@ -61,7 +59,6 @@ mod tests {
             india: true
         "#;
         let result: Result<::serde_yaml::Value, ::serde_yaml::Error> = ::serde_yaml::from_str(s);
-        assert!(result.is_ok());
         let x: ::serde_yaml::Value = result.unwrap();
         assert_eq!(x["bravo"].as_str().unwrap(), "charlie");
     }

@@ -1,4 +1,4 @@
-use ::std::ffi::OsString;
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use once_cell::sync::Lazy;
 
@@ -54,7 +54,7 @@ fn assert_str_contains(outer: &str, inner: &str) {
 pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()>
 {
     if path.as_ref().exists() {
-        ::std::fs::remove_file(path)
+        std::fs::remove_file(path)
     } else {
         Ok(())
     }

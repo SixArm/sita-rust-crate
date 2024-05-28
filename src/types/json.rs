@@ -3,7 +3,7 @@
 /// Example:
 ///
 /// ```
-/// let s: JsonStr = "{ \"alpha\": \"bravo\" }";
+/// let s: JsonStr = "{ \"alfa\": \"bravo\" }";
 /// ```
 ///
 #[allow(dead_code)] pub type JsonStr = str;
@@ -13,7 +13,7 @@
 /// Example:
 ///
 /// ```
-/// let s: JsonString = JsonString::from("{ \"alpha\": \"bravo\" }");
+/// let s: JsonString = JsonString::from("{ \"alfa\": \"bravo\" }");
 /// ```
 ///
 #[allow(dead_code)] pub type JsonString = String;

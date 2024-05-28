@@ -3,7 +3,7 @@
 /// Example:
 ///
 /// ```
-/// let s: YamlStr = "alpha: \"bravo\"";
+/// let s: YamlStr = "alfa: \"bravo\"";
 /// ```
 ///
 #[allow(dead_code)] pub type YamlStr = str;
@@ -13,7 +13,7 @@
 /// Example:
 ///
 /// ```
-/// let s: YamlString = YamlString::from("alpha: \"bravo\"");
+/// let s: YamlString = YamlString::from("alfa: \"bravo\"");
 /// ```
 ///
 #[allow(dead_code)] pub type YamlString = String;

@@ -3,7 +3,7 @@ use std::fs::DirEntry;
 
 /// Read a directory and always return the first directory entry.
 /// This function is intended for prototyping and testing, not production.
-/// 
+///
 /// Compare walkdir_dir_entry_first_with_expect which is for walkdir::DirEntry.
 ///
 pub fn dir_entry_first_with_expect(path: impl AsRef<Path>) -> DirEntry {
