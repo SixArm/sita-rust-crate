@@ -8,7 +8,7 @@
 /// let my_set: Set<i32> = Set::new();
 /// ```
 ///
-#[allow(dead_code)] pub type Set<T> = ::std::collections::BTreeSet<T>;
+#[allow(dead_code)] pub type Set<T> = std::collections::BTreeSet<T>;
 
 /// Create a typical set collection with elements.
 ///
@@ -26,7 +26,7 @@
 macro_rules! set {
     ( $( $x:expr ),* ) => {
         {
-            let mut m = ::std::collections::BTreeSet::new();
+            let mut m = std::collections::BTreeSet::new();
             $(
                 m.insert($x);
             )*

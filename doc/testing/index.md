@@ -26,7 +26,7 @@ use crate::testing::*;
 We want to test a wide variety of commands such as:
 
 ```sh
-sita --input alpha.md --output bravo.html
+sita --input alfa.md --output bravo.html
 ```
 
 To make this simple, we use a pattern.
@@ -34,14 +34,14 @@ To make this simple, we use a pattern.
 We create a directory for one test:
 
 ```sh
-mkdir tests/alpha_bravo/
-cd tests/alpha_bravo
+mkdir tests/alfa_bravo/
+cd tests/alfa_bravo
 ```
 
 We create a typical input file with Markdown:
 
 ```sh
-echo "hello world" > alpha.md
+echo "hello world" > alfa.md
 ```
 
 We create a typical output file with HTML:
@@ -60,7 +60,7 @@ Our naming convention has these aspects:
 
 * The use of "=" is a mnemonic for "this file must equal that file".
 
-* The use of a suffix ensures the actual file and the expect file will sort together alphabetically.
+* The use of a suffix ensures the actual file and the expect file will sort together alfabetically.
 
 * The use of the same file extension ".html" ensures that typical editors will treat the files equivalently.
 

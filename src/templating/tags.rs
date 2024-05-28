@@ -92,26 +92,26 @@ mod tests {
 
     #[test]
     fn test_link_tagger_with_rel_and_href() {
-        let rel = "alpha";
+        let rel = "alfa";
         let href: &UrlStr = "bravo";
         let actual = super::link_tagger_with_rel_and_href(&rel, &href);
-        let expect = "<link rel=\"alpha\" href=\"bravo\">";
+        let expect = "<link rel=\"alfa\" href=\"bravo\">";
         assert_eq!(actual, expect);
     }
 
     #[test]
     fn test_title_tagger_with_title() {
-        let title = "alpha";
+        let title = "alfa";
         let actual = super::title_tagger_with_title(&title);
-        let expect = "<title>alpha</title>";
+        let expect = "<title>alfa</title>";
         assert_eq!(actual, expect);
     }
 
     #[test]
     fn test_script_tagger_with_src() {
-        let url: &UrlStr = "alpha";
+        let url: &UrlStr = "alfa";
         let actual = super::script_tagger_with_src(&url);
-        let expect = "<script src=\"alpha\"></script>";
+        let expect = "<script src=\"alfa\"></script>";
         assert_eq!(actual, expect);
     }
 

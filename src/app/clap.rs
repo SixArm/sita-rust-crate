@@ -19,15 +19,17 @@
 
 use clap::{Arg, Command};
 use crate::app::args::Args;
-use crate::types::{list::*, map::*, pathable::*};
+use crate::types::{list::*, map::*};
 use std::path::PathBuf;
 
 /// Create a clap app.
 pub fn app() -> Command {
-    trace!("clap::app");
+    trace!("{} ➡ app", file!());
     Command::new("Sita")
-    .version("0.1.0")
-    .author("Joel Parker Henderson <joel@joelparkerhenderson.com>")
+    .name(env!("CARGO_PKG_NAME"))
+    .version(env!("CARGO_PKG_VERSION"))
+    .author(env!("CARGO_PKG_AUTHORS"))
+    .about(env!("CARGO_PKG_DESCRIPTION"))
     .arg(Arg::new("input")
         .help("An input path.\nExample file: --input \"example.html\" …\nExample directory: --input \"examples/\" …\nExample glob: --input \"examples/**/*\" …")
         .short('i')
@@ -62,11 +64,11 @@ pub fn app() -> Command {
         .value_parser(clap::value_parser!(PathBuf))
         .action(clap::ArgAction::Append)
     )
-    .arg(Arg::new("helper")
-        .help("A helper path.\nExample file: --helper \"example.rhai\" …\nExample directory: --helper \"helpers/\" …\nExample glob: --helper \"helpers/**/*\" …")
-        .short('h')
-        .long("helper")
-        .alias("helpers")
+    .arg(Arg::new("extra")
+        .help("An extra path such as for helpers, scripts, utilities, etc.\nExample file: --extra \"example.rhai\" …\nExample directory: --extra \"extras/\" …\nExample glob: --extra \"extras/**/*\" …")
+        .short('e')
+        .long("extra")
+        .alias("extras")
         .value_name("FILE | DIRECTORY | GLOB")
         .value_parser(clap::value_parser!(PathBuf))
         .action(clap::ArgAction::Append)
@@ -74,7 +76,6 @@ pub fn app() -> Command {
     .arg(Arg::new("test")
         .help("Print test output for debugging, verifying, tracing, and the like.\nExample: --test")
         .long("test")
-        .value_parser(clap::value_parser!(PathBuf))
         .action(clap::ArgAction::SetTrue)
     )
     .arg(Arg::new("set")
@@ -94,11 +95,11 @@ pub fn app() -> Command {
     )
 }
 
-/// Create an Args struct initiatied with the clap App settings.
+/// Create an Args struct initiated with the clap App settings.
 pub fn args() -> Args {
-    trace!("clap::args");
+    trace!("{} ➡ args", file!());
     let matches = app().get_matches();
-    trace!("clap::args matches: {:?}", matches);
+    trace!("{} ➡ args ➡ matches: {:?}", file!(), matches);
 
     let input_list: Option<List<PathBuf>> = match matches.get_many("input") {
         Some(paths) => Some(paths.map(|path: &PathBuf| path.to_owned()).collect()),
@@ -110,12 +111,12 @@ pub fn args() -> Args {
         _ => None,
     };
 
-    let output_file_name_extension: Option<String> = match matches.get_one::<String>("output_file_name_extension") {
+    let output_file_name_extension: Option<PathBuf> = match matches.get_one::<PathBuf>("output_file_name_extension") {
         Some(x) => Some(x.to_owned()),
         _ => None,
     };
 
-    let helper_list: Option<List<PathBuf>> = match matches.get_many("helper") {
+    let extra_list: Option<List<PathBuf>> = match matches.get_many("extra") {
         Some(paths) => Some(paths.map(|path: &PathBuf| path.to_owned()).collect()),
         _ => None,
     };
@@ -124,10 +125,10 @@ pub fn args() -> Args {
         Some(occurrences) => {
             // TODO: refactor & optimize
             let occurrences: Vec<Vec<&String>> = occurrences.map(Iterator::collect).collect();
-            let mut map: Map<String, String> = 
+            let map: Map<String, String> =
             occurrences.into_iter().map(|occurrence|
                 (
-                    occurrence[0].to_owned(), 
+                    occurrence[0].to_owned(),
                     occurrence[1].to_owned()
                 )
             ).collect();
@@ -160,17 +161,17 @@ pub fn args() -> Args {
         output_file_name_extension: output_file_name_extension,
         settings: settings,
         template_list: template_list,
-        helper_list: helper_list,
+        extra_list: extra_list,
         test: test,
     };
 
-    trace!("clap::args -> {:?}", args);
+    trace!("{} ➡ args ➡ args: {:?}", file!(), args);
     args
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
     use crate::testing::*;
     use assertables::*;
 
@@ -182,7 +183,7 @@ mod tests {
     //
     #[test]
     fn test_test() {
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test"]);
         let target = r#"Args { "#;
         assert_command_stdout_contains!(command, &target);
@@ -213,7 +214,6 @@ mod tests {
     // mod util;
     // use util::*;
 
-
     #[test]
     fn test_input() {
         let s1 = "alfa";
@@ -222,18 +222,18 @@ mod tests {
         let s4 = "delta";
         let target = format!(" input_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
 
-        // Test short `-i` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test short `-i` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "-i", &s1, &s2, "-i", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
 
-        // Test long `--input` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test long `--input` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--input", &s1, &s2, "--input", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
 
-        // Test alias `--inputs` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test alias `--inputs` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--inputs", &s1, &s2, "--inputs", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
     }
@@ -247,25 +247,25 @@ mod tests {
         let target = format!(" output_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &s1, &s2, &s3, &s4);
 
         // Test short `-o` with multiple occurrences and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "-o", &s1, &s2, "-o", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
 
         // Test long `--output` with multiple occurrences and multiple values
         // Test short `-o` with multiple occurrences and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--output", &s1, &s2, "--output", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
 
         // Test alias `--outputs` with multiple occurrences and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--outputs", &s1, &s2, "--outputs", &s3, &s4]);
         assert_command_stdout_contains!(command, &target);
     }
 
     #[test]
     fn test_clap_output_file_name_extension() {
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--output-extension", "alfa"]);
         let target = r#" output_file_name_extension: Some("alfa")"#;
         assert_command_stdout_contains!(command, &target);
@@ -280,18 +280,18 @@ mod tests {
         let glob4 = format!("{}/{}", &glob_dir, "d/**/*");
         let target = format!(" template_list: Some([\"{}\", \"{}\", \"{}\", \"{}\"])", &glob1, &glob2, &glob3, &glob4);
 
-        // Test short `-t` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test short `-t` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "-t", &glob1, &glob2, "-t", &glob3, &glob4]);
         assert_command_stdout_contains!(command, &target);
 
-        // Test long `--template` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test long `--template` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--template", &glob1, &glob2, "--template", &glob3, &glob4]);
         assert_command_stdout_contains!(command, &target);
 
-        // Test alias `--templates` with multiple occurances and multiple values
-        let mut command = ::std::process::Command::new(&*COMMAND_OS);
+        // Test alias `--templates` with multiple occurrences and multiple values
+        let mut command = std::process::Command::new(&*COMMAND_OS);
         command.args(&["--test", "--templates", &glob1, &glob2, "--templates", &glob3, &glob4]);
         assert_command_stdout_contains!(command, &target);
 
@@ -339,7 +339,7 @@ mod tests {
 
     // #[test]
     // fn test_set() {
-    //     let mut command = ::std::process::Command::new(&*COMMAND_OS);
+    //     let mut command = std::process::Command::new(&*COMMAND_OS);
     //     command.args(&["--test", "--set", "alfa", "bravo", "--set", "charlie", "delta"]);
     //     let target = r#" settings: Some({"alfa": "bravo", "charlie": "delta"})"#;
     //     assert_command_stdout_contains!(command, &target);

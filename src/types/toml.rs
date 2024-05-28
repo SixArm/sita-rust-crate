@@ -13,7 +13,7 @@
 /// Example:
 ///
 /// ```
-/// let s: TomlString = TomlString::from("alpha = \"bravo\"");
+/// let s: TomlString = TomlString::from("alfa = \"bravo\"");
 /// ```
 ///
 #[allow(dead_code)] pub type TomlString = String;

@@ -31,12 +31,12 @@ mod tests {
     #[test]
     fn test_parser() {
         let markdown = indoc!{r#"
-            # alpha
+            # alfa
             bravo *charlie* delta
         "#};
         let parser = super::parser(markdown);
         let expect =  indoc!{r#"
-            <h1>alpha</h1>
+            <h1>alfa</h1>
             <p>bravo <em>charlie</em> delta</p>
         "#};
         let mut actual = String::new();
@@ -47,13 +47,13 @@ mod tests {
     #[test]
     fn test_option_footnotes() {
         let markdown = indoc!{r#"
-            alpha[^1]
+            alfa[^1]
 
             [^1]: bravo
         "#};
         let parser = super::parser(markdown);
         let expect =  indoc!{r##"
-            <p>alpha<sup class="footnote-reference"><a href="#1">1</a></sup></p>
+            <p>alfa<sup class="footnote-reference"><a href="#1">1</a></sup></p>
             <div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
             <p>bravo</p>
             </div>
@@ -67,11 +67,11 @@ mod tests {
     #[test]
     fn test_option_heading_attributes() {
         let markdown = indoc!{r#"
-            # alpha
+            # alfa
         "#};
         let parser = super::parser(markdown);
         let expect = indoc!{r#"
-            <h1>alpha</h1>
+            <h1>alfa</h1>
         "#};
         let mut actual = String::new();
         pulldown_cmark::html::push_html(&mut actual, parser);
@@ -81,12 +81,12 @@ mod tests {
     #[test]
     fn test_option_smart_punctuation() {
         let markdown = indoc!{r#"
-            "alpha"
+            "alfa"
             'bravo'
         "#};
         let parser = super::parser(markdown);
         let expect = indoc!{r#"
-            <p>“alpha”
+            <p>“alfa”
             ‘bravo’</p>
         "#};
         let mut actual = String::new();
@@ -97,11 +97,11 @@ mod tests {
     #[test]
     fn test_option_strikethrough() {
         let markdown = indoc!{r#"
-            ~~alpha~~
+            ~~alfa~~
         "#};
         let parser = super::parser(markdown);
         let expect = indoc!{r#"
-            <p><del>alpha</del></p>
+            <p><del>alfa</del></p>
         "#};
         let mut actual = String::new();
         pulldown_cmark::html::push_html(&mut actual, parser);
@@ -111,13 +111,13 @@ mod tests {
     #[test]
     fn test_option_tables() {
         let markdown = indoc!{r#"
-            | alpha | bravo |
+            | alfa | bravo |
             |-|-|
             | charlie | delta |
         "#};
         let parser = super::parser(markdown);
         let expect = indoc!{r#"
-            <table><thead><tr><th>alpha</th><th>bravo</th></tr></thead><tbody>
+            <table><thead><tr><th>alfa</th><th>bravo</th></tr></thead><tbody>
             <tr><td>charlie</td><td>delta</td></tr>
             </tbody></table>
         "#};
@@ -129,14 +129,14 @@ mod tests {
     #[test]
     fn test_option_tasklists() {
         let markdown = indoc!{r#"
-            - [ ] alpha
+            - [ ] alfa
             - [x] bravo
         "#};
         let parser = super::parser(markdown);
         let expect = indoc!{r#"
             <ul>
             <li><input disabled="" type="checkbox"/>
-            alpha</li>
+            alfa</li>
             <li><input disabled="" type="checkbox" checked=""/>
             bravo</li>
             </ul>

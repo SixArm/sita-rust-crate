@@ -2,6 +2,7 @@ use std::ffi::OsString;
 use walkdir::DirEntry;
 use crate::types::set::*;
 
+#[allow(dead_code)]
 pub fn walkdir_dir_entry_is_in_extension_set(dir_entry: &DirEntry, extension_set: &Set<OsString>) -> bool {
     if let Some(extension) =  dir_entry.path().extension() {
         return extension_set.contains(extension)
@@ -34,3 +35,5 @@ mod tests {
     }
 
 }
+
+// cSpell:ignore walkdir

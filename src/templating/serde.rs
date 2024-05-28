@@ -15,7 +15,7 @@ mod tests {
     fn test_x_json() {
         let s = r#"
         {
-          "alpha": 123,
+          "alfa": 123,
           "bravo": "charlie",
           "delta": true,
           "echo": {
@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn test_x_toml() {
         let s = r#"
-        alpha = 7
+        alfa = 7
         bravo = "charlie"
         delta = true
 
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn test_x_yaml() {
         let s = r#"
-        alpha: 123
+        alfa: 123
         bravo: charlie
         delta: true
         echo:

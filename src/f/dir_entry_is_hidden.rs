@@ -4,11 +4,11 @@ use std::fs::DirEntry;
 ///
 /// Compare dir_entry_is_visible; these functions are not exact opposites,
 /// because they skip file names that can't convert to UTF-8.
-/// 
+///
 /// Compare the walkdir equivalents:
-///   * walkdir_dir_entry_is_hidden 
+///   * walkdir_dir_entry_is_hidden
 ///   * walkdir_dir_entry_is_visible
-/// 
+///
 pub fn dir_entry_is_hidden(dir_entry: &DirEntry) -> bool {
     if let Some(file_name) = dir_entry.file_name().to_str() {
         return file_name.starts_with(".")

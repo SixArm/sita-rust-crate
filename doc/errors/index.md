@@ -1,33 +1,52 @@
-# Errors using error-chain
+# Errors using thiserror
+
+For errors we use the crate `thiserror` because it is well-maintained, pragmatic, and provides detailed errors suitable for libraries. We removed the crate `error-chain` because it wasn't well-maintained.
 
 
-## Initialize errors
+## pub enum Error
 
-Add `error-chain` initiatization code as [recommended](https://brson.github.io/2016/11/30/starting-with-error-chain):
+The pattern for error definition looks like this:
 
 ```rust
-// Simple and robust error handling with error-chain!
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
 
-// `error_chain!` can recurse deeply, so limit it.
-#![recursion_limit = "1024"]
+    #[error("AlfaBravo ➡ {0:?}")]
+    AlfaBravo(std::io::Error),
 
-// Import the macro. Be sure to add `error-chain` in your `Cargo.toml`.
-#[macro_use]
-extern crate error_chain;
+    #[error("CharlieDelta ➡ echo: {echo:?}, foxtrot: {foxtrot:?}")]
+    CharlieDelta {
+        echo: String,
+        foxtrot: String,
+    }
 
-// We put our errors in an `errors` module, and other modules in
-// this crate will `use errors::*;` to get access to everything
-// that `error_chain!` creates.
-pub mod errors {
-    // Create the Error, ErrorKind, ResultExt, and Result types
-    error_chain! { }
 }
-
-pub use errors::*;
 ```
+
+### Our convention
+
+Our convention for `pub enum Error`:
+
+* The enum is named `Error`, not anything else. A side effect of this convention: in each file, the file's enum `Error` convention supersedes any other `Error` such as `std::error::Error`, i.e. in each file, any other `Error` must be fully qualified.
+
+* The error message starts with the enum variant and a Unicode right arrow.
+
+* The error message for a struct includes each field and its debug representation, so long as it's practical, i.e. we want to behave akin to a library error, and we want print as much information as possible for developers who are debugging.
 
 
 ## Catch errors
+
+Our preferred pattern for handling a `Result` uses `map_or_else` to return the error `err` or unwrap the value `val` like this:
+
+```rust
+foo().map_or_else(
+    |err| MyError::StdIoError(err),
+    |val| val.ok()
+)?;
+```
+
+
+### Catch errors in main
 
 Our convention is a file `main.rs` where the setup happens:
 
