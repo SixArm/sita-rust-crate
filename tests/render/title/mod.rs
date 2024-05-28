@@ -1,16 +1,11 @@
-use std::path::PathBuf;
-use once_cell::sync::Lazy;
 use crate::testing::*;
+use once_cell::sync::Lazy;
+use std::path::PathBuf;
 
-pub static DIR: Lazy<PathBuf> = Lazy::new(||
-    crate::testing::TESTS_DIR
-    .join("render")
-    .join("title")
-);
+pub static DIR: Lazy<PathBuf> =
+    Lazy::new(|| crate::testing::TESTS_DIR.join("render").join("title"));
 
 #[test]
 fn test() {
-    test_with_base_path_and_default_input_template_actual_expect(
-        &DIR
-    );
+    test_with_base_path_and_default_input_template_actual_expect(&DIR);
 }

@@ -1,8 +1,8 @@
 //! State management.
 //!
 //! This is a state manager that can handle a variety of formats:
-//! 
-//! * BTML: BTreeMap struct (for state via matter parser HTML or MDCC)
+//!
+//! * Map: Map struct (for state via matter parser HTML or Markdown comments)
 //! * JSON: JavaScript Object Notation
 //! * TOML: Tom's Obvious Markup Language
 //! * YAML: Yet Anther Markup Language

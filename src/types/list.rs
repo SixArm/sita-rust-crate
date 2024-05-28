@@ -8,7 +8,7 @@
 /// let my_list: List<i32> = List::new();
 /// ```
 ///
-#[allow(dead_code)] pub type List<T> = ::std::vec::Vec<T>;
+#[allow(dead_code)] pub type List<T> = std::vec::Vec<T>;
 
 /// Create a typical list collection with elements.
 ///
@@ -25,7 +25,7 @@
 macro_rules! list {
     ( $( $x:expr ),* ) => {
         {
-            let mut m = ::std::vec::Vec::new();
+            let mut m = std::vec::Vec::new();
             $(
                 m.push($x);
             )*

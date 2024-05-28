@@ -1,5 +1,6 @@
 # Documentation
 
+* [coding](coding)
 * [crates](crates)
 * [errors](errors)
 * [files](files)

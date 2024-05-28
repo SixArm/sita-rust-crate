@@ -5,9 +5,9 @@ App crates:
 * [`clap`](https://crates.io/crates/clap) - Command Line Argument Parser
 * [`confy`](https://crates.io/crates/confy) - Configuration management
 * [`indoc`](https://crates.io/crates/indoc) - Indented document literals
-* [`error-chain`](https://crates.io/crates/error-chain) - Consistent error handling
 * [`log`](https://crates.io/crates/env_logger) A lightweight logging facade
 * [`env_logger`](https://crates.io/crates/env_logger) - A logger configurable via environment variables
+* [`thiserror`](https://crates.io/crates/error-chain) - Convenient error handling
 
 Initialization:
 

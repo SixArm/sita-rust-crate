@@ -1,87 +1,99 @@
-use std::path::{Path, PathBuf};
-use std::ffi::OsString;
-use once_cell::sync::Lazy;
-use crate::errors::*;
-use crate::types::{map::*, set::*};
-use crate::f::walkdir_dir_entry_is_in_extension_set::*;
-use crate::f::walkdir_dir_entry_is_visible::*;
+use std::path::PathBuf;
+// use std::fs::DirEntry;
+// use std::path::StripPrefixError;
+use crate::types::map::*;
+use walkdir::WalkDir;
 
-#[allow(dead_code)]
-pub static EXTENSION_SET: Lazy<Set<OsString>> = Lazy::new(||
-    set!(
-        OsString::from("md"),
-        OsString::from("markdown")
-    )
-);
-
-/// Convert from an input directory path and output directory path
-/// into an ordered map of input file path to output file path.
+/// Convert from an input dir and output dir into
+/// an ordered map of input file path to output file path.
 ///
 /// Example:
 //
 /// ```rust
 /// use crate::types::Map;
-/// let input = PathBuf::from("input/");
-/// let output = PathBuf::from("output/");
+/// let input = PathBuf::from("input"); // any input directory
+/// let output = PathBuf::from("output"); // any output directory
 /// let map: Map<PathBuf, PathBuf> = from_input_dir_and_output_dir_into_map(input, output);
 /// //=> {
-///     "input/1/a.md" => "output/1/a.md",
-///     "input/1/b.md" => "output/1/b.html",
-///     "input/2/c.md" => "output/2/c.html",
-///     "input/2/d.md" => "output/2/d.html",
+///     "input/a.md" => "output/a.md",
+///     "input/b.md" => "output/b.md",
+///     "input/c.md" => "output/c.md",
 /// }
 /// ```
+///
+/// This function deliberately filters out errors.
+///
+/// For example, this function will silently skip directories that the
+/// owner of the running process does not have permission to access.
+///
 #[allow(dead_code)]
-pub fn from_input_dir_and_output_dir_into_map(input_dir: impl AsRef<Path>, output_dir: impl AsRef<Path>) -> Result<Map<PathBuf, PathBuf>> {
-    let input_dir = input_dir.as_ref();
-    let output_dir = output_dir.as_ref();
-    trace!("from_input_dir_and_output_dir_into_map input_dir: {:?}, output_dir: {:?} ", input_dir, output_dir);
-    if !input_dir.is_dir() { return Err("input_dir.is_dir()".into()); }
-    if !output_dir.is_dir() { return Err("output_dir.is_dir()".into()); }
-    let mut map: Map<PathBuf, PathBuf> = Map::new();
-    use walkdir::WalkDir;
-    WalkDir::new(&input_dir)
-    .follow_links(true)
-    .into_iter()
-    // Reject result error
-    .filter_map(|result|
-        match result {
+pub fn from_input_dir_and_output_dir_into_map(input_dir: &PathBuf, output_dir: &PathBuf) -> Result<Map<PathBuf, PathBuf>, Error> {
+    trace!("{} ➡ from_input_dir_and_output_dir_into_map ➡ input_dir: {:?}, output_dir: {:?} ", file!(), input_dir, output_dir);
+    if !input_dir.is_dir() {
+        return Err(Error::InputDirMustBeDir { input_dir: input_dir.to_owned() })
+    }
+    if !output_dir.is_dir() {
+        return Err(Error::OutputDirMustBeDir { output_dir: output_dir.to_owned() })
+    }
+    let mut map: std::collections::BTreeMap<PathBuf, PathBuf> = Map::new();
+    for dir_entry in WalkDir::new(&input_dir) {
+        match dir_entry {
             Ok(dir_entry) => {
-                Some(dir_entry)
+                match dir_entry.path().strip_prefix(&input_dir) {
+                    Ok(path) => {
+                        map.insert(
+                            input_dir.join(path), 
+                            output_dir.join(path)
+                        );
+                    },
+                    Err(error) => {
+                        return Err(Error::StripPrefixError {
+                            input_dir: input_dir.to_owned(),
+                            dir_entry: dir_entry.to_owned(),
+                            inner: error.to_owned(),
+                        });
+                    }
+                }
             },
-            Err(error) => {
-                error!("from_input_dir_and_output_dir_into_map -> match result -> error: {}", &error);
-                None
+            Err(err) => {
+                return Err(Error::Walk { 
+                    input_dir: input_dir.to_owned(), 
+                    output_dir: output_dir.to_owned(), 
+                    walkdir_error: err
+                });
             }
         }
-    )
-    .filter(|dir_entry| 
-        walkdir_dir_entry_is_visible(&dir_entry)
-    )
-    .for_each(|dir_entry| {
-        let file_name = dir_entry.file_name().to_string_lossy();
-        let file_type = dir_entry.file_type();
-        let depth = dir_entry.depth();
-        let sub: PathBuf = dir_entry.path().iter().skip(depth).collect::<PathBuf>();
-        trace!("from_input_dir_and_output_dir_into_map -> depth: {}, sub: {:?}, file_name: {:?}, file_type: {:?}", depth, sub, file_name, file_type);
-        if file_type.is_dir() {
-            let i = input_dir.join(&sub);
-            let o = output_dir.join(&sub);
-            trace!("from_input_dir_and_output_dir_into_map -> is_dir -> i: {:?}, o: {:?} ", i, o);
-            // TODO mkdir
-        } else 
-        if file_type.is_file() {
-            if walkdir_dir_entry_is_in_extension_set(&dir_entry, &EXTENSION_SET) {
-                let i = input_dir.join(&sub);
-                let o = output_dir.join(&sub);
-                trace!("from_input_dir_and_output_dir_into_map -> is_file -> i: {:?}, o: {:?} ", i, o);
-                map.insert(i, o);
-            }
-        } else {
-            warn!("from_input_dir_and_output_dir_into_map -> file type is unexpected => file_name: {:?}, file_type: {:?}", file_name, file_type);
-        };
-    });
+    }
     Ok(map)
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+
+    #[error("InputDirMustBeDir ➡ input_dir: {input_dir:?}")]
+    InputDirMustBeDir {
+        input_dir: PathBuf,
+    },
+
+    #[error("OutputDirMustBeDir ➡ output_dir: {output_dir:?}")]
+    OutputDirMustBeDir {
+        output_dir: PathBuf,
+    },
+
+    #[error("Walk ➡ input_dir: {input_dir:?}, output_dir: {output_dir:?}, walkdir_error: {walkdir_error:?}")]
+    Walk {
+        input_dir: PathBuf,
+        output_dir: PathBuf,
+        walkdir_error: walkdir::Error,
+    },
+
+    #[error("StripPrefixError ➡ input_dir: {input_dir:?}, dir_entry: {dir_entry:?}, inner: {inner:?}")]
+    StripPrefixError {
+        input_dir: PathBuf,
+        dir_entry: walkdir::DirEntry,
+        inner: std::path::StripPrefixError,  
+    },
+
 }
 
 #[cfg(test)]
@@ -97,16 +109,34 @@ mod tests {
     );
 
     #[test]
-    fn test() {
+    fn test_with_input_file() {
+        let input_file = DIR.join("input/a.md");
+        let output_dir = DIR.join("output/");
+        let result = from_input_dir_and_output_dir_into_map(&input_file, &output_dir);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_with_output_file() {
+        let input_dir = DIR.join("input/");
+        let output_file = DIR.join("output/a.md");
+        let result = from_input_dir_and_output_dir_into_map(&input_dir, &output_file);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_with_directories() {
         let input_dir = DIR.join("input");
-        let output_dir  = DIR.join("output");
-        let actual = from_input_dir_and_output_dir_into_map(&input_dir, &output_dir).expect("result");
-        let mut expect: Map<PathBuf, PathBuf> = Map::new();
-        expect.insert(PathBuf::from("input/1/a.md"), PathBuf::from("output/1/a.html"));
-        expect.insert(PathBuf::from("input/1/b.md"), PathBuf::from("output/1/b.html"));
-        expect.insert(PathBuf::from("input/2/c.md"), PathBuf::from("output/2/c.html"));
-        expect.insert(PathBuf::from("input/2/d.md"), PathBuf::from("output/2/d.html"));
-        assert_eq!(actual, expect);
+        let output_dir = DIR.join("output");
+        let result = from_input_dir_and_output_dir_into_map(&input_dir, &output_dir);
+        let actual: Map<PathBuf, PathBuf> = result.unwrap();
+        let mut iter = actual.iter();
+        assert_eq!(iter.next().unwrap(), (&input_dir, &output_dir));
+        assert_eq!(iter.next().unwrap(), (&input_dir.join("a.md"), &output_dir.join("a.md")));
+        assert_eq!(iter.next().unwrap(), (&input_dir.join("b.md"), &output_dir.join("b.md")));
+        assert_eq!(iter.next().unwrap(), (&input_dir.join("c.md"), &output_dir.join("c.md")));
     }
 
 }
+
+// cSpell:ignore walkdir

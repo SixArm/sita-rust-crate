@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use serde::Serialize;
 use once_cell::sync::Lazy;
 use crate::app::args::Args;
-use crate::errors::*;
+
 use crate::types::*;
 use crate::matter::matter_parser_trait::MatterParserTrait;
 use crate::state::state_trait::StateTrait;
@@ -19,64 +19,58 @@ impl TemplaterTrait for TemplaterWithLiquid {
 
     //TODO
     fn new() -> Self {
-        trace!("templater_with_liquid.rs new");
+        trace!("{} ➡ new", file!());
         TemplaterWithLiquid {
         }
     }
 
     //TODO
     fn new_with_args(_args: &Args) -> Self {
-        trace!("templater_with_liquid.rs new_with_args");
+        trace!("{} ➡ new_with_args", file!());
         TemplaterWithLiquid {
         }
     }
 
     //TODO
     fn template_name_default(&self) -> String {
-        trace!("templater_with_liquid.rs template_name_default");
+        trace!("{} ➡ template_name_default", file!());
         String::from("default")
     }
 
     //TODO
     fn template_content_text_default(&self) -> String {
-        trace!("templater_with_liquid.rs template_content_text_default");
+        trace!("{} ➡ template_content_text_default", file!());
         String::from("{{{ content }}}")
     }
 
 
     //TODO
     fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("templater_with_liquid.rs register_template_via_name_and_content_text");
-        Ok(())
-    }
-
-    //TODO
-    fn register_template_via_name_and_content_file(&mut self, name: &str, content_file: &PathBuf) -> Result<()> {
-        trace!("templater_with_liquid.rs register_template_via_name_and_content_file");
+        trace!("{} ➡ register_template_via_name_and_content_text", file!());
         Ok(())
     }
 
     //TODO
     fn contains_any_template(&self) -> bool {
-        trace!("templater_with_liquid.rs contains_any_template");
+        trace!("{} ➡ contains_any_template", file!());
         false
     }
 
     //TODO
     fn contains_template_name(&self, name: &str) -> bool {
-        trace!("templater_with_liquid.rs contains_template_name");
+        trace!("{} ➡ contains_template_name", file!());
         false
     }
 
     //TODO
     fn template_names_as_set_str(&self) -> Set<&str> {
-        trace!("templater_with_liquid.rs template_names_as_set_str");
+        trace!("{} ➡ template_names_as_set_str", file!());
         Set::new()
     }
 
     //TODO
     fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
-        trace!("templater_with_liquid.rs render_template_with_state_enum");
+        trace!("{} ➡ render_template_with_state_enum", file!());
         Ok(HtmlString::from(""))
     }
 
@@ -131,31 +125,13 @@ mod tests {
     #[test]
     fn test_register_template_via_name_and_content_text() {
         let mut templater = TemplaterX::new();
-        let name = "alpha";
+        let name = "alfa";
         let content_text = "{{ bravo }}";
-        assert_eq!(templater.contains_template_name("alpha"), false);
+        assert_eq!(templater.contains_template_name("alfa"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
         let result = templater.register_template_via_name_and_content_text(&name, &content_text);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-    }
-
-    #[test]
-    fn test_register_template_via_name_and_content_file() {
-        let mut templater = TemplaterX::new();
-        let name = "alpha";
-        let content_file = TESTS_DIR
-            .join("src")
-            .join("f")
-            .join("register_template_via_name_and_content_file")
-            .join("template.html");
-        assert!(content_file.exists());
-        assert_eq!(templater.contains_template_name("alpha"), false);
-        assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_file(&name, &content_file);
-        assert!(result.is_ok());
-        assert_eq!(templater.contains_template_name("alpha"), true);
+        result.unwrap();
+        assert_eq!(templater.contains_template_name("alfa"), true);
         assert_eq!(templater.contains_template_name("charlie"), false);
     }
 

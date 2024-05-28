@@ -1,61 +1,77 @@
+use std::ffi::OsString;
 use assertables::*;
-use ::std::ffi::OsString;
-use std::path::{Path, PathBuf};
 use once_cell::sync::Lazy;
+use std::path::{Path, PathBuf};
 
 #[allow(dead_code)]
-pub static CARGO_MANIFEST_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR")].iter().collect::<PathBuf>()
-);
+pub static CARGO_MANIFEST_DIR: Lazy<PathBuf> =
+    Lazy::new(|| [env!("CARGO_MANIFEST_DIR")].iter().collect::<PathBuf>());
 
 #[allow(dead_code)]
-pub static LOG_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "log"].iter().collect::<PathBuf>()
-);
+pub static LOG_DIR: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "log"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static TESTS_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "tests"].iter().collect::<PathBuf>()
-);
+pub static TESTS_DIR: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "tests"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static TMP_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "tmp"].iter().collect::<PathBuf>()
-);
+pub static TMP_DIR: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "tmp"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static TARGET_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "target"].iter().collect::<PathBuf>()
-);
+pub static TARGET_DIR: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "target"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static DEBUG_DIR: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "target", "debug"].iter().collect::<PathBuf>()
-);
+pub static DEBUG_DIR: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "target", "debug"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static COMMAND_FILE: Lazy<PathBuf> = Lazy::new(||
-    [env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"].iter().collect::<PathBuf>()
-);
+pub static COMMAND_FILE: Lazy<PathBuf> = Lazy::new(|| {
+    [env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"]
+        .iter()
+        .collect::<PathBuf>()
+});
 
 #[allow(dead_code)]
-pub static COMMAND_OS: Lazy<OsString> = Lazy::new(||
-    OsString::from([env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"].iter().collect::<PathBuf>())
-);
+pub static COMMAND_OS: Lazy<OsString> = Lazy::new(|| {
+    OsString::from(
+        [env!("CARGO_MANIFEST_DIR"), "target", "debug", "sita"]
+            .iter()
+            .collect::<PathBuf>(),
+    )
+});
 
 #[allow(dead_code)]
 fn assert_str_contains(outer: &str, inner: &str) {
     assert!(
         outer.contains(inner),
-        "outer: {:?}\n inner: {}\n", &outer, &inner
+        "outer: {:?}\n inner: {}\n",
+        &outer,
+        &inner
     );
 }
 
 #[allow(dead_code)]
-pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()>
-{
+pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()> {
     if path.as_ref().exists() {
-        ::std::fs::remove_file(path)
+        std::fs::remove_file(path)
     } else {
         Ok(())
     }
@@ -74,19 +90,15 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: &PathBuf) 
     remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = ::std::process::Command::new(&*COMMAND_OS)
+    let _output = std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq_other!(
-        ::std::fs::read_to_string,
-        &actual,
-        &expect,
-    );
+    assert_fn_ok_eq_other!(std::fs::read_to_string, &actual, &expect,);
     // Done
-    ::std::fs::remove_file(&actual).expect("remove");
+    std::fs::remove_file(&actual).expect("remove");
 }
 
 #[cfg(test)]
@@ -103,7 +115,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: &
     remove_file_if_exists(&actual).expect("remove");
     // Test
     assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = ::std::process::Command::new(&*COMMAND_OS)
+    let _output = std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
         .arg("--template")
@@ -111,11 +123,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: &
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq_other!(
-        ::std::fs::read_to_string,
-        &actual,
-        &expect,
-    );
+    assert_fn_ok_eq_other!(std::fs::read_to_string, &actual, &expect,);
     // Done
-    ::std::fs::remove_file(&actual).expect("remove");
+    std::fs::remove_file(&actual).expect("remove");
 }

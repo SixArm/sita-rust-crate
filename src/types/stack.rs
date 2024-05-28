@@ -8,7 +8,7 @@
 /// let my_stack: Stack<i32> = Stack::new();
 /// ```
 ///
-#[allow(dead_code)] pub type Stack<T> = ::std::vec::Vec<T>;
+#[allow(dead_code)] pub type Stack<T> = std::vec::Vec<T>;
 
 /// Create a typical stack collection with elements.
 ///
@@ -25,7 +25,7 @@
 macro_rules! stack {
     ( $( $x:expr ),* ) => {
         {
-            let mut m = ::std::vec::Vec::new();
+            let mut m = std::vec::Vec::new();
             $(
                 m.push($x);
             )*

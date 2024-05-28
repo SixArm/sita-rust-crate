@@ -7,21 +7,6 @@
 // `error_chain!` can recurse deeply, so limit it.
 #![recursion_limit = "1024"]
 
-// Import the macro. Be sure to add `error-chain` in your `Cargo.toml`.
-#[macro_use]
-extern crate error_chain;
-
-// We put our errors in an `errors` module, and other modules in
-// this crate will `use errors::*;` to get access to everything
-// that `error_chain!` creates.
-pub mod errors {
-    // Create the Error, ErrorKind, ResultExt, and Result types
-    error_chain! { }
-}
-
-#[allow(unused_imports)]
-pub use errors::*;
-
 //// log
 #[macro_use]
 extern crate log;
@@ -37,25 +22,8 @@ extern crate assertables;
 
 //// Modules
 
+#[macro_use] pub(crate) mod types; // Type aliases
 
-#[macro_use] pub(crate) mod types { // Type aliases
-    // Data structures
-    #[macro_use] pub(crate) mod list;  use crate::types::list::*;
-    #[macro_use] pub(crate) mod map;   use crate::types::map::*;
-    #[macro_use] pub(crate) mod queue; use crate::types::queue::*;
-    #[macro_use] pub(crate) mod set;   use crate::types::set::*;
-    #[macro_use] pub(crate) mod stack; use crate::types::stack::*;
-    // Semantic strings
-    #[macro_use] pub(crate) mod glob;      use crate::types::glob::*;
-    #[macro_use] pub(crate) mod html;      use crate::types::html::*;
-    #[macro_use] pub(crate) mod markdown;  use crate::types::markdown::*;
-    #[macro_use] pub(crate) mod pathable;  use crate::types::pathable::*;
-    #[macro_use] pub(crate) mod toml;      use crate::types::toml::*;
-    #[macro_use] pub(crate) mod url;       use crate::types::url::*;
-    #[macro_use] pub(crate) mod yaml;      use crate::types::yaml::*;
-}
-
-pub(crate) mod util; // Utilties
 pub(crate) mod testing; // Test helpers
 
 pub(crate) mod app { // Application
@@ -67,23 +35,21 @@ pub(crate) mod app { // Application
 }
 
 pub(crate) mod f { // Functions
-    pub(crate) mod dir_entry_is_hidden; // DirEntry is hidden i.e. basename starts with a period.
-    pub(crate) mod dir_entry_is_visible; // DirEntry is visible i.e. basename starts with a non-period.
-    pub(crate) mod dir_entry_is_in_extension_set; // DirEntry ends with e.g. Markdown file extension "md" or "markdown".
-    pub(crate) mod dir_entry_first_with_expect; // Get the first DirEntry from a directory.
     pub(crate) mod from_html_str_into_headline_str; // from HtmlStr into headline str
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>
-    pub(crate) mod from_input_pathable_string_and_output_pathable_string_into_map; // from input Pathable string and output Pathable string into Map<PathBuf, PathBuf>
-    pub(crate) mod from_input_dir_and_output_dir_into_map; // from input directory path and output directory path into Map<PathBuf, PathBuf>
-    pub(crate) mod from_path_buf_into_sibling; // from PathBuf into sibling PathBuf
+    pub(crate) mod from_input_dir_and_output_dir_into_map; // from input dir and output dir into Map<PathBuf, PathBuf>
+    pub(crate) mod from_input_path_buf_and_output_path_buf_into_map; // from input path buffer and output path buffer into Map<PathBuf, PathBuf>
+    pub(crate) mod from_path_buf_into_sibling_extension; // from PathBuf into sibling PathBuf
     pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
     pub(crate) mod remove_file_if_exists;
-    pub(crate) mod walkdir_dir_entry_is_hidden; // DirEntry is hidden i.e. basename starts with a period.
-    pub(crate) mod walkdir_dir_entry_is_visible; // DirEntry is visible i.e. basename starts with a non-period.
+    pub(crate) mod vet_input_file_path_buf_exists; // Vet an input file PathBuf exists.
+    pub(crate) mod vet_input_file_path_buf_metadata; // Vet an input file PathBuf.metadata() exists.
+    pub(crate) mod walkdir_prefer_iter;
+    pub(crate) mod walkdir_dir_entry_first_with_expect;
     pub(crate) mod walkdir_dir_entry_is_in_extension_set; // DirEntry ends with e.g. Markdown file extension "md" or "markdown".
-    pub(crate) mod walkdir_dir_entry_first_with_expect; // Get the first DirEntry from a directory.
+    pub(crate) mod walkdir_dir_entry_is_visible;
 }
 
 pub(crate) mod markdown {
@@ -119,24 +85,23 @@ pub(crate) mod templating {
 }
 
 pub(crate) mod templater {
-    pub(crate) mod templater_enum;
+    //pub(crate) mod templater_enum;
     pub(crate) mod templater_trait;
     pub(crate) mod templater_with_handlebars;
     //pub(crate) mod templater_with_liquid;
-    pub(crate) mod templater_with_tera;
+    //pub(crate) mod templater_with_tera;
 }
 
 //// Main error-chain
 fn main() {
     env_logger::init();
-    if let Err(ref e) = crate::app::run::run() {
-        println!("error: {}", e);
-        for e in e.iter().skip(1) {
-            println!("caused by: {}", e);
+    match crate::app::run::run() {
+        Ok(()) => {
+            std::process::exit(0);
         }
-        if let Some(backtrace) = e.backtrace() {
-            println!("backtrace: {:?}", backtrace);
+        Err(err) => {
+            error!("{:?}", err);
+            std::process::exit(1);
         }
-        std::process::exit(1);
     }
 }

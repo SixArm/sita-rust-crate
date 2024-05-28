@@ -3,9 +3,10 @@ use walkdir::{DirEntry, WalkDir};
 
 /// Read a directory and always return the first directory entry.
 /// This function is intended for prototyping and testing, not production.
-/// 
+///
 /// Compare dir_entry_first_with_expect which is for std::fs::DirEntry.
-/// 
+///
+#[allow(dead_code)]
 pub fn walkdir_dir_entry_first_with_expect(path: impl AsRef<Path>) -> DirEntry {
     WalkDir::new(path)
     .into_iter()
@@ -35,3 +36,5 @@ mod tests {
     }
 
 }
+
+// cSpell:ignore walkdir

@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use crate::errors::*;
 use crate::types::{list::*, pathable::*};
 use crate::f::from_pathable_string_into_list_path_buf::*;
 
@@ -19,15 +18,15 @@ use crate::f::from_pathable_string_into_list_path_buf::*;
 /// owner of the running process does not have permission to access.
 ///
 #[allow(dead_code)]
-pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>) -> Result<List<PathBuf>> {
-    trace!("from_list_pathable_string_into_list_path_buf");
+pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>) -> Result<List<PathBuf>, FromListPathableStringIntoListPathBufError> {
+    trace!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ from: {:?}", file!(), from);
     let list_path_buf: List<PathBuf> = from.iter().map(|from|
         from_pathable_string_into_list_path_buf(from)
     )
     .inspect(|x|
         match x {
-            Ok(x) => trace!("from_list_pathable_string_into_list_path_buf ok. ␟from: {:?} ␟path: {:?}", from, x),
-            Err(err) => warn!("from_list_pathable_string_into_list_path_buf err. ␟from: {:?} ␟err: {:?}", from, err),
+            Ok(x) => trace!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ Ok ➡ from: {:?}, path: {:?}", file!(), from, x),
+            Err(err) => warn!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ Err ➡ from: {:?}, err: {:?}", file!(), from, err),
         }
     )
     .filter_map(|x|
@@ -36,6 +35,12 @@ pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>)
     .flatten()
     .collect::<_>();
     Ok(list_path_buf)
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum FromListPathableStringIntoListPathBufError {
+    #[error("glob pattern error")]
+    GlobPatternError(#[from] glob::PatternError),
 }
 
 #[cfg(test)]
@@ -58,7 +63,6 @@ mod tests {
             format!("{}{}", dir_as_string, "/b")
         ];
         let result = from_list_pathable_string_into_list_path_buf(&from);
-        assert!(result.is_ok());
         let mut actual: List<PathBuf> = result.unwrap();
         actual.sort();
         let expect: List<PathBuf> = list![
@@ -88,7 +92,6 @@ mod tests {
             format!("{}{}", dir_as_string, "/b*")
         ];
         let result = from_list_pathable_string_into_list_path_buf(&from);
-        assert!(result.is_ok());
         let mut actual: List<PathBuf> = result.unwrap();
         actual.sort();
         let expect: List<PathBuf> = list![

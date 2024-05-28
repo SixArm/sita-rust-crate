@@ -8,7 +8,7 @@
 /// let my_map: Map<i32, i32> = Map::new();
 /// ```
 ///
-#[allow(dead_code)] pub type Map<K,V> = ::std::collections::BTreeMap<K,V>;
+#[allow(dead_code)] pub type Map<K,V> = std::collections::BTreeMap<K,V>;
 
 /// Create a typical map collection with elements.
 ///
@@ -28,7 +28,7 @@
 macro_rules! map {
     ( $( $k:expr => $v:expr ),* ) => {
         {
-            let mut m = ::std::collections::BTreeMap::new();
+            let mut m = std::collections::BTreeMap::new();
             $(
                 m.insert($k, $v);
             )*
