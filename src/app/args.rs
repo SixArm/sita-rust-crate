@@ -4,7 +4,8 @@
 //! We have these args in their own file in order to be flexible,
 //! such as being able to start our app with other arg parsers.
 
-use crate::types::{list::*, map::*, pathable::*};
+use std::path::PathBuf;
+use crate::types::{list::*, map::*};
 
 //pub const INPUT_FILE_NAME_SELECT_REGEX_AS_STR: &str = "\\.md$";
 pub const OUTPUT_FILE_NAME_EXTENSION_AS_STR: &str = "html";
@@ -12,37 +13,42 @@ pub const OUTPUT_FILE_NAME_EXTENSION_AS_STR: &str = "html";
 #[derive(Debug)]
 pub struct Args {
 
-    /// Input pathable string list.
+    /// Input list of path buffers.
     /// Example glob: "articles/**/*"
     /// Example file: "article.md"
-    pub(crate) input_list_pathable_string: Option<List<PathableString>>,
+    pub(crate) input_list: Option<List<PathBuf>>,
 
     /// Log level: 0=none, 1=error, 2=warn, 3=info, 4=debug, 5=trace.
     /// Example: 5 means print debug diagnostics.
     pub(crate) log_level: Option<::log::Level>,
 
-    /// Output pathable string list.
+    /// Output list of path buffers.
     /// Example directory: "results/"
     /// Example file: "article.html"
-    pub(crate) output_list_pathable_string: Option<List<PathableString>>,
+    /// TODO: add support for OsStr.
+    pub(crate) output_list: Option<List<PathBuf>>,
 
     /// Output file name extension.
     /// Example: "html" means a HTML file extension.
+    /// TODO: add support for OsStr.
     pub(crate) output_file_name_extension: Option<String>,
 
     /// Settings map for the program.
-    /// Example: {"alpha" => "bravo", "charlie" => "delta"}
+    /// Example: {"alfa" => "bravo", "charlie" => "delta"}
+    /// TODO: add support for OsStr.
     pub(crate) settings: Option<Map<String, String>>,
 
-    /// Template pathable string list.
+    /// Template list of path buffers.
     /// Example file: "template.hbs"
     /// Example glob: "templates/**/*"
-    pub(crate) template_list_pathable_string: Option<List<PathableString>>,
+    /// TODO: add support for OsStr.
+    pub(crate) template_list: Option<List<PathBuf>>,
 
-    /// Helper pathable string list.
+    /// Helper list of path buffers.
     /// Example file: "helper.rhai"
     /// Example glob: "helpers/**/*"
-    pub(crate) helper_list_pathable_string: Option<List<PathableString>>,
+    /// TODO: add support for OsStr.
+    pub(crate) helper_list: Option<List<PathBuf>>,
 
     /// Test flag that sets whether the app prints diagnostics.
     /// Example: true means print diagnostics.
@@ -51,13 +57,13 @@ pub struct Args {
 
 impl ::std::default::Default for Args {
     fn default() -> Self { Self {
-        input_list_pathable_string: None,
+        input_list: None,
         log_level: None,
-        output_list_pathable_string: None,
+        output_list: None,
         output_file_name_extension: None,
         settings: None,
-        template_list_pathable_string: None,
-        helper_list_pathable_string: None,
+        template_list: None,
+        helper_list: None,
         test: false,
     }}
 }
