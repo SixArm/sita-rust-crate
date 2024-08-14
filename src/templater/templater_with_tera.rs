@@ -13,7 +13,7 @@ pub struct TemplaterWithTera {
 impl TemplaterTrait for TemplaterWithTera {
 
     fn new() -> Self {
-        trace!("{} ➡ new", file!());
+        trace!("new");
         let my_tera = ::tera::Tera::default();
         TemplaterWithTera {
             tera: my_tera,
@@ -23,7 +23,7 @@ impl TemplaterTrait for TemplaterWithTera {
     fn new_with_args(
         _args: &Args
     ) -> Self {
-        trace!("{} ➡ new_with_args", file!());
+        trace!("new_with_args");
         let mut my_tera = ::tera::Tera::default();
         my_tera.autoescape_on(vec![]); // disable autoescaping completely
         TemplaterWithTera {
@@ -34,14 +34,14 @@ impl TemplaterTrait for TemplaterWithTera {
     fn template_name_default(
         &self
     ) -> String {
-        trace!("{} ➡ template_name_default", file!());
+        trace!("template_name_default");
         String::from("default")
     }
 
     fn template_content_text_default(
         &self
     ) -> String {
-        trace!("{} ➡ template_name_default", file!());
+        trace!("template_name_default");
         String::from("{{ content }}")
     }
 
@@ -52,7 +52,7 @@ impl TemplaterTrait for TemplaterWithTera {
     ) -> Result<(), Error> {
         let name = name.as_ref();
         let content_text = content_text.as_ref();
-        trace!("{} ➡ register_template_via_name_and_content_text ➡ name: {:?}, content_text.len(): {}", file!(), name, content_text.len());
+        trace!("register_template_via_name_and_content_text ➡ name: {:?}, content_text.len(): {}", name, content_text.len());
         self.tera.add_raw_template(name, content_text)
         .map_or_else(
             |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
@@ -63,7 +63,7 @@ impl TemplaterTrait for TemplaterWithTera {
     fn contains_any_template(
         &self
     ) -> bool {
-        trace!("{} ➡ contains_any_template", file!());
+        trace!("contains_any_template");
         self.tera.get_template_names().nth(0).is_some()
     }
 
@@ -72,14 +72,14 @@ impl TemplaterTrait for TemplaterWithTera {
         name: impl AsRef<str>
     ) -> bool {
         let name = name.as_ref();
-        trace!("{} ➡ contains_template_name ➡ name: {}", file!(), name);
+        trace!("contains_template_name ➡ name: {}", name);
         self.tera.get_template_names().any(|x| x == name)
     }
 
     fn template_names_as_set_str(
         &self
     ) -> Set<&str> {
-        trace!("{} ➡ template_names_as_set_str", file!());
+        trace!("template_names_as_set_str");
         self.tera.get_template_names().collect::<_>()
     }
 
@@ -89,7 +89,7 @@ impl TemplaterTrait for TemplaterWithTera {
         state_enum: &StateEnum
     ) -> Result<HtmlString, Error> {
         let name = name.as_ref();
-        trace!("{} ➡ render_template_with_state_enum ➡ name: {}", file!(), name);
+        trace!("render_template_with_state_enum ➡ name: {}", name);
         let context = from_state_enum_to_tera_context(&state_enum)
         .map_or_else(
             |err| Err(Error::FromStateEnumToTeraContext(err)),

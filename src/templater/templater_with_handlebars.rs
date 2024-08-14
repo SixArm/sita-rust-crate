@@ -14,7 +14,7 @@ pub struct TemplaterWithHandlebars<'templater> {
 impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
     fn new() -> Self {
-        trace!("{} ➡ new", file!());
+        trace!("new");
         let handlebars = Handlebars::default();
         TemplaterWithHandlebars {
             handlebars: handlebars,
@@ -24,7 +24,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
     fn new_with_args(
         _args: &Args
     ) -> Self {
-        trace!("{} ➡ new_with_args", file!());
+        trace!("new_with_args");
         let mut handlebars = Handlebars::default();
         handlebars.set_strict_mode(true);
         TemplaterWithHandlebars {
@@ -35,14 +35,14 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
     fn template_name_default(
         &self
     ) -> String {
-        trace!("{} ➡ template_name_default", file!());
+        trace!("template_name_default");
         String::from("default")
     }
 
     fn template_content_text_default(
         &self
     ) -> String {
-        trace!("{} ➡ template_content_text_default", file!());
+        trace!("template_content_text_default");
         String::from("{{{ content }}}")
     }
 
@@ -51,7 +51,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         name: impl AsRef<str>,
         content_text: impl AsRef<str>
     ) -> Result<(), impl std::error::Error> {
-        trace!("{} ➡ register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", file!(), name.as_ref(), content_text.as_ref().len());
+        trace!("register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content_text.as_ref().len());
         self.handlebars.register_template_string(name.as_ref(), &content_text)
         .map_or_else(
             |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
@@ -62,7 +62,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
     fn contains_any_template(
         &self
     ) -> bool {
-        trace!("{} ➡ contains_any_template", file!());
+        trace!("contains_any_template");
         !self.handlebars.get_templates().is_empty()
     }
 
@@ -70,14 +70,14 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         &self,
         name: impl AsRef<str>
     ) -> bool {
-        trace!("{} ➡ contains_template_name", file!());
+        trace!("contains_template_name");
         self.handlebars.get_template(name.as_ref()).is_some()
     }
 
     fn template_names_as_set_str(
         &self
     ) -> Set<&str> {
-        trace!("{} ➡ template_names_as_set_str", file!());
+        trace!("template_names_as_set_str");
         let mut names: Set<&str> = Set::new();
         for key in self.handlebars.get_templates().keys() {
             names.insert(key);
@@ -90,7 +90,7 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
         template_name: impl AsRef<str>,
         state_enum: &StateEnum
     ) -> Result<HtmlString, impl std::error::Error> {
-        trace!("{} ➡ render_template_with_state_enum", file!());
+        trace!("render_template_with_state_enum");
         //TODO make generic
         match state_enum {
             StateEnum::StateWithMap(x) =>  self.handlebars.render(template_name.as_ref(), x),

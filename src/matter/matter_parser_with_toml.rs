@@ -42,7 +42,7 @@ impl MatterParserTrait<State, Error> for MatterParserWithTOML {
     /// ```
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String), Error> {
-        trace!("{} ➡ parse_mix_text_to_content_text_and_matter_text", file!());
+        trace!("parse_mix_text_to_content_text_and_matter_text");
         match REGEX.captures(mix_text) {
             Some(captures) => Ok((
                 String::from(captures.name("content").unwrap().as_str()),
@@ -81,7 +81,7 @@ impl MatterParserTrait<State, Error> for MatterParserWithTOML {
     /// ```
     #[allow(dead_code)]
     fn parse_matter_text_to_state(&self, matter_text: &str) -> Result<State, Error> {
-        trace!("{} ➡ parse_matter_text_to_state", file!());
+        trace!("parse_matter_text_to_state");
         match matter_text.parse::<::toml::Value>() {
             Ok(toml) => {
                 match toml {

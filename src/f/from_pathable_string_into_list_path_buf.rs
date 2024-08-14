@@ -33,8 +33,8 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
     )
     .inspect(|x|
         match x {
-            Ok(x) => trace!("{} ➡ from_pathable_string_into_list_path_buf glob ➡ Ok ➡ from: {:?}, path: {:?}", file!(), from, x),
-            Err(err) => warn!("{} ➡ from_pathable_string_into_list_path_buf glob ➡ Err ➡ from: {:?}, err: {:?}", file!(), from, err),
+            Ok(x) => trace!("from_pathable_string_into_list_path_buf glob ➡ Ok ➡ from: {:?}, path: {:?}", from, x),
+            Err(err) => warn!("from_pathable_string_into_list_path_buf glob ➡ Err ➡ from: {:?}, err: {:?}", from, err),
         }
     )
     .filter_map(|x|

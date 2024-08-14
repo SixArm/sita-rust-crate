@@ -12,7 +12,7 @@ use crate::types::{list::*, map::*};
 ///
 #[allow(dead_code)]
 pub fn from_list_str_into_map_string_string(list_str: &List<&str>) -> Map<String, String> {
-    trace!("{} ➡ from_list_str_into_map_string_string ➡ list_str: {:?}", file!(), list_str);
+    trace!("from_list_str_into_map_string_string ➡ list_str: {:?}", list_str);
     let mut map: Map<String, String> = Map::new();
     for i in (0..list_str.len()-1).step_by(2) {
         let k = String::from(list_str[i]);

@@ -92,7 +92,6 @@ pub(crate) mod templater {
     //pub(crate) mod templater_with_tera;
 }
 
-//// Main error-chain
 fn main() {
     env_logger::init();
     match crate::app::run::run() {

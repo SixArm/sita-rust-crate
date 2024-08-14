@@ -19,14 +19,14 @@ use crate::f::from_pathable_string_into_list_path_buf::*;
 ///
 #[allow(dead_code)]
 pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>) -> Result<List<PathBuf>, FromListPathableStringIntoListPathBufError> {
-    trace!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ from: {:?}", file!(), from);
+    trace!("from_list_pathable_string_into_list_path_buf ➡ from: {:?}", from);
     let list_path_buf: List<PathBuf> = from.iter().map(|from|
         from_pathable_string_into_list_path_buf(from)
     )
     .inspect(|x|
         match x {
-            Ok(x) => trace!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ Ok ➡ from: {:?}, path: {:?}", file!(), from, x),
-            Err(err) => warn!("{} ➡ from_list_pathable_string_into_list_path_buf ➡ Err ➡ from: {:?}, err: {:?}", file!(), from, err),
+            Ok(x) => trace!("from_list_pathable_string_into_list_path_buf ➡ Ok ➡ from: {:?}, path: {:?}", from, x),
+            Err(err) => warn!("from_list_pathable_string_into_list_path_buf ➡ Err ➡ from: {:?}, err: {:?}", from, err),
         }
     )
     .filter_map(|x|

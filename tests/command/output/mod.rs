@@ -10,8 +10,8 @@ pub static DIR: Lazy<PathBuf> =
 fn test() {
     // Given
     let input: PathBuf = DIR.join("example.md");
-    let actual: PathBuf = DIR.join("custom-output-file-name.html");
-    let expect: PathBuf = DIR.join("custom-output-file-name.html=expect.html");
+    let actual: PathBuf = DIR.join("custom-file-name.html");
+    let expect: PathBuf = DIR.join("custom-file-name.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
     remove_file_if_exists(&actual).expect("remove");

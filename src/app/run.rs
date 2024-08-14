@@ -34,7 +34,7 @@ use walkdir::WalkDir;
 /// ```
 ///
 pub(crate) fn run() -> Result<(), Error> {
-    trace!("{} ➡ run", file!());
+    trace!("run");
     let _config = initialize_configuration()?;
     let args = initialize_arguments();
     let templater = initialize_templater(&args)?;
@@ -42,7 +42,7 @@ pub(crate) fn run() -> Result<(), Error> {
 }
 
 fn initialize_configuration() -> Result<Config, Error> {
-    trace!("{} ➡ initialize_configuration", file!());
+    trace!("initialize_configuration");
     match confy::load("sita", None) {
         Ok(val) => Ok(val),
         Err(err) => Err(Error::Confy(err)),
@@ -50,7 +50,7 @@ fn initialize_configuration() -> Result<Config, Error> {
 }
 
 fn initialize_arguments() -> Args {
-    trace!("{} ➡ initialize_arguments", file!());
+    trace!("initialize_arguments");
     let args: Args = crate::app::clap::args();
     if args.test { 
         println!("{:?}", args);
@@ -60,7 +60,7 @@ fn initialize_arguments() -> Args {
 }
 
 fn initialize_templater(args: &Args) -> Result<TemplaterWithHandlebars, Error> {
-    trace!("{} ➡ initialize_templater", file!());
+    trace!("initialize_templater");
     let mut templater = TemplaterWithHandlebars::new_with_args(&args);
     initialize_templater_templates(&args, &mut templater)?;
     initialize_templater_default(&args, &mut templater)?;
@@ -72,11 +72,11 @@ fn initialize_templater_templates(
     args: &Args,
     templater: &mut TemplaterWithHandlebars
 ) -> Result<(), Error> {
-    trace!("{} ➡ initialize_templater_templates", file!());
+    trace!("initialize_templater_templates");
 
     if let Some(template_list) = &args.template_list {
         for template_path_buf in template_list.iter().filter(|&x| x.is_file()) {
-            trace!("{} ➡ initialize_templater_templates ➡ template_path_buf: {:?}", file!(), template_path_buf);
+            trace!("initialize_templater_templates ➡ template_path_buf: {:?}", template_path_buf);
             //TODO optimize
             let name: String = match template_path_buf.file_name() {
                 Some(x) => x.to_string_lossy().into(),
@@ -113,7 +113,7 @@ fn initialize_templater_default(
     _args: &Args,
     templater: &mut TemplaterWithHandlebars
 ) -> Result<(), Error> {
-    trace!("{} ➡ initialize_templater_default", file!());
+    trace!("initialize_templater_default");
     if !templater.contains_any_template() {
         templater.register_template_via_default()
         .map_or_else(
@@ -130,7 +130,7 @@ fn initialize_templater_helpers(
     args: &Args,
     templater: &mut TemplaterWithHandlebars,
 ) -> Result<(), Error> {
-    trace!("{} ➡ initialize_templater_helpers", file!());
+    trace!("initialize_templater_helpers");
     if let Some(extra_list) = &args.extra_list {
         for extra_path_buf in extra_list.iter().filter(|&x| x.is_file()) {
             trace!(
@@ -154,7 +154,7 @@ fn initialize_templater_helpers(
 }
 
 fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Error> {
-    trace!("{} ➡ cook_all", file!());
+    trace!("cook_all");
     if let (
         Some(input_list),
         Some(output_list)
@@ -173,7 +173,7 @@ fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Erro
 }
 
 fn vet_input_output_list_length(input_list: &List<PathBuf>, output_list: &List<PathBuf>) -> Result<(), Error> {
-    trace!("{} ➡ vet_input_output_list_length ➡ input: {:?}, output: {:?}", file!(), input_list, output_list);
+    trace!("vet_input_output_list_length ➡ input: {:?}, output: {:?}", input_list, output_list);
     if input_list.len() == output_list.len() {
         Ok(())
     } else {
@@ -185,7 +185,7 @@ fn vet_input_output_list_length(input_list: &List<PathBuf>, output_list: &List<P
 }
 
 fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
-    trace!("{} ➡ cook_one ➡ input: {:?}, output: {:?}", file!(), input, output);
+    trace!("cook_one ➡ input: {:?}, output: {:?}", input, output);
     if input.is_dir() && output.is_dir() {    
         return cook_one_dir(
             &args,
@@ -207,7 +207,7 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
 }
 
 fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
-    trace!("{} ➡ cook_one_dir ➡ input: {:?}, output: {:?}", file!(), input, output);
+    trace!("cook_one_dir ➡ input: {:?}, output: {:?}", input, output);
     let output_file_name_extension = match &args.output_file_name_extension {
         Some(x) => x,
         None => &crate::app::args::OUTPUT_FILE_NAME_EXTENSION_AS_PATH_BUF,
@@ -216,7 +216,7 @@ fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBu
         match dir_entry {
             Ok(dir_entry) => {
                 if dir_entry.file_type().is_file() {
-                    trace!("{} ➡ cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a file", file!(), input, output);
+                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a file", input, output);
                     match dir_entry.path().strip_prefix(&input) {
                         Ok(path) => {
                             let input_entry = input.join(path);
@@ -240,10 +240,10 @@ fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBu
                 } else
                 if dir_entry.file_type().is_dir() {
                     //TODO handle this e.g. make the corresponding directory
-                    trace!("{} ➡ cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a dir", file!(), input, output);
+                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a dir", input, output);
                 } else {
                     //TODO handle the corner cases
-                    trace!("{} ➡ cook_one_dir ➡ input: {:?}, output: {:?}, skip because dir entry is not a dir nor a file", file!(), input, output);
+                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, skip because dir entry is not a dir nor a file", input, output);
                 }
             },
             Err(err) => {
@@ -264,13 +264,13 @@ fn cook_one_file<T: TemplaterTrait>(
     input: &PathBuf,
     output: &PathBuf
 ) -> Result<(), Error> {
-    trace!("{} ➡ cook_file ➡ input: {:?}, output: {:?}", file!(), input, output);
+    trace!("cook_file ➡ input: {:?}, output: {:?}", input, output);
 
-    trace!("{} ➡ cook_file ➡ Read content as mix text.", file!());
+    trace!("cook_file ➡ Read content as mix text.");
     let content_as_mix_text = read_content_as_mix_text(&input)?;
-    debug!("{} ➡ cook_file ➡ Read content as mix text. ➡ content_as_mix_text: {:?}", file!(),  content_as_mix_text);
+    debug!(" cook_file ➡ Read content as mix text. ➡ content_as_mix_text: {:?}",  content_as_mix_text);
 
-    debug!("{} ➡ cook_file ➡ Parse matter that holds variables.", file!());
+    debug!(" cook_file ➡ Parse matter that holds variables.");
     // TODO refactor this section to use let(…), when it is stable.
     let content_as_markdown_text: String;
     let mut state_trait: Box<dyn StateTrait>;
@@ -283,50 +283,50 @@ fn cook_one_file<T: TemplaterTrait>(
     }
     debug!("state_trait: {:?}", &state_trait);
 
-    trace!("{} ➡ cook_file ➡ Convert from Markdown text to HTML text.", file!());
+    trace!("cook_file ➡ Convert from Markdown text to HTML text.");
     let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
     debug!("content_as_html_text: {:?}", &content_as_html_text);
 
-    trace!("{} ➡ cook_file ➡ Set the content HTML for the content template tag.", file!());
+    trace!("cook_file ➡ Set the content HTML for the content template tag.");
     state_trait.insert(String::from("content"), content_as_html_text.clone());
-    debug!("{} ➡ cook_file ➡ Set the content HTML for the content template tag. ➡ state_trait: {:?}", file!(), state_trait);
+    debug!(" cook_file ➡ Set the content HTML for the content template tag. ➡ state_trait: {:?}", state_trait);
 
-    trace!("{} ➡ cook_file ➡ Set the state trait title as needed via the first headline.", file!());
+    trace!("cook_file ➡ Set the state trait title as needed via the first headline.");
     if !state_trait.contains_key("title") {
         if let Some(title) = from_html_str_into_headline_str(&content_as_html_text) {
             state_trait.contains_key_or_insert(String::from("title"), String::from(title));
         }
     }
-    debug!("{} ➡ cook_file ➡ Set the state trait title as needed via the first headline. ➡ state_trait: {:?}", file!(), state_trait);
+    debug!(" cook_file ➡ Set the state trait title as needed via the first headline. ➡ state_trait: {:?}", state_trait);
 
-    trace!("{} ➡ cook_file ➡ Convert the state to a final state enum.", file!());
+    trace!("cook_file ➡ Convert the state to a final state enum.");
     let state_enum = state_trait.to_state_enum();
-    debug!("{} ➡ cook_file ➡ Convert the state to a final state enum. ➡ state_enum: {:?}", file!(), &state_enum);
+    debug!(" cook_file ➡ Convert the state to a final state enum. ➡ state_enum: {:?}", &state_enum);
 
     //TODO make dynamic
-    trace!("{} ➡ cook_file ➡ Select the template name.", file!());
+    trace!("cook_file ➡ Select the template name.");
     let template_name = *templater.template_names_as_set_str().iter().next().expect("template_name");
-    debug!("{} ➡ cook_file ➡ Select the template name. ➡ template_name: {:?}", file!(), &template_name);
+    debug!(" cook_file ➡ Select the template name. ➡ template_name: {:?}", &template_name);
 
-    trace!("{} ➡ cook_file ➡ Render the template.", file!());
+    trace!("cook_file ➡ Render the template.");
     let output_as_html_text: String = templater.render_template_with_state_enum(&template_name, &state_enum)
     .map_or_else(
         |err| Err(Error::DoPathRenderTemplateWithStateEnum { input: input.to_owned(), output: output.to_owned(), template_name: template_name.to_owned(), debug: format!("{:?}", err) }),
         |val| Ok(val)
     )?;
-    debug!("{} ➡ cook_file ➡ Render the template. ➡ output_as_html_text: {:?}", file!(), &output_as_html_text);
+    debug!(" cook_file ➡ Render the template. ➡ output_as_html_text: {:?}", &output_as_html_text);
 
-    trace!("{} ➡ cook_file ➡ Rewrite the HTML.", file!());
+    trace!("cook_file ➡ Rewrite the HTML.");
     let output_as_html_text = crate::rewriting::lol::rewrite(&output_as_html_text);
-    debug!("{} ➡ cook_file ➡ Rewrite the HTML. ➡ output_as_html_text: {:?}", file!(), &output_as_html_text);
+    debug!(" cook_file ➡ Rewrite the HTML. ➡ output_as_html_text: {:?}", &output_as_html_text);
 
-    trace!("{} ➡ cook_file ➡ Write output file.", file!());
+    trace!("cook_file ➡ Write output file.");
     if let Err(err) = std::fs::write(&output, output_as_html_text) {
         return Err(Error::Write(err));
     }
-    debug!("{} ➡ cook_file ➡ Write output file. -> Ok", file!());
+    debug!(" cook_file ➡ Write output file. -> Ok");
 
-    debug!("{} ➡ cook_file ➡ Ok → input: {:?}, output: {:?}", file!(), input, output);
+    debug!(" cook_file ➡ Ok → input: {:?}, output: {:?}", input, output);
     Ok(())
 }
 

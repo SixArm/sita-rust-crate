@@ -26,7 +26,7 @@ use crate::f::from_input_dir_and_output_dir_into_map::*;
 ///
 #[allow(dead_code)]
 pub fn from_input_path_buf_and_output_path_buf_into_map(input_path_buf: &PathBuf, output_path_buf: &PathBuf) -> Result<Map<PathBuf, PathBuf>, Error> {
-    trace!("{} ➡ from_input_path_buf_and_output_path_buf_into_map ➡ input_path_buf: {:?}, output_path_buf: {:?} ", file!(), input_path_buf, output_path_buf);
+    trace!("from_input_path_buf_and_output_path_buf_into_map ➡ input_path_buf: {:?}, output_path_buf: {:?} ", input_path_buf, output_path_buf);
     if input_path_buf.is_dir() {
         if output_path_buf.exists() && !output_path_buf.is_dir() {
             return Err(Error::InputIsDirButOutputIsNotDir { 

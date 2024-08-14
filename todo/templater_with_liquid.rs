@@ -19,58 +19,58 @@ impl TemplaterTrait for TemplaterWithLiquid {
 
     //TODO
     fn new() -> Self {
-        trace!("{} ➡ new", file!());
+        trace!("new");
         TemplaterWithLiquid {
         }
     }
 
     //TODO
     fn new_with_args(_args: &Args) -> Self {
-        trace!("{} ➡ new_with_args", file!());
+        trace!("new_with_args");
         TemplaterWithLiquid {
         }
     }
 
     //TODO
     fn template_name_default(&self) -> String {
-        trace!("{} ➡ template_name_default", file!());
+        trace!("template_name_default");
         String::from("default")
     }
 
     //TODO
     fn template_content_text_default(&self) -> String {
-        trace!("{} ➡ template_content_text_default", file!());
+        trace!("template_content_text_default");
         String::from("{{{ content }}}")
     }
 
 
     //TODO
     fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("{} ➡ register_template_via_name_and_content_text", file!());
+        trace!("register_template_via_name_and_content_text");
         Ok(())
     }
 
     //TODO
     fn contains_any_template(&self) -> bool {
-        trace!("{} ➡ contains_any_template", file!());
+        trace!("contains_any_template");
         false
     }
 
     //TODO
     fn contains_template_name(&self, name: &str) -> bool {
-        trace!("{} ➡ contains_template_name", file!());
+        trace!("contains_template_name");
         false
     }
 
     //TODO
     fn template_names_as_set_str(&self) -> Set<&str> {
-        trace!("{} ➡ template_names_as_set_str", file!());
+        trace!("template_names_as_set_str");
         Set::new()
     }
 
     //TODO
     fn render_template_with_state_enum(&self, template_name: &str, state_enum: &StateEnum) -> Result<HtmlString> {
-        trace!("{} ➡ render_template_with_state_enum", file!());
+        trace!("render_template_with_state_enum");
         Ok(HtmlString::from(""))
     }
 

@@ -24,7 +24,7 @@ use crate::f::walkdir_dir_entry_is_visible::*;
 /// ```
 #[allow(dead_code)]
 pub fn walkdir_prefer_iter(dir: impl AsRef<Path>) -> impl Iterator<Item = DirEntry> {
-    trace!("{} ➡ walkdir_prefer_iter ➡ dir: {:?}", file!(), dir.as_ref());
+    trace!("walkdir_prefer_iter ➡ dir: {:?}", dir.as_ref());
     WalkDir::new(dir)
     .into_iter()
     .filter_map(|result|
@@ -33,7 +33,7 @@ pub fn walkdir_prefer_iter(dir: impl AsRef<Path>) -> impl Iterator<Item = DirEnt
                 Some(dir_entry)
             },
             Err(error) => {
-                error!("{} ➡ walkdir_prefer_iter -> Err ➡ {:?}", file!(), error);
+                error!("walkdir_prefer_iter -> Err ➡ {:?}", error);
                 None
             }
         }

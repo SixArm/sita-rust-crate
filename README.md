@@ -24,16 +24,22 @@ Sita aims to be flexible for complex needs:
 * For example Sita can use front matter variables that can be set
   via HTML, JSON, TOML, YAML, XML, or other options.
 
+
+## Sita status
+
 Sita is currently being developed:
+
+* We're using Sita for real-world work.
 
 * We welcome help and constructive feedback.
 
 * You can open a GitHub issue or contact us at sita@sixarm.com.
 
 
-## Sīta is a goddess
+## Sīta naming
 
 Sīta is an earth goddess who blesses the land with good crops. In the Vedic period, she was one of the goddesses associated with fertility.
+
 The word Sīta is a poetic term that signifies fertility and blessings coming from agriculture.
 
 
@@ -144,4 +150,3 @@ The roadmap is:
 * Liquid - because of popularity with e-commerce developers.
 
 * Tera - because of advanced capabilities and pure Rust.
-

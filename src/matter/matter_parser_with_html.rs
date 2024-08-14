@@ -43,7 +43,7 @@ impl MatterParserTrait<State, Error> for MatterParserWithHTML {
     /// ```
     #[allow(dead_code)]
     fn parse_mix_text_to_content_text_and_matter_text(&self, mix_text: &str) -> Result<(String, String), Error> {
-        trace!("{} ➡ parse_mix_text_to_content_text_and_matter_text", file!());
+        trace!("parse_mix_text_to_content_text_and_matter_text");
         match REGEX.captures(mix_text) {
             Some(captures) => Ok((
                 String::from(captures.name("content").unwrap().as_str()),

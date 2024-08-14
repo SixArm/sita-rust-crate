@@ -24,7 +24,7 @@ use std::path::PathBuf;
 
 /// Create a clap app.
 pub fn app() -> Command {
-    trace!("{} ➡ app", file!());
+    trace!("app");
     Command::new("Sita")
     .name(env!("CARGO_PKG_NAME"))
     .version(env!("CARGO_PKG_VERSION"))
@@ -50,13 +50,6 @@ pub fn app() -> Command {
         .action(clap::ArgAction::Append)
         .num_args(1..)
     )
-    .arg(Arg::new("output_file_name_extension")
-        .help("The output file name extension.\nDefault: \"html\".\nExample: --output-extension \"html\"")
-        .long("output-extension")
-        .value_name("EXTENSION")
-        .value_parser(clap::value_parser!(PathBuf))
-        .action(clap::ArgAction::Append)
-    )
     .arg(Arg::new("template")
         .help("A template path.\nExample file: --template \"example.html\" …\nExample directory: --template \"examples/\" …\nExample glob: --template \"examples/**/*\" …")
         .short('t')
@@ -76,11 +69,6 @@ pub fn app() -> Command {
         .value_parser(clap::value_parser!(PathBuf))
         .action(clap::ArgAction::Append)
     )
-    .arg(Arg::new("test")
-        .help("Print test output for debugging, verifying, tracing, and the like.\nExample: --test")
-        .long("test")
-        .action(clap::ArgAction::SetTrue)
-    )
     .arg(Arg::new("set")
         .help("Set a variable name to a value.\nExample: --set pi 3.1415 …")
         .short('s')
@@ -88,6 +76,18 @@ pub fn app() -> Command {
         .num_args(2)
         .value_names(&["NAME", "VALUE"])
         .value_parser(clap::value_parser!(String))
+        .action(clap::ArgAction::Append)
+    )
+    .arg(Arg::new("test")
+        .help("Print test output for debugging, verifying, tracing, and the like.\nExample: --test")
+        .long("test")
+        .action(clap::ArgAction::SetTrue)
+    )
+    .arg(Arg::new("output_file_name_extension")
+        .help("The output file name extension.\nDefault: \"html\".\nExample: --output-extension \"html\"")
+        .long("output-extension")
+        .value_name("EXTENSION")
+        .value_parser(clap::value_parser!(PathBuf))
         .action(clap::ArgAction::Append)
     )
     .arg(Arg::new("verbose")
@@ -100,9 +100,9 @@ pub fn app() -> Command {
 
 /// Create an Args struct initiated with the clap App settings.
 pub fn args() -> Args {
-    trace!("{} ➡ args", file!());
+    trace!("args");
     let matches = app().get_matches();
-    trace!("{} ➡ args ➡ matches: {:?}", file!(), matches);
+    trace!("args ➡ matches: {:?}", matches);
 
     let input_list: Option<List<PathBuf>> = match matches.get_many("input") {
         Some(paths) => Some(paths.map(|path: &PathBuf| path.to_owned()).collect()),
@@ -168,7 +168,7 @@ pub fn args() -> Args {
         test: test,
     };
 
-    trace!("{} ➡ args ➡ args: {:?}", file!(), args);
+    trace!("args ➡ args: {:?}", args);
     args
 }
 

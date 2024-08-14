@@ -52,15 +52,15 @@ Our convention is a file `main.rs` where the setup happens:
 
 ```rust
 fn main() {
-    if let Err(ref e) = crate::run::run() {
-        println!("error: {}", e);
-        for e in e.iter().skip(1) {
-            println!("caused by: {}", e);
+    env_logger::init();
+    match crate::app::run::run() {
+        Ok(()) => {
+            std::process::exit(0);
         }
-        if let Some(backtrace) = e.backtrace() {
-            println!("backtrace: {:?}", backtrace);
+        Err(err) => {
+            error!("{:?}", err);
+            std::process::exit(1);
         }
-        std::process::exit(1);
     }
 }
 ```

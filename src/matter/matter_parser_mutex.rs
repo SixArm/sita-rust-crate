@@ -93,7 +93,7 @@ use crate::state::state_trait::StateTrait;
 
 #[allow(dead_code)]
 pub fn parse_mix_text_to_content_text_and_state(mix_text: &str) -> Result<(String, Box<dyn StateTrait>), Error> {
-    trace!("{} ➡ parse_mix_text_to_content_text_and_state", file!());
+    trace!("parse_mix_text_to_content_text_and_state");
     if let Ok((s, state)) = (MatterParserWithHTML{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }
     if let Ok((s, state)) = (MatterParserWithJSON{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }
     if let Ok((s, state)) = (MatterParserWithMarkdownComments{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }

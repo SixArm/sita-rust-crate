@@ -28,7 +28,7 @@ use walkdir::WalkDir;
 ///
 #[allow(dead_code)]
 pub fn from_input_dir_and_output_dir_into_map(input_dir: &PathBuf, output_dir: &PathBuf) -> Result<Map<PathBuf, PathBuf>, Error> {
-    trace!("{} ➡ from_input_dir_and_output_dir_into_map ➡ input_dir: {:?}, output_dir: {:?} ", file!(), input_dir, output_dir);
+    trace!("from_input_dir_and_output_dir_into_map ➡ input_dir: {:?}, output_dir: {:?} ", input_dir, output_dir);
     if !input_dir.is_dir() {
         return Err(Error::InputDirMustBeDir { input_dir: input_dir.to_owned() })
     }
