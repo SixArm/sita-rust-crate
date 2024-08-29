@@ -1,6 +1,6 @@
 [package]
 name = "sita"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Joel Parker Henderson <joel@joelparkerhenderson.com>"]
 edition = "2021"
 description = "Sita: static site generator (SSG) for Markdown and HTML"
@@ -28,7 +28,7 @@ base64 = "0.22.1"
 bytes = "1.7.1"
 
 # clap: Command Line Argument Parser
-clap = { version = "4.5.13", features = ["string", "wrap_help"] }
+clap = { version = "4.5.16", features = ["string", "wrap_help"] }
 
 # confy: Boilerplate-free configuration management
 confy = "0.6.1"
@@ -85,7 +85,7 @@ minidom = "0.15.2"
 once_cell = "1.19.0"
 
 # pulldown-cmark: A pull parser for CommonMark
-pulldown-cmark = "0.11.0"
+pulldown-cmark = "0.11.2"
 
 # regex: Regular expressions parser, compiler, and executer
 regex = "1.10.6"
@@ -97,10 +97,10 @@ rhai = { version = "1.19.0", features = [ "decimal", "internals", "metadata", "s
 quick-xml = "0.25.0"
 
 # serde: Serialize/deserialize framework
-serde = { version = "1.0.204", features = ["derive"] }
+serde = { version = "1.0.209", features = ["derive"] }
 
 # serde_json: serialize/deserialize JavaScript Object Notation
-serde_json = "1.0.122"
+serde_json = "1.0.127"
 
 # serde_yaml: serialize/deserialize Yet Another Markup Language
 serde_yaml = "0.9.34"

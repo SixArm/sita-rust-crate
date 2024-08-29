@@ -133,11 +133,7 @@ fn initialize_templater_helpers(
     trace!("initialize_templater_helpers");
     if let Some(extra_list) = &args.extra_list {
         for extra_path_buf in extra_list.iter().filter(|&x| x.is_file()) {
-            trace!(
-                "{} ➡ initialize_templater_helpers ➡ extra_path_buf: {:?}",
-                file!(),
-                extra_path_buf
-            );
+            trace!("initialize_templater_helpers ➡ extra_path_buf: {:?}", extra_path_buf);
             //TODO borrow
             let name: String = match extra_path_buf.file_name() {
                 Some(x) => x.to_string_lossy().into(),
@@ -154,7 +150,7 @@ fn initialize_templater_helpers(
 }
 
 fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Error> {
-    trace!("cook_all");
+    trace!("cook_all ➡ args.input_list: {:?}, args.output_list: {:?}", &args.input_list, &args.output_list);
     if let (
         Some(input_list),
         Some(output_list)
@@ -162,12 +158,15 @@ fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Erro
         &args.input_list,
         &args.output_list
     ){
+        trace!("cook_all ➡ input_list len: {}, output_list len: {}", input_list.len(), output_list.len());
         vet_input_output_list_length(input_list, output_list)?;
         for i in 0..input_list.len() {
             let input = &input_list[i];
             let output = &output_list[i];
             cook_one(args, templater, input, output)?
         }
+    } else {
+        trace!("cook_all ➡ missing input/output lists");
     }
     Ok(())
 }
@@ -186,7 +185,19 @@ fn vet_input_output_list_length(input_list: &List<PathBuf>, output_list: &List<P
 
 fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
     trace!("cook_one ➡ input: {:?}, output: {:?}", input, output);
-    if input.is_dir() && output.is_dir() {    
+    if input.is_dir() {
+        if output.is_file() {
+            return Err(Error::CookOneInputIsDirButOutputIsFile { 
+                input: input.to_owned(), 
+                output: output.to_owned() 
+            })
+        }
+        if output.exists() {
+            return Err(Error::CookOneInputIsDirButOutputExists { 
+                input: input.to_owned(), 
+                output: output.to_owned() 
+            })
+        }
         return cook_one_dir(
             &args,
             templater,
@@ -194,7 +205,19 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
             output,
         )
     }
-    if input.is_file() && output.is_file() {
+    if input.is_file() {
+        if output.is_dir() {
+            return Err(Error::CookOneInputIsFileButOutputIsDir { 
+                input: input.to_owned(), 
+                output: output.to_owned() 
+            })
+        }
+        if output.exists() {
+            return Err(Error::CookOneInputIsFileButOutputExists { 
+                input: input.to_owned(), 
+                output: output.to_owned() 
+            })
+        }
         return cook_one_file(
             &args,
             templater,
@@ -202,8 +225,10 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
             output,
         )
     }
-    // TODO return mismatch error
-    Ok(())
+    Err(Error::CookOne { 
+        input: input.to_owned(), 
+        output: output.to_owned() 
+    })
 }
 
 fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
@@ -421,6 +446,36 @@ pub enum Error {
         input_dir: PathBuf,
         dir_entry: walkdir::DirEntry,
         strip_prefix_error: std::path::StripPrefixError,  
+    },
+
+    #[error("CookOne ➡ input {input:?}, output {output:?}")]
+    CookOne {
+        input: PathBuf,
+        output: PathBuf
+    },
+
+    #[error("CookOneInputIsDirButOutputIsFile ➡ input {input:?}, output {output:?}")]
+    CookOneInputIsDirButOutputIsFile {
+        input: PathBuf,
+        output: PathBuf
+    },
+
+    #[error("CookOneInputIsDirButOutputExists ➡ input {input:?}, output {output:?}")]
+    CookOneInputIsDirButOutputExists {
+        input: PathBuf,
+        output: PathBuf
+    },
+
+    #[error("CookOneInputIsFileButOutputIsDir ➡ input {input:?}, output {output:?}")]
+    CookOneInputIsFileButOutputIsDir {
+        input: PathBuf,
+        output: PathBuf
+    },
+
+    #[error("CookOneInputIsFileButOutputExists ➡ input {input:?}, output {output:?}")]
+    CookOneInputIsFileButOutputExists {
+        input: PathBuf,
+        output: PathBuf
     },
 
 }
