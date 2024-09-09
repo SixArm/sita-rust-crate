@@ -96,7 +96,7 @@ pub fn test_with_base_path_and_default_input_actual_expect(base_path: &PathBuf) 
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq_other!(std::fs::read_to_string, &actual, &expect,);
+    assert_fs_read_to_string_eq!(&actual, &expect);
     // Done
     std::fs::remove_file(&actual).expect("remove");
 }
@@ -123,7 +123,7 @@ pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: &
         .output()
         .expect("failure");
     assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fn_ok_eq_other!(std::fs::read_to_string, &actual, &expect,);
+    assert_fs_read_to_string_eq!(&actual, &expect);
     // Done
     std::fs::remove_file(&actual).expect("remove");
 }

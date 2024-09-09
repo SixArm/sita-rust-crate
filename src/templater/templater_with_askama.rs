@@ -1,23 +1,23 @@
-//! Templater with Liquid
+//! Templater with Askama
 
-use liquid;
+use askama;
 use crate::app::args::Args;
 use crate::types::{html::*, set::*};
 use crate::state::state_enum::StateEnum;
 use crate::templater::templater_trait::TemplaterTrait;
 
 #[derive(Debug, Default)]
-pub struct TemplaterWithLiquid<'templater> {
-    pub liquid: ::liquid::Liquid<'templater>,
+pub struct TemplaterWithAskama<'templater> {
+    pub askama: ::askama::Askama<'templater>,
 }
 
-impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
+impl<'templater> TemplaterTrait for TemplaterWithAskama<'templater> {
 
     fn new() -> Self {
         trace!("new");
-        let liquid = Liquid::default();
-        TemplaterWithLiquid {
-            liquid: liquid,
+        let askama = Askama::default();
+        TemplaterWithAskama {
+            askama: askama,
         }
     }
 
@@ -25,10 +25,10 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
         _args: &Args
     ) -> Self {
         trace!("new_with_args");
-        let mut liquid = Liquid::default();
-        liquid.set_strict_mode(true);
-        TemplaterWithLiquid {
-            liquid: liquid,
+        let mut askama = Askama::default();
+        askama.set_strict_mode(true);
+        TemplaterWithAskama {
+            askama: askama,
         }
     }
 
@@ -52,7 +52,7 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
         content_text: impl AsRef<str>
     ) -> Result<(), impl std::error::Error> {
         trace!("register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content_text.as_ref().len());
-        self.liquid.register_template_string(name.as_ref(), &content_text)
+        self.askama.register_template_string(name.as_ref(), &content_text)
         .map_or_else(
             |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
             |()| Ok(())
@@ -63,7 +63,7 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
         &self
     ) -> bool {
         trace!("contains_any_template");
-        !self.liquid.get_templates().is_empty()
+        !self.askama.get_templates().is_empty()
     }
 
     fn contains_template_name(
@@ -71,7 +71,7 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
         name: impl AsRef<str>
     ) -> bool {
         trace!("contains_template_name");
-        self.liquid.get_template(name.as_ref()).is_some()
+        self.askama.get_template(name.as_ref()).is_some()
     }
 
     fn template_names_as_set_str(
@@ -79,7 +79,7 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
     ) -> Set<&str> {
         trace!("template_names_as_set_str");
         let mut names: Set<&str> = Set::new();
-        for key in self.liquid.get_templates().keys() {
+        for key in self.askama.get_templates().keys() {
             names.insert(key);
         }
         names
@@ -93,10 +93,10 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
         trace!("render_template_with_state_enum");
         //TODO make generic
         match state_enum {
-            StateEnum::StateWithMap(x) =>  self.liquid.render(template_name.as_ref(), x),
-            StateEnum::StateWithJSON(x) => self.liquid.render(template_name.as_ref(), x),
-            StateEnum::StateWithTOML(x) => self.liquid.render(template_name.as_ref(), x),
-            StateEnum::StateWithYAML(x) => self.liquid.render(template_name.as_ref(), x),
+            StateEnum::StateWithMap(x) =>  self.askama.render(template_name.as_ref(), x),
+            StateEnum::StateWithJSON(x) => self.askama.render(template_name.as_ref(), x),
+            StateEnum::StateWithTOML(x) => self.askama.render(template_name.as_ref(), x),
+            StateEnum::StateWithYAML(x) => self.askama.render(template_name.as_ref(), x),
         }.map_or_else(
             |err| Err(Error::Render(err)),
             |html_string| Ok(html_string)
@@ -109,10 +109,10 @@ impl<'templater> TemplaterTrait for TemplaterWithLiquid<'templater> {
 pub enum Error {
 
     #[error ("RegisterTemplateViaNameAndContentText ➡ {0:?}")]
-    RegisterTemplateViaNameAndContentText(liquid::TemplateError),
+    RegisterTemplateViaNameAndContentText(askama::TemplateError),
 
     #[error ("Render ➡ {0:?}")]
-    Render(liquid::RenderError),
+    Render(askama::RenderError),
 
 }
 
@@ -135,7 +135,7 @@ mod tests {
 
     const FAB_OUTPUT_HTML: &str = "my content";
 
-    type TemplaterX<'templater> = TemplaterWithLiquid<'templater>;
+    type TemplaterX<'templater> = TemplaterWithAskama<'templater>;
 
     #[test]
     fn test_new() {

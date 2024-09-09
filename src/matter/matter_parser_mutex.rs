@@ -99,17 +99,14 @@ pub fn parse_mix_text_to_content_text_and_state(mix_text: &str) -> Result<(Strin
     if let Ok((s, state)) = (MatterParserWithMarkdownComments{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }
     if let Ok((s, state)) = (MatterParserWithTOML{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }
     if let Ok((s, state)) = (MatterParserWithYAML{}.parse_mix_text_to_content_text_and_state(mix_text)) { return Ok((s, Box::new(state))); }
-    Err(Error::ParseMixTextToContentTextAndMatterText { mix_text: mix_text.to_owned() })
+    // Fallback
+    let content_text = String::from(mix_text); //TODO optimize to &str
+    let state = crate::state::state_with_map::StateWithMap::new(); // TODO make configurable
+    Ok((content_text, Box::new(state)))
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-
-    #[error("parse mix text to content text and state ➡ mix_text: {mix_text}")]
-    ParseMixTextToContentTextAndMatterText {
-        mix_text: String,
-    }
-
 }
 
 #[cfg(test)]

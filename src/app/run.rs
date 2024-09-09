@@ -4,14 +4,11 @@ use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::app::config::Config;
 use crate::types::list::*;
-use crate::state::state_trait::StateTrait;
-use crate::state::state_with_map::StateWithMap;
 use crate::templater::templater_trait::TemplaterTrait;
 use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 //use crate::templater::templater_with_liquid::TemplaterWithLiquid;
 //use crate::templater::templater_with_tera::TemplaterWithTera;
 //use crate::f::from_path_buf_into_sibling_extension::*;
-use crate::f::from_html_str_into_headline_str::*;
 use walkdir::WalkDir;
 
 /// Run everything.
@@ -185,6 +182,7 @@ fn vet_input_output_list_length(input_list: &List<PathBuf>, output_list: &List<P
 
 fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
     trace!("cook_one ➡ input: {:?}, output: {:?}", input, output);
+
     if input.is_dir() {
         if output.is_file() {
             return Err(Error::CookOneInputIsDirButOutputIsFile { 
@@ -205,6 +203,7 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
             output,
         )
     }
+    
     if input.is_file() {
         if output.is_dir() {
             return Err(Error::CookOneInputIsFileButOutputIsDir { 
@@ -218,17 +217,26 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
                 output: output.to_owned() 
             })
         }
-        return cook_one_file(
+        return crate::cook_file::cook_file(
             &args,
             templater,
             input,
             output,
         )
+        .map_or_else(
+            |err| Err(Error::CookFile {
+                input: input.to_owned(), 
+                output: output.to_owned(),
+                err: err,
+            }),
+            |()| Ok(())
+        )
     }
-    Err(Error::CookOne { 
-        input: input.to_owned(), 
-        output: output.to_owned() 
+
+    Err(Error::CookOneInputIsNotDirAndIsNotFile { 
+        input: input.to_owned()
     })
+    
 }
 
 fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
@@ -247,7 +255,7 @@ fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBu
                             let input_entry = input.join(path);
                             let mut output_entry = output.join(path); 
                             output_entry.set_extension(output_file_name_extension);
-                            cook_one_file(
+                            cook_one(
                                 &args,
                                 templater,
                                 &input_entry,
@@ -283,112 +291,6 @@ fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBu
     Ok(())
 }
 
-fn cook_one_file<T: TemplaterTrait>(
-    _args: &Args,
-    templater: &T,
-    input: &PathBuf,
-    output: &PathBuf
-) -> Result<(), Error> {
-    trace!("cook_file ➡ input: {:?}, output: {:?}", input, output);
-
-    trace!("cook_file ➡ Read content as mix text.");
-    let content_as_mix_text = read_content_as_mix_text(&input)?;
-    debug!(" cook_file ➡ Read content as mix text. ➡ content_as_mix_text: {:?}",  content_as_mix_text);
-
-    debug!(" cook_file ➡ Parse matter that holds variables.");
-    // TODO refactor this section to use let(…), when it is stable.
-    let content_as_markdown_text: String;
-    let mut state_trait: Box<dyn StateTrait>;
-    if let Ok(parsed) = crate::matter::matter_parser_mutex::parse_mix_text_to_content_text_and_state(&content_as_mix_text) {
-        content_as_markdown_text = parsed.0;
-        state_trait = parsed.1;
-    } else {
-        content_as_markdown_text = content_as_mix_text.into();
-        state_trait = Box::new(StateWithMap::new());
-    }
-    debug!("state_trait: {:?}", &state_trait);
-
-    trace!("cook_file ➡ Convert from Markdown text to HTML text.");
-    let content_as_html_text = convert_from_markdown_text_to_html_text(&content_as_markdown_text);
-    debug!("content_as_html_text: {:?}", &content_as_html_text);
-
-    trace!("cook_file ➡ Set the content HTML for the content template tag.");
-    state_trait.insert(String::from("content"), content_as_html_text.clone());
-    debug!(" cook_file ➡ Set the content HTML for the content template tag. ➡ state_trait: {:?}", state_trait);
-
-    trace!("cook_file ➡ Set the state trait title as needed via the first headline.");
-    if !state_trait.contains_key("title") {
-        if let Some(title) = from_html_str_into_headline_str(&content_as_html_text) {
-            state_trait.contains_key_or_insert(String::from("title"), String::from(title));
-        }
-    }
-    debug!(" cook_file ➡ Set the state trait title as needed via the first headline. ➡ state_trait: {:?}", state_trait);
-
-    trace!("cook_file ➡ Convert the state to a final state enum.");
-    let state_enum = state_trait.to_state_enum();
-    debug!(" cook_file ➡ Convert the state to a final state enum. ➡ state_enum: {:?}", &state_enum);
-
-    //TODO make dynamic
-    trace!("cook_file ➡ Select the template name.");
-    let template_name = *templater.template_names_as_set_str().iter().next().expect("template_name");
-    debug!(" cook_file ➡ Select the template name. ➡ template_name: {:?}", &template_name);
-
-    trace!("cook_file ➡ Render the template.");
-    let output_as_html_text: String = templater.render_template_with_state_enum(&template_name, &state_enum)
-    .map_or_else(
-        |err| Err(Error::DoPathRenderTemplateWithStateEnum { input: input.to_owned(), output: output.to_owned(), template_name: template_name.to_owned(), debug: format!("{:?}", err) }),
-        |val| Ok(val)
-    )?;
-    debug!(" cook_file ➡ Render the template. ➡ output_as_html_text: {:?}", &output_as_html_text);
-
-    trace!("cook_file ➡ Rewrite the HTML.");
-    let output_as_html_text = crate::rewriting::lol::rewrite(&output_as_html_text);
-    debug!(" cook_file ➡ Rewrite the HTML. ➡ output_as_html_text: {:?}", &output_as_html_text);
-
-    trace!("cook_file ➡ Write output file.");
-    if let Err(err) = std::fs::write(&output, output_as_html_text) {
-        return Err(Error::Write(err));
-    }
-    debug!(" cook_file ➡ Write output file. -> Ok");
-
-    debug!(" cook_file ➡ Ok → input: {:?}, output: {:?}", input, output);
-    Ok(())
-}
-
-/// Read content as mix text i.e. text that contains both Markdown and variables.
-///
-/// Example:
-///
-/// ```
-/// let input_file_path_buf: PathBuf = PathBuf::from("example.md");
-/// let content_as_markdown: String = read_content_as_markdown(&input_file_path_buf);
-/// ```
-///
-fn read_content_as_mix_text(input_file_path_buf: &PathBuf) -> Result<String, Error> {
-    std::fs::read_to_string(input_file_path_buf)
-    .map_or_else(
-        |err| Err(Error::ReadContentAsMixText(err)),
-        |s| Ok(String::from(s.trim_end())) //TODO optimize to &str
-    )
-}
-
-/// Convert from Markdown text to HTML text.
-///
-/// Example:
-///
-/// ```
-/// let markdown_text: &str = "# alfa\nbravo\n";
-/// let html_text = convert_from_markdown_text_to_html_text(markdown);
-/// assert_eq!(html, "<h1>alfa</h1>\n<p>bravo</p>\n");
-/// ```
-///
-fn convert_from_markdown_text_to_html_text(markdown_text: &str) -> String {
-    let parser = crate::markdown::markdown_parser::parser(markdown_text);
-    let mut html_text = String::new();
-    pulldown_cmark::html::push_html(&mut html_text, parser);
-    html_text
-}
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
 
@@ -399,12 +301,6 @@ pub enum Error {
     RegisterTemplateViaDefault {
         debug: String
     },
-
-    #[error("ReadContentAsMixText ➡ {0:?}")]
-    ReadContentAsMixText(std::io::Error),
-
-    #[error("Write ➡ {0:?}")]
-    Write(std::io::Error),
 
     #[error("InputOutputListLength ➡ input_list: {input_list:?}, output_list: {output_list:?}")]
     InputOutputListLength {
@@ -424,14 +320,6 @@ pub enum Error {
         name: String,
         extra_path_buf: PathBuf,
         debug: String,
-    },
-
-    #[error("DoPathRenderTemplateWithStateEnum ➡ input {input:?}, output {output:?}, template_name: {template_name:?}, debug: {debug:?}")]
-    DoPathRenderTemplateWithStateEnum {
-        input: PathBuf,
-        output: PathBuf,
-        template_name: String,
-        debug: String
     },
 
     #[error("Walk ➡ input: {input:?}, output: {output:?}, walkdir_error: {walkdir_error:?}")]
@@ -478,44 +366,27 @@ pub enum Error {
         output: PathBuf
     },
 
+    #[error("CookOneInputIsNotDirAndIsNotFile ➡ input {input:?}")]
+    CookOneInputIsNotDirAndIsNotFile {
+        input: PathBuf,
+    },    
+
+    #[error("CookFile ➡ input {input:?}, output {output:?}, err: {err:?}")]
+    CookFile {
+        input: PathBuf,
+        output: PathBuf,
+        err: crate::cook_file::Error,
+    },
+
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
 
     #[test]
     fn test_run() {
         //TODO
-    }
-
-    #[test]
-    fn test_cook_file() {
-        //TODO
-    }
-
-    #[test]
-    fn test_read_content_as_mix_text() {
-        let input_file_path_buf = crate::testing::TESTS_DIR
-        .join("src")
-        .join("f")
-        .join("read_content_as_mix_text")
-        .join("example.md");
-        let content_as_mix_text: String = read_content_as_mix_text(&input_file_path_buf).unwrap();
-        assert_eq!(
-            content_as_mix_text,
-            "# alfa\nbravo"
-        );
-    }
-
-    #[test]
-    fn test_convert_from_markdown_text_to_html_text() {
-        let markdown_text: &str = "# alfa\nbravo\n";
-        let html_text = convert_from_markdown_text_to_html_text(markdown_text);
-        assert_eq!(
-            html_text,
-            "<h1>alfa</h1>\n<p>bravo</p>\n"
-        );
     }
 
 }

@@ -63,7 +63,6 @@ mod tests {
         assert_eq!(actual, expect);
     }
 
-
     #[test]
     fn test_option_heading_attributes() {
         let markdown = indoc!{r#"

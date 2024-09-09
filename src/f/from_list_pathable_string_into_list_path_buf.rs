@@ -39,7 +39,7 @@ pub fn from_list_pathable_string_into_list_path_buf(from: &List<PathableString>)
 
 #[derive(thiserror::Error, Debug)]
 pub enum FromListPathableStringIntoListPathBufError {
-    #[error("glob pattern error")]
+    #[error("GlobPatternError")]
     GlobPatternError(#[from] glob::PatternError),
 }
 

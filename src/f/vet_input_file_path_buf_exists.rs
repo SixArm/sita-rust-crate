@@ -13,14 +13,14 @@ use std::path::PathBuf;
 pub fn vet_input_file_path_buf_exists(input: &PathBuf) -> Result<(), impl std::error::Error> {
     match input.exists() {
         true => Ok(()),
-        false => Err(Error::MustExist(input.to_owned()))
+        false => Err(Error::InputFileMustExist(input.to_owned()))
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("input file must exist; input: {0:?}")]
-    MustExist(PathBuf),
+    #[error("InputFileMustExist ➡ input: {0:?}")]
+    InputFileMustExist(PathBuf),
 }
 
 #[cfg(test)]

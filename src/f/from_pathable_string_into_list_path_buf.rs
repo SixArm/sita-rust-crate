@@ -81,7 +81,7 @@ pub fn from_pathable_string_into_list_path_buf(from: &PathableString) -> Result<
 
 #[derive(thiserror::Error, Debug)]
 pub enum FromPathableStringIntoListPathBufError {
-    #[error("pattern error")]
+    #[error("PatternError")]
     PatternError(#[from] PatternError),
 }
 

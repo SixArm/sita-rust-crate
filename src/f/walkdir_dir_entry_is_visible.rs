@@ -1,4 +1,3 @@
-use clap::builder::OsStr;
 use walkdir::DirEntry;
 
 /// Is the directory entry a visible path i.e. doesn't start with a period?

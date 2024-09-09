@@ -26,7 +26,7 @@ fn test() {
         .expect("failure");
     // Then
     assert!(actual.exists(), "actual.exists() path: {:?}", actual);
-    assert_fn_ok_eq_other!(std::fs::read_to_string, &actual, &expect,);
+    assert_fs_read_to_string_eq!(&actual, &expect);
     // Done
     remove_file_if_exists(&actual).expect("remove");
 }

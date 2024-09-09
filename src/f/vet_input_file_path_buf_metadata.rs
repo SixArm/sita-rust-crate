@@ -13,14 +13,14 @@ use std::path::PathBuf;
 pub fn vet_input_file_path_buf_metadata(input: &PathBuf) -> Result<(), impl std::error::Error> {
     match std::fs::metadata(input) {
         Ok(_) => Ok(()),
-        Err(e) => Err(Error::MustExist(input.to_owned(), e))
+        Err(e) => Err(Error::InputFileMetadataMustBeOk(input.to_owned(), e))
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("input file metadata must exist; input: {0:?}")]
-    MustExist(PathBuf, std::io::Error),
+    #[error("InputFileMetadataMustBeOk input: {0:?}")]
+    InputFileMetadataMustBeOk(PathBuf, std::io::Error),
 }
 
 

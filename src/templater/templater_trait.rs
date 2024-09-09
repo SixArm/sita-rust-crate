@@ -7,7 +7,7 @@
 use crate::app::args::Args;
 use crate::types::{html::*, set::*};
 
-pub trait TemplaterTrait {
+pub trait TemplaterTrait: std::fmt::Debug {
 
     // Create a new templater.
     //
@@ -67,7 +67,7 @@ pub trait TemplaterTrait {
         &mut self
     ) -> Result<(), impl std::error::Error> where Self: Sized {
         self.register_template_via_name_and_content_text(
-            self.template_name_default(),
+            self.template_name_default().to_owned(),
             self.template_content_text_default()
         )
     }

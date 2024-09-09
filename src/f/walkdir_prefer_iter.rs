@@ -1,6 +1,5 @@
 use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
-use crate::f::walkdir_dir_entry_is_visible::*;
 
 /// Walk a directory using our preferred settings:
 ///
