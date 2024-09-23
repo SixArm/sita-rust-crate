@@ -60,7 +60,5 @@ mod render {
 // }
 
 mod tutorial {
-    mod tutorial_01_input;
-    mod tutorial_02_output;
-    mod tutorial_03_template;
+    mod tutorial_01_template_input_output;
 }

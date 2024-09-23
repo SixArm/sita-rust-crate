@@ -12,5 +12,5 @@ pub static DIR: Lazy<PathBuf> = Lazy::new(|| {
 
 #[test]
 fn test() {
-    test_with_base_path_and_default_input_actual_expect(&DIR);
+    test_with_base_path_and_default_template_input_output_expect(&DIR);
 }

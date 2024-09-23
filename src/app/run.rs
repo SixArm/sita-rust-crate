@@ -146,7 +146,10 @@ fn initialize_templater_helpers(
     Ok(())
 }
 
-fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Error> {
+fn cook_all(
+    args: &Args, 
+    templater: &TemplaterWithHandlebars
+) -> Result<(), Error> {
     trace!("cook_all ➡ args.input_list: {:?}, args.output_list: {:?}", &args.input_list, &args.output_list);
     if let (
         Some(input_list),
@@ -160,7 +163,7 @@ fn cook_all(args: &Args, templater: &TemplaterWithHandlebars) -> Result<(), Erro
         for i in 0..input_list.len() {
             let input = &input_list[i];
             let output = &output_list[i];
-            cook_one(args, templater, input, output)?
+            cook_one(args, Some(templater), input, output)?
         }
     } else {
         trace!("cook_all ➡ missing input/output lists");
@@ -180,43 +183,30 @@ fn vet_input_output_list_length(input_list: &List<PathBuf>, output_list: &List<P
     }
 }
 
-fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
+fn cook_one(
+    args: &Args, 
+    templater: Option<&TemplaterWithHandlebars>, 
+    input: &PathBuf, 
+    output: &PathBuf
+) -> Result<(), Error> {
     trace!("cook_one ➡ input: {:?}, output: {:?}", input, output);
-
+    if !input.exists() {
+        return Err(Error::CookOneInputDoesNotExist { 
+            input: input.to_owned()
+        })
+    }    
     if input.is_dir() {
-        if output.is_file() {
-            return Err(Error::CookOneInputIsDirButOutputIsFile { 
-                input: input.to_owned(), 
-                output: output.to_owned() 
-            })
-        }
-        if output.exists() {
-            return Err(Error::CookOneInputIsDirButOutputExists { 
-                input: input.to_owned(), 
-                output: output.to_owned() 
-            })
-        }
-        return cook_one_dir(
+        return crate::cook_dir::cook_dir(
             &args,
             templater,
             input,
             output,
+        ).map_or_else(
+            |err| Err(Error::CookDir(err)),
+            |()| Ok(())
         )
     }
-    
     if input.is_file() {
-        if output.is_dir() {
-            return Err(Error::CookOneInputIsFileButOutputIsDir { 
-                input: input.to_owned(), 
-                output: output.to_owned() 
-            })
-        }
-        if output.exists() {
-            return Err(Error::CookOneInputIsFileButOutputExists { 
-                input: input.to_owned(), 
-                output: output.to_owned() 
-            })
-        }
         return crate::cook_file::cook_file(
             &args,
             templater,
@@ -224,72 +214,15 @@ fn cook_one(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, o
             output,
         )
         .map_or_else(
-            |err| Err(Error::CookFile {
-                input: input.to_owned(), 
-                output: output.to_owned(),
-                err: err,
-            }),
+            |err| Err(Error::CookFile(err)),
             |()| Ok(())
         )
     }
-
     Err(Error::CookOneInputIsNotDirAndIsNotFile { 
         input: input.to_owned()
     })
-    
 }
 
-fn cook_one_dir(args: &Args, templater: &TemplaterWithHandlebars, input: &PathBuf, output: &PathBuf) -> Result<(), Error> {
-    trace!("cook_one_dir ➡ input: {:?}, output: {:?}", input, output);
-    let output_file_name_extension = match &args.output_file_name_extension {
-        Some(x) => x,
-        None => &crate::app::args::OUTPUT_FILE_NAME_EXTENSION_AS_PATH_BUF,
-    };
-    for dir_entry in WalkDir::new(&input) {
-        match dir_entry {
-            Ok(dir_entry) => {
-                if dir_entry.file_type().is_file() {
-                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a file", input, output);
-                    match dir_entry.path().strip_prefix(&input) {
-                        Ok(path) => {
-                            let input_entry = input.join(path);
-                            let mut output_entry = output.join(path); 
-                            output_entry.set_extension(output_file_name_extension);
-                            cook_one(
-                                &args,
-                                templater,
-                                &input_entry,
-                                &output_entry,
-                            )?
-                        },
-                        Err(error) => {
-                            return Err(Error::StripPrefixError {
-                                input_dir: input.to_owned(),
-                                dir_entry: dir_entry.to_owned(),
-                                strip_prefix_error: error.to_owned(),
-                            });
-                        }
-                    }
-                } else
-                if dir_entry.file_type().is_dir() {
-                    //TODO handle this e.g. make the corresponding directory
-                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, dir entry is a dir", input, output);
-                } else {
-                    //TODO handle the corner cases
-                    trace!("cook_one_dir ➡ input: {:?}, output: {:?}, skip because dir entry is not a dir nor a file", input, output);
-                }
-            },
-            Err(err) => {
-                return Err(Error::Walk { 
-                    input: input.to_owned(), 
-                    output: output.to_owned(), 
-                    walkdir_error: err
-                });
-            }
-        }
-    }
-    Ok(())
-}
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -329,54 +262,21 @@ pub enum Error {
         walkdir_error: walkdir::Error,
     },
 
-    #[error("StripPrefixError ➡ input_dir: {input_dir:?}, dir_entry: {dir_entry:?}, strip_prefix_error: {strip_prefix_error:?}")]
-    StripPrefixError {
-        input_dir: PathBuf,
-        dir_entry: walkdir::DirEntry,
-        strip_prefix_error: std::path::StripPrefixError,  
-    },
-
-    #[error("CookOne ➡ input {input:?}, output {output:?}")]
-    CookOne {
+    #[error("CookOneInputDoesNotExist ➡ input {input:?}")]
+    CookOneInputDoesNotExist {
         input: PathBuf,
-        output: PathBuf
-    },
-
-    #[error("CookOneInputIsDirButOutputIsFile ➡ input {input:?}, output {output:?}")]
-    CookOneInputIsDirButOutputIsFile {
-        input: PathBuf,
-        output: PathBuf
-    },
-
-    #[error("CookOneInputIsDirButOutputExists ➡ input {input:?}, output {output:?}")]
-    CookOneInputIsDirButOutputExists {
-        input: PathBuf,
-        output: PathBuf
-    },
-
-    #[error("CookOneInputIsFileButOutputIsDir ➡ input {input:?}, output {output:?}")]
-    CookOneInputIsFileButOutputIsDir {
-        input: PathBuf,
-        output: PathBuf
-    },
-
-    #[error("CookOneInputIsFileButOutputExists ➡ input {input:?}, output {output:?}")]
-    CookOneInputIsFileButOutputExists {
-        input: PathBuf,
-        output: PathBuf
-    },
+    },    
 
     #[error("CookOneInputIsNotDirAndIsNotFile ➡ input {input:?}")]
     CookOneInputIsNotDirAndIsNotFile {
         input: PathBuf,
     },    
 
-    #[error("CookFile ➡ input {input:?}, output {output:?}, err: {err:?}")]
-    CookFile {
-        input: PathBuf,
-        output: PathBuf,
-        err: crate::cook_file::Error,
-    },
+    #[error("CookDir ➡ {0:?}")]
+    CookDir(crate::cook_dir::Error),
+
+    #[error("CookFile ➡ {0:?}")]
+    CookFile(crate::cook_file::Error,)
 
 }
 

@@ -87,7 +87,8 @@ pub(crate) mod templater {
     //pub(crate) mod templater_with_tera;
 }
 
-pub(crate) mod cook_file; // Cook functions that convert Markdown to HTML
+pub(crate) mod cook_dir; // Cook a directory from Markdown into HTML
+pub(crate) mod cook_file; // Cook a file from Markdown into HTML
 
 fn main() {
     env_logger::init();

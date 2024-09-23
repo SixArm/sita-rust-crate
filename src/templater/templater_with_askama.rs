@@ -13,6 +13,14 @@ pub struct TemplaterWithAskama<'templater> {
 
 impl<'templater> TemplaterTrait for TemplaterWithAskama<'templater> {
 
+    // fn as_any(&self) -> &dyn Any {
+    //     self
+    // }
+
+    // fn to_templater_enum(&self) -> TemplaterEnum {
+    //     TemplaterEnum::TemplaterWithAskama(self.clone())
+    // }
+
     fn new() -> Self {
         trace!("new");
         let askama = Askama::default();

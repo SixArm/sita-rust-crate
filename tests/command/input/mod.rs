@@ -10,21 +10,23 @@ pub static DIR: Lazy<PathBuf> =
 fn test() {
     // Given
     let input: PathBuf = DIR.join("custom-file-name.md");
-    let actual: PathBuf = DIR.join("custom-file-name.html");
+    let output: PathBuf = DIR.join("custom-file-name.html");
     let expect: PathBuf = DIR.join("custom-file-name.html=expect.html");
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    remove_file_if_exists(&actual).expect("remove");
+    assert_ok!(remove_file_if_exists(&output));
+    assert!(!output.exists(), "!output.exists() path: {:?}", output);
     // When
-    assert!(!actual.exists(), "!actual.exists() path: {:?}", actual);
-    let _output = std::process::Command::new(&*COMMAND_OS)
+    let command_result = std::process::Command::new(&*COMMAND_OS)
         .arg("--input")
         .arg(input.as_os_str())
-        .output()
-        .expect("failure");
+        .arg("--output")
+        .arg(output.as_os_str())
+        .output();
     // Then
-    assert!(actual.exists(), "actual.exists() path: {:?}", actual);
-    assert_fs_read_to_string_eq!(&actual, &expect);
+    assert_ok!(command_result);
+    assert!(output.exists(), "output.exists() path: {:?}", output);
+    assert_fs_read_to_string_eq!(&output, &expect);
     // Done
-    remove_file_if_exists(&actual).expect("remove");
+    assert_ok!(remove_file_if_exists(&output));
 }

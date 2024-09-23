@@ -9,6 +9,13 @@ use crate::types::{html::*, set::*};
 
 pub trait TemplaterTrait: std::fmt::Debug {
 
+    /// Convert from the specific to any type.
+    // #[allow(dead_code)]
+    // fn as_any(&self) -> &dyn Any;
+
+    /// Convert from the specific to the corresponding enum.
+    // fn to_templater_enum(&self) -> TemplaterEnum;
+
     // Create a new templater.
     //
     // Example:
@@ -162,6 +169,7 @@ pub trait TemplaterTrait: std::fmt::Debug {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assertables::*;
     use crate::app::args::Args;
     use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 
@@ -184,14 +192,14 @@ mod tests {
     fn test_template_name_default() {
         let templater = TemplaterX::new();
         let actual: String = templater.template_name_default();
-        assert!(actual.len() > 0); // Exists
+        assert_gt!(actual.len(), 0);
     }
 
     #[test]
     fn test_template_content_text_default() {
         let templater = TemplaterX::new();
         let actual: String = templater.template_content_text_default();
-        assert!(actual.len() > 0); // Exists
+        assert_gt!(actual.len(), 0);
     }
 
     #[test]
@@ -275,7 +283,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum() {
         let mut templater: TemplaterWithHandlebars = TemplaterX::new();
-        templater.register_template_via_name_and_content_text("alfa", "<p>{{ bravo }}</p>");
+        templater.register_template_via_name_and_content_text("alfa", "<p>{{ bravo }}</p>").expect("register_template_via_name_and_content_text");
         let map = map!(
             String::from("bravo") => String::from("charlie")
         );

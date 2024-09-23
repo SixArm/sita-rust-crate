@@ -1,6 +1,6 @@
 //! Templater with Tera
 
-use std::path::PathBuf;
+use tera;
 use crate::app::args::Args;
 use crate::types::{html::*, set::*};
 use crate::state::state_enum::StateEnum;
@@ -11,6 +11,14 @@ pub struct TemplaterWithTera {
     pub tera: ::tera::Tera,
 }
 impl TemplaterTrait for TemplaterWithTera {
+
+    // fn as_any(&self) -> &dyn Any {
+    //     self
+    // }
+
+    // fn to_templater_enum(&self) -> TemplaterEnum {
+    //     TemplaterEnum::TemplaterWithTera(self.clone())
+    // }
 
     fn new() -> Self {
         trace!("new");

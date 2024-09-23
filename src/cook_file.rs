@@ -1,28 +1,33 @@
-//! Run the app
-
 use std::path::PathBuf;
 use crate::app::args::Args;
 use crate::state::state_trait::StateTrait;
 use crate::templater::templater_trait::TemplaterTrait;
-//use crate::f::from_path_buf_into_sibling_extension::*;
 use crate::f::from_markdown_str_into_html_string::*;
 use crate::f::from_html_str_into_headline_str::*;
 
 pub (crate) fn cook_file<T: TemplaterTrait> (
     args: &Args,
-    templater: &T,
+    templater: Option<&T>,
     input: &PathBuf,
-    output: &PathBuf
+    output: &PathBuf,
 ) -> Result<(), Error> {
     trace!("Cook file.");
-    debug!("args: {:?}, templater: {:?}, input: {:?}, output: {:?}", args, templater, input, output);
+    debug!("cook_file ➡ args: {:?}, templater: {:?}, input: {:?}, output: {:?}", args, templater, input, output);
     vet_input(input)?;
+    vet_output(output)?;
     let mix_text = read_input_into_mix_text(input)?;
     let (content_text, state) = parse_mix_to_content_text_and_state(mix_text)?;
     let input_html_text = convert_from_markdown_str_into_html_string(&content_text);
-    let state = insert_state_variables(state, &input_html_text);
-    let template_name = get_template_name(templater)?;    
-    let output_html_text = render(templater, &template_name, &state)?;
+    let output_html_text = match templater {
+        Some(templater) => {
+            let state = insert_state_variables(state, &input_html_text);
+            let template_name = get_template_name(templater)?;    
+            render(templater, &template_name, &state)?
+        },
+        None => {
+            input_html_text
+        }
+    };
     let output_html_text = crate::rewriting::lol::rewrite(&output_html_text);
     write_output(output, &output_html_text)?;
     Ok(())
@@ -31,10 +36,15 @@ pub (crate) fn cook_file<T: TemplaterTrait> (
 fn vet_input(
     input: &PathBuf
 ) -> Result<(), Error>  {
-    trace!("Vet input.");
-    debug!("input: {:?}", input);
     if !input.exists() { return Err(Error::InputMustExist { input: input.to_owned() }) }
     if !input.is_file() { return Err(Error::InputMustBeFile { input: input.to_owned() }) }
+    Ok(())    
+}
+
+fn vet_output(
+    output: &PathBuf
+) -> Result<(), Error>  {
+    if output.exists() { return Err(Error::OutputMustNotExist { output: output.to_owned() }) }
     Ok(())    
 }
 
@@ -152,6 +162,11 @@ pub enum Error {
         input: PathBuf,
     },
 
+    #[error("OutputMustNotExist ➡ output {output:?}")]
+    OutputMustNotExist {
+        output: PathBuf,
+    },
+
     #[error("ReadMixText ➡ input {input:?}, err {err:?}")]
     ReadMixText {
         input: PathBuf,
@@ -185,6 +200,7 @@ mod tests {
     use super::*;
     use assertables::*;
     use once_cell::sync::Lazy;
+    use crate::f::remove_file_if_exists::*;
     use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 
     pub static DIR: Lazy<PathBuf> = Lazy::new(||
@@ -196,15 +212,27 @@ mod tests {
     #[test]
     fn test() {
         let args = Args::default();
-        let mut templater = TemplaterWithHandlebars::new();
-        // let result = templater.register_template_via_default();
-        // assert_result_ok!(result);
+        let option_templater: Option<&TemplaterWithHandlebars<'_>> = None;
+        let input = DIR.join("example.md");
+        let output = DIR.join("example.html");
+        let expect = DIR.join("example.html=expect.html");
+        assert_ok!(remove_file_if_exists(&output));
+        let result = cook_file(&args, option_templater, &input, &output);
+        assert_ok!(result);
+        assert_fs_read_to_string_eq!(&output, &expect);
+    }
+
+    #[test]
+    fn test_with_templater() {
+        let args = Args::default();
+        let mut templater: TemplaterWithHandlebars<'_> = TemplaterWithHandlebars::new();
         templater.register_template_via_default().expect("register_template_via_default");
         let input = DIR.join("example.md");
         let output = DIR.join("example.html");
         let expect = DIR.join("example.html=expect.html");
-        let result = cook_file(&args, &templater, &input, &output);
-        assert_result_ok!(result);
+        assert_ok!(remove_file_if_exists(&output));
+        let result = cook_file(&args, Some(&templater), &input, &output);
+        assert_ok!(result);
         assert_fs_read_to_string_eq!(&output, &expect);
     }
 

@@ -19,16 +19,16 @@ categories = ["web-programming", "template-engine", "text-processing"]
 ammonia = "4.0.0"
 
 # assertables: Runtime reliability checking macros
-assertables = "8.5.0"
+assertables = "8.7.0"
 
 # base64: Encode and decode base64 as bytes or utf8
 base64 = "0.22.1"
 
 # bytes: Types and traits for working with bytes
-bytes = "1.7.1"
+bytes = "1.7.2"
 
 # clap: Command Line Argument Parser
-clap = { version = "4.5.17", features = ["string", "wrap_help"] }
+clap = { version = "4.5.18", features = ["string", "wrap_help"] }
 
 # confy: Boilerplate-free configuration management
 confy = "0.6.1"
@@ -37,7 +37,7 @@ confy = "0.6.1"
 env_logger = "0.9.3"
 
 # thiserror: Convenient derive macro for the standard library’s std::error::Error trait.
-thiserror = "1.0.63"
+thiserror = "1.0.64"
 
 # glob: Match file paths against Unix shell style patterns
 glob = "0.3.1"
@@ -118,7 +118,7 @@ toml = { version = "0.8.19", features = ["preserve_order"] } # TOML encoder/deco
 typeables = "2.3.0"
 
 # unicode-segmentation: Iterators which split strings on graphemes, words, etc.
-unicode-segmentation = "1.11.0"
+unicode-segmentation = "1.12.0"
 
 # url: URL library for Rust, based on the WHATWG URL Standard
 url = "2.5.2"

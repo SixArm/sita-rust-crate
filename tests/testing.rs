@@ -79,51 +79,35 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()> {
 
 #[cfg(test)]
 #[allow(dead_code)]
-pub fn test_with_base_path_and_default_input_actual_expect(base_path: &PathBuf) {
+pub fn test_with_base_path_and_default_template_input_output_expect(base_path: &PathBuf) {
     // Prep
+    let template = base_path.join("template.html");
     let input = base_path.join("example.md");
-    let actual = base_path.join("example.html");
+    let output = base_path.join("example.html");
     let expect = base_path.join("example.html=expect.html");
-    remove_file_if_exists(&actual).expect("remove");
+    assert_ok!(remove_file_if_exists(&output));
     assert!(input.exists(), "input path: {:?}", input);
     assert!(expect.exists(), "expect path: {:?}", expect);
-    remove_file_if_exists(&actual).expect("remove");
+    assert_ok!(remove_file_if_exists(&output));
     // Test
-    assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = std::process::Command::new(&*COMMAND_OS)
+    assert!(!output.exists(), "output path: {:?}", output);
+    let command_result = std::process::Command::new(&*COMMAND_OS)
+        .arg("--template")
+        .arg(template.as_os_str())
         .arg("--input")
         .arg(input.as_os_str())
-        .output()
-        .expect("failure");
-    assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fs_read_to_string_eq!(&actual, &expect);
+        .arg("--output")
+        .arg(output.as_os_str())
+        .output();
+    assert_ok!(command_result);
+    let command_output = command_result.unwrap();
+    let stdout_string = String::from_utf8(command_output.stdout).unwrap();
+    let stderr_string = String::from_utf8(command_output.stderr).unwrap();
+    assert_eq!(stdout_string, "");
+    assert_eq!(stderr_string, "");
+    assert!(output.exists(), "test_with_base_path_and_default_template_input_output_expect ➡ output file must exist ➡ template: {:?}, input: {:?}, output: {:?}, expect: {:?}", template, input, output, expect);
+    assert_fs_read_to_string_eq!(&output, &expect);
     // Done
-    std::fs::remove_file(&actual).expect("remove");
+    assert_ok!(remove_file_if_exists(&output));
 }
 
-#[cfg(test)]
-#[allow(dead_code)]
-pub fn test_with_base_path_and_default_input_template_actual_expect(base_path: &PathBuf) {
-    // Prep
-    let input = base_path.join("example.md");
-    let template = base_path.join("template.html");
-    let actual = base_path.join("example.html");
-    let expect = base_path.join("example.html=expect.html");
-    assert!(input.exists(), "input path: {:?}", input);
-    assert!(template.exists(), "template path: {:?}", template);
-    assert!(expect.exists(), "expect path: {:?}", expect);
-    remove_file_if_exists(&actual).expect("remove");
-    // Test
-    assert!(!actual.exists(), "actual path: {:?}", actual);
-    let _output = std::process::Command::new(&*COMMAND_OS)
-        .arg("--input")
-        .arg(input.as_os_str())
-        .arg("--template")
-        .arg(&template)
-        .output()
-        .expect("failure");
-    assert!(actual.exists(), "actual path: {:?}", actual);
-    assert_fs_read_to_string_eq!(&actual, &expect);
-    // Done
-    std::fs::remove_file(&actual).expect("remove");
-}
