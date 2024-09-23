@@ -3,6 +3,7 @@ mod testing;
 mod command {
     mod input;
     mod output;
+    mod same_input_dir_and_output_dir;
     mod template;
 }
 mod markdown {

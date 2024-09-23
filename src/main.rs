@@ -37,6 +37,7 @@ pub(crate) mod f { // Functions
     pub(crate) mod from_path_buf_into_sibling_extension; // from PathBuf into sibling PathBuf
     pub(crate) mod from_pathable_string_into_list_path_buf; // from PathableString into List<PathBuf>
     pub(crate) mod from_set_pathable_string_into_set_path_buf; // from Set<PathableString> into Set<PathBuf>
+    pub(crate) mod remove_dir_if_exists;
     pub(crate) mod remove_file_if_exists;
     pub(crate) mod vet_input_file_path_buf_exists; // Vet an input file PathBuf exists.
     pub(crate) mod vet_input_file_path_buf_metadata; // Vet an input file PathBuf.metadata() exists.

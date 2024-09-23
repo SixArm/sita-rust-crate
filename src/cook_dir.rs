@@ -53,11 +53,27 @@ pub (crate) fn cook_dir<T: TemplaterTrait> (
                     }
                 } else
                 if dir_entry.file_type().is_dir() {
-                    //TODO handle this e.g. make the corresponding directory
                     trace!("cook_dir ➡ input: {:?}, output: {:?}, dir entry is a dir", input, output);
+                    match dir_entry.path().strip_prefix(&input) {
+                        Ok(path) => {
+                            let output_entry = output.join(path); 
+                            std::fs::create_dir_all(output_entry)
+                            .map_or_else(
+                                |err| Err(Error::IO(err)),
+                                |()| Ok(())
+                            )?
+                        },
+                        Err(error) => {
+                            return Err(Error::StripPrefixError {
+                                input_dir: input.to_owned(),
+                                dir_entry: dir_entry.to_owned(),
+                                strip_prefix_error: error.to_owned(),
+                            });
+                        }
+                    }
                 } else {
-                    //TODO handle the corner cases
                     trace!("cook_dir ➡ input: {:?}, output: {:?}, skip because dir entry is not a dir nor a file", input, output);
+                    //TODO handle the corner cases
                 }
             },
             Err(err) => {
@@ -107,6 +123,9 @@ pub enum Error {
         output: PathBuf
     },
 
+    #[error("IO ➡ {0:?}")]
+    IO(std::io::Error),
+
     #[error("CookFile ➡ {0:?}")]
     CookFile(crate::cook_file::Error),
 
@@ -127,6 +146,7 @@ mod tests {
     use super::*;
     use assertables::*;
     use once_cell::sync::Lazy;
+    use crate::f::remove_dir_if_exists::*;
     use crate::f::remove_file_if_exists::*;
     use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
 
@@ -137,25 +157,95 @@ mod tests {
     );
 
     #[test]
-    fn test() {
+    fn test_input_dir_and_output_dir() {
         let args = Args::default();
         let templater: Option<&TemplaterWithHandlebars<'_>> = None;
-        let input = DIR.join("input");
+        let dir = DIR.join("test_input_dir_and_output_dir");
+
+        // Given these expected input paths
+        let input = dir.join("input");
+        let input_subdirs = [
+            input.join("subdir"),
+        ];
         let input_files = [
             input.join("alfa.md"),
             input.join("bravo.md"),
+            input.join("subdir").join("charlie.md"),
+            input.join("subdir").join("delta.md"),
         ];
-        input_files.into_iter().for_each(|file| assert!(file.exists(), "file: {:?}", file));
-        let output = DIR.join("output");
+        input_files.into_iter().for_each(|file: PathBuf| assert!(file.is_file(), "file: {:?}", file));
+        input_subdirs.into_iter().for_each(|dir: PathBuf| assert!(dir.is_dir(), "dir: {:?}", dir));
+
+        // Given these expected output paths
+        let output = dir.join("output");
+        let output_subdirs = [
+            output.join("subdir"),
+        ];
         let output_files = [
             output.join("alfa.html"),
             output.join("bravo.html"),
+            output.join("subdir").join("charlie.html"),
+            output.join("subdir").join("delta.html"),
         ];
-        output_files.into_iter().for_each(|file| assert_ok!(remove_file_if_exists(file)));
+        // Refresh
+        output_files.clone().into_iter().for_each(|file| assert_ok!(remove_file_if_exists(&file)));
+        output_subdirs.clone().into_iter().for_each(|dir: PathBuf| assert_ok!(remove_dir_if_exists(&dir), format!("dir: {:?}", &dir)));
+
+        // When
         let result = cook_dir(&args, templater, &input, &output);
+
+        // Then        
         assert_ok!(result);
-        //TODO
+        output_subdirs.clone().into_iter().for_each(|dir: PathBuf| assert!(dir.is_dir(), "dir: {:?}", dir));
+        output_files.clone().into_iter().for_each(|file: PathBuf| assert!(file.is_file(), "file: {:?}", file));
+
     }
+
+    #[test]
+    fn test_input_dir_and_output_dir_are_the_same_path() {
+        let args = Args::default();
+        let templater: Option<&TemplaterWithHandlebars<'_>> = None;
+        let dir = DIR.join("test_input_dir_and_output_dir_are_the_same_path");
+
+        // Given these expected input paths
+        let input = dir.clone();
+        let input_subdirs = [
+            input.join("subdir"),
+        ];
+        let input_files = [
+            input.join("alfa.md"),
+            input.join("bravo.md"),
+            input.join("subdir").join("charlie.md"),
+            input.join("subdir").join("delta.md"),
+        ];
+        input_files.into_iter().for_each(|file: PathBuf| assert!(file.is_file(), "file: {:?}", file));
+        input_subdirs.into_iter().for_each(|dir: PathBuf| assert!(dir.is_dir(), "dir: {:?}", dir));
+
+        // Given these expected output paths
+        let output = input.clone();
+        let output_subdirs = [
+            output.join("subdir"),
+        ];
+        let output_files = [
+            output.join("alfa.html"),
+            output.join("bravo.html"),
+            output.join("subdir").join("charlie.html"),
+            output.join("subdir").join("delta.html"),
+        ];
+        // Refresh
+        output_files.clone().into_iter().for_each(|file| assert_ok!(remove_file_if_exists(&file)));
+        //output_subdirs.clone().into_iter().for_each(|dir: PathBuf| assert_ok!(remove_dir_if_exists(&dir), format!("dir: {:?}", &dir)));
+
+        // When
+        let result = cook_dir(&args, templater, &input, &output);
+
+        // Then        
+        assert_ok!(result);
+        output_subdirs.clone().into_iter().for_each(|dir: PathBuf| assert!(dir.is_dir(), "dir: {:?}", dir));
+        output_files.clone().into_iter().for_each(|file: PathBuf| assert!(file.is_file(), "file: {:?}", file));
+
+    }
+
 
 }
 

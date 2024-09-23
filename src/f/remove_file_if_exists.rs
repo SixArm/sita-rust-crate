@@ -22,6 +22,7 @@ pub fn remove_file_if_exists<P: AsRef<Path>>(path: P) -> std::io::Result<()>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assertables::*;
     use std::path::PathBuf;
     use once_cell::sync::Lazy;
 
@@ -34,8 +35,8 @@ mod tests {
         let file = TMP_DIR.join("test_remove_file_if_exists_x_present.tmp");
         std::fs::write(&file, "").expect("write");
         assert!(file.exists());
-        let x = remove_file_if_exists(&file);
-        x.unwrap();
+        let result = remove_file_if_exists(&file);
+        assert_ok!(result);
         assert!(!file.exists());
     }
 
@@ -43,8 +44,8 @@ mod tests {
     fn test_remove_file_if_exists_x_absent() {
         let file = TMP_DIR.join("test_remove_file_if_exists_x_absent.tmp");
         assert!(!file.exists());
-        let x = remove_file_if_exists(&file);
-        x.unwrap();
+        let result = remove_file_if_exists(&file);
+        assert_ok!(result);
         assert!(!file.exists());
     }
 
