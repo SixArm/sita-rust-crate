@@ -96,8 +96,8 @@ fn insert_state_content(
     mut state: Box<dyn StateTrait>, 
     html: &str
 ) -> Box<dyn StateTrait> {
+    trace!("insert_state_content");
     if !state.contains_key("content") {
-        trace!("Set the state variables: set `content` to the HTML String.");
         state.insert(String::from("content"), String::from(html));
     }
     state
@@ -107,13 +107,11 @@ fn insert_state_title(
     mut state: Box<dyn StateTrait>, 
     html: &str
 ) -> Box<dyn StateTrait> {
+    trace!("insert_state_title");
     if !state.contains_key("title") {
-        trace!("Set the state variables: set `title` to the first headline.");
-        let s = match from_html_str_into_headline_str(html) {
-            Some(s) => s,
-            None => "",
-        };
-        state.insert(String::from("title"), String::from(s));
+        if let Some(s) = from_html_str_into_headline_str(html) {
+            state.insert(String::from("title"), String::from(s));
+        }
     }
     state
 }
@@ -122,13 +120,11 @@ fn insert_state_description(
     mut state: Box<dyn StateTrait>, 
     html: &str
 ) -> Box<dyn StateTrait> {
+    trace!("insert_state_description");
     if !state.contains_key("description") {
-        trace!("Set the state variables: set `description` to the first paragraph.");
-        let s = match from_html_str_into_paragraph_str(html) {
-            Some(s) => s,
-            None => "",
-        };
-        state.insert(String::from("description"), String::from(s));
+        if let Some(s) = from_html_str_into_paragraph_str(html) {
+            state.insert(String::from("description"), String::from(s));
+        }
     }
     state
 }

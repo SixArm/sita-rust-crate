@@ -33,6 +33,7 @@ pub fn from_html_str_into_paragraph_str(html_str: &HtmlStr) -> Option<&str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assertables::*;
     use ::indoc::indoc;
 
     #[test]
@@ -44,10 +45,7 @@ mod tests {
             <p>echo foxtrot</p>
             lorem ipsum
          "#};
-        let option = from_html_str_into_paragraph_str(&html_str);
-        assert!(option.is_some());
-        let headline_str = option.unwrap();
-        assert_eq!(headline_str, "charlie delta");
+        assert_some_eq!(from_html_str_into_paragraph_str(&html_str), Some("charlie delta"));
     }
 
     #[test]
@@ -59,10 +57,7 @@ mod tests {
             <p>echo foxtrot</p>
             lorem ipsum
          "#};
-        let option = from_html_str_into_paragraph_str(&html_str);
-        assert!(option.is_some());
-        let headline_str = option.unwrap();
-        assert_eq!(headline_str, "charlie delta");
+        assert_some_eq!(from_html_str_into_paragraph_str(&html_str), Some("charlie delta"));
     }
 
     #[test]
@@ -74,8 +69,7 @@ mod tests {
             echo foxtrot
             lorem ipsum
         "#};
-        let option = from_html_str_into_paragraph_str(&html_str);
-        assert!(option.is_none());
+        assert_none!(from_html_str_into_paragraph_str(&html_str));
     }
 
 }

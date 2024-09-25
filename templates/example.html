@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8">
+        {{#if title}}
         <title>{{ title }}</title>
+        {{/if}}
+        {{#if description}}
+        <meta name="description" content="{{ description }}">
+        {{#/if}}
+        {{#if author}}
+        <meta name="author" content="{{ author }}">
+        {{#/if}}
+        {{#if keywords}}
+        <meta name="keywords" content="{{ keywords }}">
+        {{#/if}}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+{{#if content}}
 {{{ content }}}
+{{#/if}}
     </body>
 </html>

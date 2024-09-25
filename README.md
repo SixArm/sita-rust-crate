@@ -55,7 +55,7 @@ Create a file `template.html` with this text:
 ```html
 <html>
   <head>
-    <title>{{{ title }}}</title>
+    <title>{{ title }}</title>
   <body>
     {{{ content }}}
   </body>

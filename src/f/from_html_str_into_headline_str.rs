@@ -33,6 +33,7 @@ pub fn from_html_str_into_headline_str(html_str: &HtmlStr) -> Option<&str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assertables::*;
     use ::indoc::indoc;
 
     #[test]
@@ -42,10 +43,7 @@ mod tests {
             <h1>alfa bravo</h1>
             lorem ipsum
          "#};
-        let option = from_html_str_into_headline_str(&html_str);
-        assert!(option.is_some());
-        let headline_str = option.unwrap();
-        assert_eq!(headline_str, "alfa bravo");
+        assert_some_eq!(from_html_str_into_headline_str(&html_str), Some("alfa bravo"));
     }
 
     #[test]
@@ -55,10 +53,7 @@ mod tests {
             <H1 class="foo">alfa bravo</H1>
             lorem ipsum
          "#};
-        let option = from_html_str_into_headline_str(&html_str);
-        assert!(option.is_some());
-        let headline_str = option.unwrap();
-        assert_eq!(headline_str, "alfa bravo");
+        assert_some_eq!(from_html_str_into_headline_str(&html_str), Some("alfa bravo"));
     }
 
     #[test]
@@ -68,8 +63,7 @@ mod tests {
             alfa bravo
             lorem ipsum
         "#};
-        let option = from_html_str_into_headline_str(&html_str);
-        assert!(option.is_none());
+        assert_none!(from_html_str_into_headline_str(&html_str));
     }
 
 }
