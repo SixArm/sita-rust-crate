@@ -45,7 +45,7 @@ mod tests {
             <p>echo foxtrot</p>
             lorem ipsum
          "#};
-        assert_some_eq!(from_html_str_into_paragraph_str(&html_str), Some("charlie delta"));
+        assert_some_eq_expr!(from_html_str_into_paragraph_str(&html_str), "charlie delta");
     }
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
             <p>echo foxtrot</p>
             lorem ipsum
          "#};
-        assert_some_eq!(from_html_str_into_paragraph_str(&html_str), Some("charlie delta"));
+        assert_some_eq_expr!(from_html_str_into_paragraph_str(&html_str), "charlie delta");
     }
 
     #[test]

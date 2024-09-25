@@ -19,7 +19,7 @@ categories = ["web-programming", "template-engine", "text-processing"]
 ammonia = "4.0.0"
 
 # assertables: Runtime reliability checking macros
-assertables = "8.8.0"
+assertables = "8.9.0"
 
 # base64: Encode and decode base64 as bytes or utf8
 base64 = "0.22.1"

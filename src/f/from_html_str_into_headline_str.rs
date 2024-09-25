@@ -43,7 +43,7 @@ mod tests {
             <h1>alfa bravo</h1>
             lorem ipsum
          "#};
-        assert_some_eq!(from_html_str_into_headline_str(&html_str), Some("alfa bravo"));
+        assert_some_eq_expr!(from_html_str_into_headline_str(&html_str), "alfa bravo");
     }
 
     #[test]
@@ -53,7 +53,7 @@ mod tests {
             <H1 class="foo">alfa bravo</H1>
             lorem ipsum
          "#};
-        assert_some_eq!(from_html_str_into_headline_str(&html_str), Some("alfa bravo"));
+        assert_some_eq_expr!(from_html_str_into_headline_str(&html_str), "alfa bravo");
     }
 
     #[test]

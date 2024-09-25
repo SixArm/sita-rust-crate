@@ -129,7 +129,6 @@ fn insert_state_description(
     state
 }
 
-
 fn get_template_name<T: TemplaterTrait>(
     templater: &T,
 ) -> Result<String, Error> {
