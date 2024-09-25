@@ -49,7 +49,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_html_str_into_headline_str_x_present_x_h1_uppercase_and_extra() {
+    fn test_from_html_str_into_headline_str_x_present_x_tag_has_uppercase_and_extra() {
         let html_str = indoc!{r#"
             lorem ipsum
             <H1 class="foo">alfa bravo</H1>

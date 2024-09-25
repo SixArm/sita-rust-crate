@@ -29,6 +29,7 @@ pub(crate) mod app { // Application
 
 pub(crate) mod f { // Functions
     pub(crate) mod from_html_str_into_headline_str; // from HtmlStr into headline str
+    pub(crate) mod from_html_str_into_paragraph_str; // from HtmlStr into paragraph str
     pub(crate) mod from_markdown_str_into_html_string; // from Markdown str into HTML String    
     pub(crate) mod from_list_pathable_string_into_list_path_buf; // from List<PathableString> into List<PathBuf>
     pub(crate) mod from_list_str_into_map_string_string; // from List<&str> into Map<String, String>

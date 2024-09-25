@@ -6,10 +6,9 @@ use crate::app::config::Config;
 use crate::types::list::*;
 use crate::templater::templater_trait::TemplaterTrait;
 use crate::templater::templater_with_handlebars::TemplaterWithHandlebars;
+//use crate::templater::templater_with_askama::TemplaterWithAskama;
 //use crate::templater::templater_with_liquid::TemplaterWithLiquid;
 //use crate::templater::templater_with_tera::TemplaterWithTera;
-//use crate::f::from_path_buf_into_sibling_extension::*;
-use walkdir::WalkDir;
 
 /// Run everything.
 ///
