@@ -42,25 +42,25 @@ impl<'templater> TemplaterTrait for TemplaterWithAskama<'templater> {
 
     fn template_name_default(
         &self
-    ) -> String {
+    ) -> &str {
         trace!("template_name_default");
         String::from("default")
     }
 
-    fn template_content_text_default(
+    fn template_content_default(
         &self
-    ) -> String {
-        trace!("template_content_text_default");
+    ) -> &str {
+        trace!("template_content_default");
         String::from("{{{ content }}}")
     }
 
-    fn register_template_via_name_and_content_text(
+    fn register_template_via_name_and_content(
         &mut self,
         name: impl AsRef<str>,
-        content_text: impl AsRef<str>
+        content: impl AsRef<str>
     ) -> Result<(), impl std::error::Error> {
-        trace!("register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content_text.as_ref().len());
-        self.askama.register_template_string(name.as_ref(), &content_text)
+        trace!("register_template_via_name_and_content ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content.as_ref().len());
+        self.askama.register_template_string(name.as_ref(), &content)
         .map_or_else(
             |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
             |()| Ok(())
@@ -161,25 +161,25 @@ mod tests {
     #[test]
     fn test_templater_name_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_name_default(), "default");
+        assert_eq!(templater.template_name_default(), super::TEMPLATE_NAME_DEFAULT);
     }
 
     #[test]
-    fn test_templater_content_text_default() {
+    fn test_templater_content_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{{ content }}}");
+        assert_eq!(templater.template_content_default(), super::TEMPLATE_CONTENT_DEFAULT);
     }
 
     #[test]
-    fn test_register_template_via_name_and_content_text() {
+    fn test_register_template_via_name_and_content() {
         let mut templater = TemplaterX::new();
         let name = "alfa";
         let content_text = "{{ bravo }}";
         assert!(!templater.contains_template_name(name));
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             String::from(name),
             String::from(content_text)
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         assert!(templater.contains_template_name(name));
     }
 
@@ -206,14 +206,14 @@ mod tests {
         let name_1: &str = "my-name-1";
         let content_text_0 = "my text 0";
         let content_text_1 = "my text 1";
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             String::from(name_0),
             String::from(content_text_0)
-        ).expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(
+        ).expect("register_template_via_name_and_content");
+        templater.register_template_via_name_and_content(
             String::from(name_1),
             String::from(content_text_1)
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);

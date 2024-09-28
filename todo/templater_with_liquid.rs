@@ -38,15 +38,15 @@ impl TemplaterTrait for TemplaterWithLiquid {
     }
 
     //TODO
-    fn template_content_text_default(&self) -> String {
-        trace!("template_content_text_default");
+    fn template_content_default(&self) -> String {
+        trace!("template_content_default");
         String::from("{{{ content }}}")
     }
 
 
     //TODO
-    fn register_template_via_name_and_content_text(&mut self, name: &str, content_text: &str) -> Result<()> {
-        trace!("register_template_via_name_and_content_text");
+    fn register_template_via_name_and_content(&mut self, name: &str, content_text: &str) -> Result<()> {
+        trace!("register_template_via_name_and_content");
         Ok(())
     }
 
@@ -113,23 +113,23 @@ mod tests {
     #[test]
     fn test_templater_name_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_name_default(), "default");
+        assert_eq!(templater.template_name_default(), super::TEMPLATE_NAME_DEFAULT);
     }
 
     #[test]
-    fn test_templater_content_text_default() {
+    fn test_templater_content_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{{ content }}}");
+        assert_eq!(templater.template_content_default(), super::TEMPLATE_CONTENT_DEFAULT);
     }
 
     #[test]
-    fn test_register_template_via_name_and_content_text() {
+    fn test_register_template_via_name_and_content() {
         let mut templater = TemplaterX::new();
         let name = "alfa";
         let content_text = "{{ bravo }}";
         assert_eq!(templater.contains_template_name("alfa"), false);
         assert_eq!(templater.contains_template_name("charlie"), false);
-        let result = templater.register_template_via_name_and_content_text(&name, &content_text);
+        let result = templater.register_template_via_name_and_content(&name, &content_text);
         result.unwrap();
         assert_eq!(templater.contains_template_name("alfa"), true);
         assert_eq!(templater.contains_template_name("charlie"), false);
@@ -156,8 +156,8 @@ mod tests {
         let mut templater = TemplaterX::new();
         let name_0: &str = "my-name-0";
         let name_1: &str = "my-name-1";
-        templater.register_template_via_name_and_content_text(&name_0, "my text 0").expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(&name_1, "my text 1").expect("register_template_via_name_and_content_text");
+        templater.register_template_via_name_and_content(&name_0, "my text 0").expect("register_template_via_name_and_content");
+        templater.register_template_via_name_and_content(&name_1, "my text 1").expect("register_template_via_name_and_content");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);

@@ -116,9 +116,9 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
 name = "assertables"
-version = "8.9.0"
+version = "8.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56b0890d3e1161b3a529dbaa4d86bd52bfbfdf2e35d530bb67e876880cb3c7fd"
+checksum = "a73cd825c7b94d74b0b29fed0c326a8e629c628d10d37ac87c907d3dbfe99e62"
 
 [[package]]
 name = "atty"

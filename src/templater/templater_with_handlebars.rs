@@ -42,25 +42,23 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
     fn template_name_default(
         &self
-    ) -> String {
-        trace!("template_name_default");
-        String::from("default")
+    ) -> &str {
+        TEMPLATE_NAME_DEFAULT
     }
 
-    fn template_content_text_default(
+    fn template_content_default(
         &self
-    ) -> String {
-        trace!("template_content_text_default");
-        String::from("{{{ content }}}")
+    ) -> &str {
+        TEMPLATE_CONTENT_DEFAULT
     }
 
-    fn register_template_via_name_and_content_text(
+    fn register_template_via_name_and_content(
         &mut self,
         name: impl AsRef<str>,
-        content_text: impl AsRef<str>
+        content: impl AsRef<str>
     ) -> Result<(), impl std::error::Error> {
-        trace!("register_template_via_name_and_content_text ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content_text.as_ref().len());
-        self.handlebars.register_template_string(name.as_ref(), &content_text)
+        trace!("register_template_via_name_and_content ➡  name: {:?}, content_text.len(): {}", name.as_ref(), content.as_ref().len());
+        self.handlebars.register_template_string(name.as_ref(), &content)
         .map_or_else(
             |err| Err(Error::RegisterTemplateViaNameAndContentText(err)),
             |()| Ok(())
@@ -113,6 +111,24 @@ impl<'templater> TemplaterTrait for TemplaterWithHandlebars<'templater> {
 
 }
 
+
+const TEMPLATE_NAME_DEFAULT: &str = "default";
+
+const TEMPLATE_CONTENT_DEFAULT: &str = r#"<!DOCTYPE html>
+<html lang="{{#if lang}}{{ lang }}{{else}}en{{/if}}">
+    <head>
+        <meta charset="{{#if charset}}{{ charset }}{{else}}UTF-8{{/if}}">
+        <meta name="viewport" content="{{#if viewport }}{{ viewport }}{{else}}width=device-width, initial-scale=1.0{{/if}}">{{#if description}}
+        <meta name="description" content="{{ description }}">{{/if}}{{#if keywords}}
+        <meta name="keywords" content="{{ keywords }}">{{/if}}{{#if title}}
+        <title>{{ title }}</title>{{/if}}
+    </head>
+    <body>
+{{#if content}}{{{ content }}}{{/if}}
+    </body>
+</html>
+"#;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
 
@@ -141,7 +157,9 @@ mod tests {
     use crate::state::state_with_toml::StateWithTOML;
     use crate::state::state_with_yaml::StateWithYAML;
 
-    const FAB_OUTPUT_HTML: &str = "my content";
+    const FAB_TEMPLATE_NAME: &str = "default";
+    const FAB_TEMPLATE_CONTENT: &str = "{{{ title }}} + {{{ content }}}";
+    const FAB_OUTPUT_HTML: &str = "my title + my content";
 
     type TemplaterX<'templater> = TemplaterWithHandlebars<'templater>;
 
@@ -161,25 +179,25 @@ mod tests {
     #[test]
     fn test_templater_name_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_name_default(), "default");
+        assert_eq!(templater.template_name_default(), super::TEMPLATE_NAME_DEFAULT);
     }
 
     #[test]
-    fn test_templater_content_text_default() {
+    fn test_templater_content_default() {
         let templater = TemplaterX::new();
-        assert_eq!(templater.template_content_text_default(), "{{{ content }}}");
+        assert_eq!(templater.template_content_default(), super::TEMPLATE_CONTENT_DEFAULT);
     }
 
     #[test]
-    fn test_register_template_via_name_and_content_text() {
+    fn test_register_template_via_name_and_content() {
         let mut templater = TemplaterX::new();
         let name = "alfa";
         let content_text = "{{ bravo }}";
         assert!(!templater.contains_template_name(name));
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             String::from(name),
             String::from(content_text)
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         assert!(templater.contains_template_name(name));
     }
 
@@ -206,14 +224,14 @@ mod tests {
         let name_1: &str = "my-name-1";
         let content_text_0 = "my text 0";
         let content_text_1 = "my text 1";
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             String::from(name_0),
             String::from(content_text_0)
-        ).expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(
+        ).expect("register_template_via_name_and_content");
+        templater.register_template_via_name_and_content(
             String::from(name_1),
             String::from(content_text_1)
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);
@@ -222,7 +240,7 @@ mod tests {
     #[test]
     fn test_render_template_x_matter_parser_with_html() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             <!--
             title: my title
@@ -239,7 +257,7 @@ mod tests {
     #[test]
     fn test_render_template_x_matter_parser_with_json() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             {
                 "title": "my title",
@@ -256,12 +274,12 @@ mod tests {
     #[test]
     fn test_render_template_x_matter_parser_with_markdown_comments() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             [//]: # (title: my title)
             [//]: # (content: my content)
         "#};
-        let name: String = templater.template_name_default();
+        let name = templater.template_name_default();
         let state: StateWithMap = MatterParserWithMarkdownComments{}.parse_matter_text_to_state(matter_text).expect("parse_matter_text_to_state");
         let state_enum = StateEnum::StateWithMap(state);
         let actual = templater.render_template_with_state_enum(&name, &state_enum).expect("render_template_with_state");
@@ -271,7 +289,7 @@ mod tests {
     #[test]
     fn test_render_template_x_matter_parser_with_toml() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             title = "my title"
             content = "my content"
@@ -286,7 +304,7 @@ mod tests {
     #[test]
     fn test_render_template_x_matter_parser_with_yaml() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             title: my title
             content: my content
@@ -301,7 +319,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_toml() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             title = "my title"
             content = "my content"
@@ -316,7 +334,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum_x_yaml() {
         let mut templater = TemplaterX::new();
-        templater.register_template_via_default().expect("default");
+        templater.register_template_via_name_and_content(FAB_TEMPLATE_NAME, FAB_TEMPLATE_CONTENT).expect("register");
         let matter_text = indoc!{r#"
             title: "my title"
             content: "my content"

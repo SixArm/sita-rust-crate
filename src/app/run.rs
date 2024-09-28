@@ -89,7 +89,7 @@ fn initialize_templater_templates(
                 ),
                 |x| Ok(x),
             )?;
-            templater.register_template_via_name_and_content_text(&name, &content_text)
+            templater.register_template_via_name_and_content(&name, &content_text)
             .map_or_else(
                 |err| Err(
                     Error::InitializeTemplaterTemplate {
@@ -254,12 +254,12 @@ pub enum Error {
         debug: String,
     },
 
-    #[error("Walk ➡ input: {input:?}, output: {output:?}, walkdir_error: {walkdir_error:?}")]
-    Walk {
-        input: PathBuf,
-        output: PathBuf,
-        walkdir_error: walkdir::Error,
-    },
+    // #[error("Walk ➡ input: {input:?}, output: {output:?}, walkdir_error: {walkdir_error:?}")]
+    // Walk {
+    //     input: PathBuf,
+    //     output: PathBuf,
+    //     walkdir_error: walkdir::Error,
+    // },
 
     #[error("CookOneInputDoesNotExist ➡ input {input:?}")]
     CookOneInputDoesNotExist {

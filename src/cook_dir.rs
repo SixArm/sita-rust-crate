@@ -1,10 +1,7 @@
 use std::path::PathBuf;
 use walkdir::WalkDir;
 use crate::app::args::Args;
-use crate::state::state_trait::StateTrait;
 use crate::templater::templater_trait::TemplaterTrait;
-use crate::f::from_markdown_str_into_html_string::*;
-use crate::f::from_html_str_into_headline_str::*;
 use crate::cook_file::cook_file;
 
 pub (crate) fn cook_dir<T: TemplaterTrait> (

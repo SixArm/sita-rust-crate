@@ -47,17 +47,17 @@ pub trait TemplaterTrait: std::fmt::Debug {
     // ```
     //
     #[allow(dead_code)]
-    fn template_name_default(&self) -> String;
+    fn template_name_default(&self) -> &str;
 
     // Get the template content text e.g. "{{{ content }}}".
     //
     // ```
-    // let content_text = template_content_text_default();
+    // let content_text = template_content_default();
     // assert_eq!(content_text, "{{{ content }}}");
     // ```
     //
     #[allow(dead_code)]
-    fn template_content_text_default(&self) -> String;
+    fn template_content_default(&self) -> &str;
 
     // Add a default template.
     //
@@ -73,9 +73,9 @@ pub trait TemplaterTrait: std::fmt::Debug {
     fn register_template_via_default(
         &mut self
     ) -> Result<(), impl std::error::Error> where Self: Sized {
-        self.register_template_via_name_and_content_text(
-            self.template_name_default().to_owned(),
-            self.template_content_text_default()
+        self.register_template_via_name_and_content(
+            String::from(self.template_name_default()),
+            String::from(self.template_content_default())
         )
     }
 
@@ -87,14 +87,14 @@ pub trait TemplaterTrait: std::fmt::Debug {
     // let templater: Templater = TemplaterWithHandlebars::new();
     // let name = "alfa";
     // let content_text = "{{ bravo }}";
-    // templater.register_template_via_name_and_content_text(&name, &content_text);
+    // templater.register_template_via_name_and_content(&name, &content_text);
     // ```
     //
     #[allow(dead_code)]
-    fn register_template_via_name_and_content_text(
+    fn register_template_via_name_and_content(
         &mut self,
         name: impl AsRef<str>,
-        content_text: impl AsRef<str>
+        content: impl AsRef<str>
     ) -> Result<(), impl std::error::Error>;
 
     // Does the templater contain any template?
@@ -103,7 +103,7 @@ pub trait TemplaterTrait: std::fmt::Debug {
     //
     // ```
     // let mut templater: Templater = TemplaterWithHandlebars::new();
-    // templater.register_template_via_name_and_content_text("alfa", "bravo");
+    // templater.register_template_via_name_and_content("alfa", "bravo");
     // let flag = templater.contains_any_template();
     // assert_eq!(flag, true);
     // ```
@@ -119,7 +119,7 @@ pub trait TemplaterTrait: std::fmt::Debug {
     //
     // ```
     // let mut templater: Templater = TemplaterWithHandlebars::new();
-    // templater.register_template_via_name_and_content_text("alfa", "bravo");
+    // templater.register_template_via_name_and_content("alfa", "bravo");
     // let flag = templater.contains_template_name("alfa");
     // assert_eq!(flag, true);
     // ```
@@ -136,8 +136,8 @@ pub trait TemplaterTrait: std::fmt::Debug {
     //
     // ```
     // let mut templater: Templater = TemplaterWithHandlebars::new();
-    // register_template_via_name_and_content_text("alfa", "alfa text".into());
-    // register_template_via_name_and_content_text("bravo", "bravo text".into());
+    // register_template_via_name_and_content("alfa", "alfa text".into());
+    // register_template_via_name_and_content("bravo", "bravo text".into());
     // let template_names: Set<&str> = template_names_as_set_str(&templater);
     // assert_eq!(template_names, set!["alfa", "bravo"]);
     // ```
@@ -151,7 +151,7 @@ pub trait TemplaterTrait: std::fmt::Debug {
     //
     // ```
     // let templater: Templater = TemplaterWithHandlebars::new();
-    // templater.register_template_via_name_and_content_text("alfa", "<p>{{ bravo }}</p>");
+    // templater.register_template_via_name_and_content("alfa", "<p>{{ bravo }}</p>");
     // let state_enum = crate::state::state_enum::StateEnum::StateWithMap(map!("bravo" => "charlie"));
     // let html = templater.render_template_with_state_enum("alfa", &state_enum).expect("render_template_with_state_enum");
     // assert_eq!(html, "<p>charlie</p>");
@@ -191,14 +191,14 @@ mod tests {
     #[test]
     fn test_template_name_default() {
         let templater = TemplaterX::new();
-        let actual: String = templater.template_name_default();
+        let actual = templater.template_name_default();
         assert_gt!(actual.len(), 0);
     }
 
     #[test]
-    fn test_template_content_text_default() {
+    fn test_template_content_default() {
         let templater = TemplaterX::new();
-        let actual: String = templater.template_content_text_default();
+        let actual = templater.template_content_default();
         assert_gt!(actual.len(), 0);
     }
 
@@ -211,25 +211,25 @@ mod tests {
     }
     
     #[test]
-    fn test_register_template_via_name_and_content_text() {
+    fn test_register_template_via_name_and_content() {
         let mut templater = TemplaterX::new();
         let name = "alfa";
         let content_text = "{{ bravo }}";
         assert!(!templater.contains_any_template());
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             name,
             String::from(content_text)
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         assert!(templater.contains_any_template());
     }
 
     #[test]
     fn test_contains_any_template_x_true() {
         let mut templater  = TemplaterX::new();
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             "my-name",
             "my-content"
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         let flag = templater.contains_any_template();
         assert_eq!(
             flag,
@@ -253,10 +253,10 @@ mod tests {
         let name = "alfa";
         let content_text = "bravo";
         assert!(!templater.contains_template_name(name));
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             name,
             content_text
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         assert!(templater.contains_template_name(name));
     }
     
@@ -267,14 +267,14 @@ mod tests {
         let name_1 = "my-name-1";
         let content_text_0 = "my text 0";
         let content_text_1 = "my text 1";
-        templater.register_template_via_name_and_content_text(
+        templater.register_template_via_name_and_content(
             name_0,
             content_text_0
-        ).expect("register_template_via_name_and_content_text");
-        templater.register_template_via_name_and_content_text(
+        ).expect("register_template_via_name_and_content");
+        templater.register_template_via_name_and_content(
             name_1,
             content_text_1
-        ).expect("register_template_via_name_and_content_text");
+        ).expect("register_template_via_name_and_content");
         let actual: Set<&str> = templater.template_names_as_set_str();
         let expect: Set<&str> = set!(name_0, name_1);
         assert_eq!(actual, expect);
@@ -283,7 +283,7 @@ mod tests {
     #[test]
     fn test_render_template_with_state_enum() {
         let mut templater: TemplaterWithHandlebars = TemplaterX::new();
-        templater.register_template_via_name_and_content_text("alfa", "<p>{{ bravo }}</p>").expect("register_template_via_name_and_content_text");
+        templater.register_template_via_name_and_content("alfa", "<p>{{ bravo }}</p>").expect("register_template_via_name_and_content");
         let map = map!(
             String::from("bravo") => String::from("charlie")
         );

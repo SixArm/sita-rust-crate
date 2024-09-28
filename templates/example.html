@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{#if lang}}{{ lang }}{{else}}en{{/if}}">
     <head>
-        <meta charset="UTF-8">
-        {{#if title}}
-        <title>{{ title }}</title>
-        {{/if}}
-        {{#if description}}
-        <meta name="description" content="{{ description }}">
-        {{#/if}}
-        {{#if author}}
-        <meta name="author" content="{{ author }}">
-        {{#/if}}
-        {{#if keywords}}
-        <meta name="keywords" content="{{ keywords }}">
-        {{#/if}}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="{{#if charset}}{{ charset }}{{else}}UTF-8{{/if}}">
+        {{#if title}}<title>{{ title }}</title>{{/if}}
+        {{#if application-name}}<meta name="application-name" content="{{ application-name }}">{{/if}}
+        {{#if author}}<meta name="author" content="{{ author }}">{{/if}}
+        {{#if description}}<meta name="description" content="{{ description }}">{{/if}}
+        {{#if generator}}<meta name="generator" content="{{ generator }}">{{/if}}
+        {{#if keywords}}<meta name="keywords" content="{{ keywords }}">{{/if}}
+        {{#if viewport}}<meta name="viewport" content="width=device-width, initial-scale=1.0">{{/if}}
     </head>
     <body>
-{{#if content}}
-{{{ content }}}
-{{#/if}}
+{{#if content}}{{{ content }}}{{#/if}}
     </body>
 </html>

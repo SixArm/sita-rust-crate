@@ -131,13 +131,13 @@ fn insert_state_description(
 
 fn get_template_name<T: TemplaterTrait>(
     templater: &T,
-) -> Result<String, Error> {
+) -> Result<&str, Error> {
     //TODO make dynamic; currently this implementation merely returns the first available name
     trace!("Get template name.");
     debug!("templater: {:?}", templater);
     let template_names = templater.template_names_as_set_str();
     match template_names.iter().next() {
-        Some(&s) => Ok(String::from(s)),
+        Some(&s) => Ok(s),
         None => Ok(templater.template_name_default())
     }
 }
@@ -238,12 +238,13 @@ mod tests {
     );
 
     #[test]
-    fn test() {
+    fn test_sans_templater() {
+        let dir = DIR.join("test_sans_templater");
         let args = Args::default();
         let option_templater: Option<&TemplaterWithHandlebars<'_>> = None;
-        let input = DIR.join("example.md");
-        let output = DIR.join("example.html");
-        let expect = DIR.join("example.html=expect.html");
+        let input = dir.join("example.md");
+        let output = dir.join("example.html");
+        let expect = dir.join("example.html=expect.html");
         assert_ok!(remove_file_if_exists(&output));
         let result = cook_file(&args, option_templater, &input, &output);
         assert_ok!(result);
@@ -252,12 +253,13 @@ mod tests {
 
     #[test]
     fn test_with_templater() {
+        let dir = DIR.join("test_with_templater");
         let args = Args::default();
         let mut templater: TemplaterWithHandlebars<'_> = TemplaterWithHandlebars::new();
         templater.register_template_via_default().expect("register_template_via_default");
-        let input = DIR.join("example.md");
-        let output = DIR.join("example.html");
-        let expect = DIR.join("example.html=expect.html");
+        let input = dir.join("example.md");
+        let output = dir.join("example.html");
+        let expect = dir.join("example.html=expect.html");
         assert_ok!(remove_file_if_exists(&output));
         let result = cook_file(&args, Some(&templater), &input, &output);
         assert_ok!(result);

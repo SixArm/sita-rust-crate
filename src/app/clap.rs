@@ -409,12 +409,12 @@ mod tests {
     //     );
     // }
 
-    // #[test]
-    // fn test_set() {
-    //     let mut command = std::process::Command::new(&*COMMAND_OS);
-    //     command.args(&["--test", "--set", "alfa", "bravo", "--set", "charlie", "delta"]);
-    //     let target = r#" settings: Some({"alfa": "bravo", "charlie": "delta"})"#;
-    //     assert_command_stdout_contains!(command, &target);
-    // }
+    #[test]
+    fn test_set() {
+        let mut command = std::process::Command::new(&*COMMAND_OS);
+        command.args(&["--test", "--set", "alfa", "bravo", "--set", "charlie", "delta"]);
+        let target = r#" settings: Some({"alfa": "bravo", "charlie": "delta"})"#;
+        assert_command_stdout_contains!(command, &target);
+    }
 
 }
